@@ -1,0 +1,10 @@
+{
+  "name": "koi-design",
+  "private": true,
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.0",
+    "vite-plus": "0.3.0"
+  },
+  "packageManager": "pnpm@11.21.0"
+}

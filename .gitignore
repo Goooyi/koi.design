@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+
+.playwright-cli/
+playwright-report/
+test-results/
+blob-report/
+
+midscene_run/
+
+.env
+.env.*
+!.env.example
