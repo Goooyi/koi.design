@@ -9,11 +9,13 @@ Koi must show many Paper-style Frames on one infinite Page while preserving real
 
 ## Decision
 
-Use one positioned DOM world with one CSS camera transform. Render trusted component Frames as actual DOM. Use SVG for committed connectors, shapes, and initial ink; Canvas2D for transient editor feedback; DOM overlays for editing controls; and WebGL2 canvas leaves for shader elements.
+Use one positioned DOM world with one CSS camera transform. Render trusted component Frames as actual DOM. Use SVG for committed connectors, shapes, and initial ink; Canvas2D for transient editor feedback; DOM overlays for editing controls; and WebGPU canvas leaves for programmable GPU elements.
 
 Camera updates occur once per animation frame outside React reconciliation. Scale by top-level Frame visibility, containment, record-level subscriptions, cached geometry, and distant previews.
 
-WebGPU, Wasm, React Flow, and a custom pixel renderer are not part of the core canvas. They may be reconsidered only for a measured bounded workload.
+WebGPU leaves, Wasm, React Flow, and a custom pixel renderer are not part of the core canvas foundation. Bounded WebGPU features are added only for an explicit product capability; CPU-heavy Wasm optimizations require a measured workload.
+
+ADR 0005 fixes WebGPU/WGSL as Koi's only programmable GPU backend.
 
 ## Consequences
 
@@ -21,7 +23,7 @@ WebGPU, Wasm, React Flow, and a custom pixel renderer are not part of the core c
 - The browser owns component layout; Koi owns camera math, semantic interaction, measurement, visibility, and overlays.
 - DOM scalability becomes an explicit benchmark and level-of-detail problem.
 - Pen, connectors, comments, and shaders can evolve independently behind clear rendering roles.
-- Koi must test compositor behavior, retained DOM, paint cost, SVG density, and WebGL context/pixel budgets in real Chrome.
+- Koi must test compositor behavior, retained DOM, paint cost, SVG density, and WebGPU device/resource budgets in real Chrome.
 
 ## Rejected alternatives
 

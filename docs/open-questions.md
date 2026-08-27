@@ -14,7 +14,11 @@ Recommendation: yes. Finish the judged web journey first, then reuse the shared 
 
 Status: next owner decision.
 
-Recommendation: Apache-2.0 for the open Koi application/core and a separately operated commercial hosted service. Do not publish or submit until the exact boundary and license are approved.
+Recommendation: license the complete self-hostable product under Apache-2.0, including the editor, WebMCP, stdio/HTTP MCP, authentication, Workspaces, Documents, collaboration, and deployment path. The judged WebMCP flow must build and run without hidden private source.
+
+Monetize Koi Cloud through managed availability, storage, synchronization, backups, AI usage, support, and later organization features. Do not create a private `koi-cloud` repository until its first real control-plane slice exists. That repository may own billing, entitlements, tenant provisioning, abuse controls, production operations, and compliance integrations; it must consume released public artifacts rather than fork Koi's product core.
+
+Owner decision: accept the adoption-oriented Apache-2.0 recommendation, or prefer AGPL-3.0 network copyleft despite its greater embedding and enterprise-adoption friction. Do not publish or accept outside contributions until the license and contributor-rights policy are approved.
 
 ## 3. Minimum challenge document schema
 
@@ -50,7 +54,7 @@ Recommendation: use synthetic workspaces and an explicitly approved model provid
 
 Status: after the challenge cut.
 
-Recommendation: adopt Paper Shaders or its mount pattern only after the base Shader element contract and global resource budget exist. Shader authoring is not part of the challenge slice.
+Recommendation: study Paper Shaders' lifecycle and resource-budget patterns, but do not adopt its WebGL runtime. Build a WebGPU/WGSL implementation only after the base Shader element contract and global resource budget exist. Shader authoring is not part of the challenge slice.
 
 ## 9. Rich-text collaboration boundary
 

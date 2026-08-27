@@ -43,7 +43,7 @@ Chrome DevTools MCP is the right immediate installation for this empty repositor
 - disabled usage statistics and CrUX lookups;
 - redacted network headers and bounded WebP screenshots.
 
-The configuration uses Chrome's `--enable-features=WebMCP` flag. Chrome 150 or newer is required by the current DevTools MCP integration. Start a new Codex task or restart the app after configuration changes; MCP servers are not guaranteed to hot-load into an existing task.
+The configuration uses Chrome's `--enable-features=WebMCP` flag. Chrome 150 or newer is required by the current DevTools MCP integration. Start a new Codex task or restart the app after future configuration changes; MCP servers are not guaranteed to hot-load into an existing task. This task loaded the configured server and smoke-tested `list_pages` and native `list_webmcp_tools` on 2026-08-27, so no restart is currently needed.
 
 Do not connect this tooling to a personal Chrome profile. Use isolated profiles and synthetic accounts. Treat screenshots, traces, video, storage state, heap snapshots, MCP results, and network logs as sensitive artifacts.
 
@@ -111,7 +111,7 @@ Before a release, repeat the golden challenge journey in ChatGPT's built-in brow
 
 Use a pinned Linux/browser/font image for exact screenshots. Use Midscene only for qualitative assertions such as “the selected Frame is visually obvious” or “the connector does not obscure its label.” When Midscene finds a concrete regression, add a deterministic test.
 
-axe runs after every important application state. Because Canvas2D and WebGL pixels have no inherent accessibility tree, Koi must expose semantic Element navigation and descriptions in DOM.
+axe runs after every important application state. Because Canvas2D and WebGPU pixels have no inherent accessibility tree, Koi must expose semantic Element navigation and descriptions in DOM.
 
 Chrome performance traces cover representative fixtures:
 
@@ -123,7 +123,9 @@ Chrome performance traces cover representative fixtures:
 
 The initial camera acceptance criterion is a 60 Hz baseline: one camera style write per animation frame, no React commit caused by pan/zoom, and no avoidable layout or paint caused by the camera path. Budgets for live DOM, shader pixels, and ink density are set from measured fixture curves rather than Lighthouse's generic DOM warnings.
 
-Heap tests open, edit, navigate away, and return repeatedly to catch retained Frames, observers, WebGL contexts, and event listeners.
+Heap and resource-lifecycle tests open, edit, navigate away, and return repeatedly to catch retained Frames, observers, GPU resources, device-loss handlers, and event listeners.
+
+WebGPU fixtures cover supported, unavailable/denied, and device-loss states. They assert that Shader element records survive capability loss, the non-GPU editor remains usable, resources are released, and no WebGL runtime fallback is loaded.
 
 ## Failure evidence
 
@@ -147,7 +149,7 @@ The coding agent can install and configure the stack. The user does not need to 
 | Vite+ | Pinned global `vp` plus pinned local `vite-plus`; pnpm workspace | At application scaffold | Approve the global download if the environment requests it |
 | Playwright Test | Pinned repository dependency, installed through Vite+; version-matched browser cache | Immediately after the web scaffold exists | None beyond a possible browser-download approval |
 | Playwright CLI | Agent tool, preferably a pinned global `@playwright/cli`; the repository-bundled CLI is available when exact test-version parity matters | With the first runnable app | None |
-| Chrome DevTools MCP | Project-scoped `.codex/config.toml` invoking pinned `chrome-devtools-mcp` | Complete | Start a new Codex task or restart the app so it loads |
+| Chrome DevTools MCP | Project-scoped `.codex/config.toml` invoking pinned `chrome-devtools-mcp` | Complete and loaded in this task | Restart only after a future configuration change fails to hot-load |
 | Midscene web | Pinned `@midscene/web` repository dependency using its Playwright integration | After deterministic golden journeys work | None when reusing the existing Codex OAuth session; approve a different model/provider only if chosen |
 | Midscene desktop | Separate `@midscene/computer` advisory lane | Only when testing a native MCP host | Grant macOS Accessibility permission and keep the desktop session unlocked |
 

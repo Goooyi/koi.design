@@ -4,7 +4,7 @@ Status: working agreement, 2026-08-27.
 
 ## Decision summary
 
-Koi will be a DOM-first, local-first spatial editor with one shared command/query core. Human UI, WebMCP, and MCP servers are equal entry surfaces over that core. The browser renders actual HTML/CSS and Astryx components; SVG, Canvas2D, and WebGL2 are used only where they are the right visual medium.
+Koi will be a DOM-first, local-first spatial editor with one shared command/query core. Human UI, WebMCP, and MCP servers are equal entry surfaces over that core. The browser renders actual HTML/CSS and Astryx components; SVG and Canvas2D serve their bounded roles, while every Koi-authored programmable GPU feature uses WebGPU and WGSL.
 
 This gives Koi the product property that matters most: a human can directly edit a real web composition, and an agent can read the exact semantic result and continue without overwriting it.
 
@@ -17,7 +17,7 @@ The following are deliberately outside the first vertical slice:
 - arbitrary untrusted React packages or arbitrary JavaScript renderers;
 - a Figma-compatible vector engine;
 - full multiplayer, general-purpose CRDT state, and hosted organization features;
-- WebGPU or Wasm in the core rendering path;
+- WebGPU as a replacement for the DOM/SVG/Canvas2D canvas foundation, or Wasm in the core rendering path;
 - arbitrary shader post-processing of live DOM subtrees.
 
 Wasm remains a reserved optimization boundary. It must be justified by a measured CPU-heavy workload and must work across the intended MCP host security policies before adoption.
@@ -50,7 +50,7 @@ Viewport
 │   ├── SVG relationship plane
 │   ├── positioned DOM Frames
 │   │   ├── real HTML/CSS and Astryx component trees
-│   │   └── optional WebGL2 shader canvas leaves
+│   │   └── optional WebGPU shader canvas leaves
 │   └── committed SVG shapes and ink
 ├── Canvas2D HUD — active ink, guides, selection and cursors
 └── DOM overlay — handles, text editing, comments and toolbars
@@ -66,13 +66,13 @@ These layers are not competing canvas implementations. They share one Document a
 | SVG plane | World space; durable | Selectable connectors, geometric shapes, and initially committed pen paths |
 | Canvas2D HUD | Screen space; transient | In-progress pen strokes, lasso, selection marquee, snap guides, hover feedback, and cursors |
 | DOM overlay | Screen space; transient UI | Text inputs, comment popovers, resize handles, context menus, toolbars, keyboard focus, and ARIA semantics |
-| WebGL2 leaf | Inside a world-space Frame; durable element with animated pixels | Trusted procedural shaders and other bounded GPU effects |
+| WebGPU leaf | Inside a world-space Frame; durable element with animated pixels | Trusted procedural shaders and other bounded programmable GPU effects |
 
 HUD means heads-up display: one transparent `<canvas>` lies above the world and is redrawn once per animation frame during an interaction. A pointer move therefore changes pixels in one bitmap instead of creating React, DOM, or SVG nodes. On pointer-up, Koi commits one semantic operation, such as a simplified SVG path, and clears the HUD. The HUD is deliberately unsuitable for editable text or accessible controls because its pixels have no individual DOM identity.
 
 The DOM overlay is a separate layer above the transformed world. Koi converts an Element's world position to screen position and places ordinary HTML controls there. The controls stay readable at a constant screen size and retain native input, selection, focus, keyboard, and accessibility behavior while the content beneath them pans and zooms.
 
-WebGL2 is already GPU accelerated. It runs GLSL shaders in a `<canvas>` and directly matches Paper Shaders' rendering model. WebGPU is a newer render-and-compute API, but it does not accelerate DOM layout and is not automatically faster for a small isolated shader. Koi will prefer WebGL2 for the bounded shader leaf and consider WebGPU only for a measured workload such as very dense ink, particles, or image computation.
+WebGPU runs WGSL render and compute pipelines in a `<canvas>`. It solves bounded programmable work such as procedural pixels, dense particles, image computation, and potentially very dense ink. It does not accelerate DOM layout and is not automatically faster for one small effect. Koi nevertheless standardizes on WebGPU so it has one modern programmable GPU model rather than parallel WebGL2/GLSL and WebGPU/WGSL implementations.
 
 ### Why one camera transform
 
@@ -110,15 +110,17 @@ SVG is the initial committed medium for connectors, geometric shapes, and simpli
 
 ### WebGPU
 
-WebGPU does not accelerate DOM style calculation, flex/grid layout, text editing, or DOM hit testing. It is therefore not a canvas foundation. A future optional GPU renderer may serve dense ink, particles, procedural graphics, image processing, or computation after a benchmark proves the need.
+WebGPU does not accelerate DOM style calculation, flex/grid layout, text editing, DOM hit testing, Canvas2D, or the browser compositor. It is therefore not the canvas foundation. It is Koi's only programmable GPU API: all Koi-authored GPU rendering and computation uses WebGPU and WGSL, and Koi ships no WebGL2/GLSL runtime backend.
+
+GPU features remain capability-gated leaves. The editor, ordinary Frames, connectors, text, and transient HUD continue to work when an MCP host or browser does not expose WebGPU. A Shader element remains in the Document and renders a clear static preview or unsupported-state diagnostic rather than silently changing the artifact. Device loss, pixel budgets, offscreen suspension, and host compatibility are explicit test boundaries.
 
 ### Paper-style shaders
 
-The DOM-first design supports Paper-style shaders directly: a normal Frame can contain an absolutely positioned WebGL2 canvas plus normal DOM children. A Shader element stores a trusted shader identity, serializable uniforms, playback speed, deterministic frame, and quality settings.
+The DOM-first design supports the same product category as Paper-style shaders: a normal Frame can contain an absolutely positioned WebGPU canvas plus normal DOM children. A Shader element stores a trusted shader identity, serializable uniforms, playback speed, deterministic frame, and quality settings.
 
-Paper's implementation gives each mount its own WebGL2 context and animation loop, observes size, caps backing pixels, and pauses static, hidden, or offscreen work. Koi should use the same principles while adding a Page-wide pixel and animation budget. Offscreen and distant shaders become snapshots; resolution is refreshed after zoom settles rather than reallocating every camera frame.
+Paper's implementation remains useful reference material for observing size, capping backing pixels, and pausing static, hidden, or offscreen work. Koi will apply those resource principles to WebGPU while adding a Page-wide pixel and animation budget. Offscreen and distant shaders become snapshots; resolution is refreshed after zoom settles rather than reallocating every camera frame.
 
-WebGL2 is sufficient for this feature. WebGPU is not required. Applying a shader to a rasterized snapshot of arbitrary live DOM is a different feature and is not part of the initial contract.
+Koi will not ship Paper Shaders' WebGL runtime. A future WGSL implementation may reproduce supported effects with appropriate license and provenance notices. Applying a shader to a rasterized snapshot of arbitrary live DOM is a different feature and is not part of the initial contract.
 
 ## Document and command model
 
@@ -265,7 +267,7 @@ Mitosis and Panda may inform the design, but neither is currently required. The 
 - [`content-visibility`](https://web.dev/articles/content-visibility)
 - [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
 - [CSS containment](https://developer.mozilla.org/en-US/docs/Web/CSS/contain)
-- [WebGL2 API](https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext)
 - [WebGPU API](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API)
+- [WebGPU Shading Language](https://www.w3.org/TR/WGSL/)
 - [Paper Shaders](https://github.com/paper-design/shaders)
 - [Zed: Introducing DeltaDB](https://zed.dev/blog/introducing-deltadb)

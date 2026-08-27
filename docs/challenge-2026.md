@@ -32,7 +32,8 @@ Build:
 - top-level WebMCP context, inspect, create/update, arrange, and export tools;
 - one design-profile input and native web export path;
 - deterministic Playwright journey plus native Chrome and ChatGPT smoke tests;
-- a public deployment, repository documentation, license, and demo video.
+- a public deployment, repository documentation, license, and demo video;
+- a judged WebMCP workflow that builds and runs entirely from the public source without a private service dependency.
 
 Defer:
 
@@ -89,4 +90,4 @@ Deletion can remain a deliberately confirmed UI action for the challenge unless 
 
 The largest risk is schedule dilution: implementing stdio, hosted collaboration, general whiteboard tools, and a universal component system before the judged WebMCP story works. The second is relying only on mocked WebMCP or AI visual tests. The third is publishing without a license that satisfies the challenge.
 
-The open-source license and final source boundary require owner approval. Apache-2.0 is the current recommendation because it permits commercial use while providing explicit patent terms; the hosted service can remain a separate commercial offering.
+The open-source license and final source boundary require owner approval. Apache-2.0 is the current recommendation because it permits commercial use while providing explicit patent terms. The complete self-hostable product remains public; a later private repository is limited to Koi Cloud's managed-service control plane and must not be required by the challenge workflow.
