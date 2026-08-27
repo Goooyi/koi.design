@@ -1,6 +1,8 @@
 node_modules/
+.pnpm-store/
 dist/
 coverage/
+*.tsbuildinfo
 
 .playwright-cli/
 playwright-report/
@@ -8,6 +10,12 @@ test-results/
 blob-report/
 
 midscene_run/
+
+# Local self-host state
+.koi/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
 
 .env
 .env.*

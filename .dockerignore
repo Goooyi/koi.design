@@ -1,0 +1,17 @@
+.git
+.agents
+.codex
+.playwright-cli
+.pnpm-store
+node_modules
+**/dist
+coverage
+playwright-report
+test-results
+midscene_run
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal

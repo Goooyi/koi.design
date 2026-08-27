@@ -1,0 +1,30 @@
+{
+  "name": "@koi/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "vp build",
+    "check": "vp check",
+    "start": "node dist/main.js",
+    "test": "vp test --run"
+  },
+  "dependencies": {
+    "@hono/node-server": "2.1.1",
+    "@koi/core": "workspace:*",
+    "@koi/mcp": "workspace:*",
+    "@koi/mcp-view": "workspace:*",
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "hono": "4.13.5",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}

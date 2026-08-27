@@ -1,0 +1,291 @@
+import { describe, expect, it, vi } from "vite-plus/test";
+
+import {
+  acknowledgeAllOutboxEntries,
+  createEmptyDocument,
+  createInitialProjection,
+} from "@koi/core";
+import { CameraController, EditorStore } from "@koi/editor";
+
+import { createKoiWebMcpTools, registerKoiWebMcp } from "../src/webmcp/tools.js";
+
+function dependencies(onCommit?: ConstructorParameters<typeof EditorStore>[0]["onCommit"]) {
+  const document = createEmptyDocument({
+    id: "document-1",
+    workspaceId: "workspace-1",
+    name: "WebMCP test",
+    pageId: "page-1",
+    historyId: "history-1",
+    designProfileVersion: "0.5.0",
+  });
+  let sequence = 0;
+  return {
+    camera: new CameraController({ x: 10, y: 20, zoom: 1 }),
+    store: new EditorStore({
+      projection: createInitialProjection(document),
+      clientId: "webmcp-client",
+      createId: (prefix) => `${prefix}-${++sequence}`,
+      onCommit,
+    }),
+  };
+}
+
+function executionOptions() {
+  return { signal: new AbortController().signal };
+}
+
+describe("Koi WebMCP", () => {
+  it("publishes the stable first-class tool catalog with schemas and annotations", () => {
+    const tools = createKoiWebMcpTools(dependencies());
+
+    expect(tools.map((tool) => tool.name)).toEqual([
+      "get_canvas_context",
+      "list_components",
+      "inspect_elements",
+      "create_elements",
+      "update_elements",
+      "delete_elements",
+      "arrange_elements",
+      "export_document",
+    ]);
+    expect(tools.every((tool) => tool.inputSchema && tool.description.length > 0)).toBe(true);
+    expect(tools.find((tool) => tool.name === "create_elements")?.annotations).toEqual({
+      readOnlyHint: false,
+      untrustedContentHint: true,
+    });
+  });
+
+  it("validates input and makes a retried mutation idempotent", async () => {
+    const runtime = dependencies();
+    const tool = createKoiWebMcpTools(runtime).find(
+      (candidate) => candidate.name === "create_elements",
+    )!;
+    const invalid = await tool.execute({ unexpected: true }, executionOptions());
+    expect(invalid).toMatchObject({
+      ok: false,
+      error: { code: "invalid_input", retryable: false },
+    });
+
+    const input = {
+      commandId: "agent-command-1",
+      pageId: "page-1",
+      elements: [
+        {
+          schemaVersion: 1,
+          id: "note-1",
+          kind: "note",
+          parentId: null,
+          geometry: { x: 10, y: 20, width: 220, height: 140, rotation: 0 },
+          properties: { content: "Agent note", color: "#ffe694" },
+        },
+      ],
+    };
+    const first = await tool.execute(input, executionOptions());
+    const replay = await tool.execute(input, executionOptions());
+
+    expect(first).toMatchObject({ ok: true, replayed: false, changedIds: ["note-1"] });
+    expect(replay).toMatchObject({ ok: true, replayed: true, changedIds: ["note-1"] });
+    expect(runtime.store.getActivePage()?.elements).toHaveLength(1);
+  });
+
+  it("accepts hosts that omit the draft callback-options object", async () => {
+    const tool = createKoiWebMcpTools(dependencies()).find(
+      (candidate) => candidate.name === "get_canvas_context",
+    )!;
+
+    const result = await (tool.execute as (input: Record<string, unknown>) => Promise<unknown>)({});
+
+    expect(result).toMatchObject({ ok: true, document: { id: "document-1" } });
+  });
+
+  it("bounds canvas-context selection output and marks transient locks retryable", async () => {
+    const runtime = dependencies();
+    for (let index = 0; index < 70; index += 1) {
+      runtime.store.createElement("page-1", {
+        schemaVersion: 1,
+        id: `note-${index}`,
+        kind: "note",
+        parentId: null,
+        geometry: { x: index, y: index, width: 100, height: 80, rotation: 0 },
+        properties: { content: String(index) },
+      });
+      runtime.store.replaceProjection(acknowledgeAllOutboxEntries(runtime.store.getProjection()));
+    }
+    runtime.store.select(Array.from({ length: 70 }, (_, index) => `note-${index}`));
+    const tools = createKoiWebMcpTools(runtime);
+    const context = tools.find((candidate) => candidate.name === "get_canvas_context")!;
+
+    await expect(context.execute({}, executionOptions())).resolves.toMatchObject({
+      ok: true,
+      selectionCount: 70,
+      selectionTruncated: true,
+      selection: expect.any(Array),
+    });
+    const contextResult = (await context.execute({}, executionOptions())) as {
+      selection: unknown[];
+    };
+    expect(contextResult.selection).toHaveLength(64);
+
+    const releaseInteractionLock = runtime.store.acquireInteractionLock();
+    const create = tools.find((candidate) => candidate.name === "create_elements")!;
+    const locked = await create.execute(
+      {
+        commandId: "locked-command",
+        elements: [
+          {
+            schemaVersion: 1,
+            id: "locked-note",
+            kind: "note",
+            parentId: null,
+            geometry: { x: 0, y: 0, width: 100, height: 80, rotation: 0 },
+            properties: { content: "later" },
+          },
+        ],
+      },
+      executionOptions(),
+    );
+    releaseInteractionLock();
+    expect(locked).toMatchObject({
+      ok: false,
+      error: { code: "interaction_locked", retryable: true },
+    });
+  });
+
+  it("does not tell agents to blindly retry a resource limit", async () => {
+    const runtime = dependencies();
+    const create = createKoiWebMcpTools(runtime).find(
+      (candidate) => candidate.name === "create_elements",
+    )!;
+    for (let index = 0; index < 64; index += 1) {
+      await expect(
+        create.execute(
+          {
+            commandId: `queued-command-${index}`,
+            pageId: "page-1",
+            elements: [
+              {
+                schemaVersion: 1,
+                id: `queued-note-${index}`,
+                kind: "note",
+                parentId: null,
+                geometry: { x: index, y: index, width: 100, height: 80, rotation: 0 },
+                properties: { content: String(index) },
+              },
+            ],
+          },
+          executionOptions(),
+        ),
+      ).resolves.toMatchObject({ ok: true });
+    }
+
+    await expect(
+      create.execute(
+        {
+          commandId: "one-command-too-many",
+          pageId: "page-1",
+          elements: [
+            {
+              schemaVersion: 1,
+              id: "one-note-too-many",
+              kind: "note",
+              parentId: null,
+              geometry: { x: 0, y: 0, width: 100, height: 80, rotation: 0 },
+              properties: { content: "Reconnect or clear the queue first" },
+            },
+          ],
+        },
+        executionOptions(),
+      ),
+    ).resolves.toMatchObject({
+      ok: false,
+      error: { code: "resource_limit", retryable: false },
+    });
+  });
+
+  it("returns bounded Element previews and refuses oversized model-context exports", async () => {
+    const runtime = dependencies();
+    for (let index = 0; index < 11; index += 1) {
+      expect(
+        runtime.store.createElement("page-1", {
+          schemaVersion: 1,
+          id: `large-note-${index}`,
+          kind: "note",
+          parentId: null,
+          geometry: { x: index * 20, y: 20, width: 220, height: 140, rotation: 0 },
+          properties: { content: "x".repeat(100_000), color: "#ffe694" },
+        }).ok,
+      ).toBe(true);
+    }
+    const tools = createKoiWebMcpTools(runtime);
+    const inspect = tools.find((candidate) => candidate.name === "inspect_elements")!;
+    const inspected = await inspect.execute({ elementIds: ["large-note-0"] }, executionOptions());
+    expect(inspected).toMatchObject({
+      ok: true,
+      elements: [{ id: "large-note-0", truncated: true }],
+    });
+    const exportTool = tools.find((candidate) => candidate.name === "export_document")!;
+    const exported = await exportTool.execute({}, executionOptions());
+
+    expect(exported).toMatchObject({
+      ok: false,
+      error: { code: "output_too_large", retryable: false },
+    });
+  });
+
+  it("reports mutation success only after the durable callback completes", async () => {
+    let finishPersistence!: () => void;
+    const runtime = dependencies(
+      () =>
+        new Promise<void>((resolve) => {
+          finishPersistence = resolve;
+        }),
+    );
+    const tool = createKoiWebMcpTools(runtime).find(
+      (candidate) => candidate.name === "create_elements",
+    )!;
+    let resolved = false;
+    const execution = tool.execute(
+      {
+        commandId: "durable-agent-command",
+        pageId: "page-1",
+        elements: [
+          {
+            schemaVersion: 1,
+            id: "durable-note",
+            kind: "note",
+            parentId: null,
+            geometry: { x: 10, y: 10, width: 200, height: 100, rotation: 0 },
+            properties: { content: "Saved before success", color: "#ffe694" },
+          },
+        ],
+      },
+      executionOptions(),
+    ) as Promise<unknown>;
+    const call = execution.then((result: unknown) => {
+      resolved = true;
+      return result;
+    });
+    await Promise.resolve();
+
+    expect(resolved).toBe(false);
+    finishPersistence();
+    expect(await call).toMatchObject({ ok: true, commandId: "durable-agent-command" });
+  });
+
+  it("registers centrally and aborts one shared lifetime on cleanup", async () => {
+    const registered: Array<{ tool: WebMCP.ModelContextTool; signal?: AbortSignal }> = [];
+    const context = {
+      registerTool: vi.fn(async (tool, options) => {
+        registered.push({ tool, signal: options?.signal });
+      }),
+    } as unknown as WebMCP.ModelContext;
+
+    const cleanup = await registerKoiWebMcp(dependencies(), context);
+    expect(registered).toHaveLength(8);
+    expect(new Set(registered.map((entry) => entry.signal)).size).toBe(1);
+    expect(registered[0]!.signal?.aborted).toBe(false);
+
+    cleanup();
+    expect(registered[0]!.signal?.aborted).toBe(true);
+  });
+});

@@ -1,0 +1,6 @@
+# Koi Design
+
+Koi is a portable, local-first spatial design workspace where humans and agents edit the same
+structured document through native WebMCP, standard MCP, or the interactive canvas.
+
+- [Source and documentation](https://github.com/Goooyi/koi.design)

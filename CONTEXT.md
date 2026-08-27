@@ -74,6 +74,11 @@ This file defines the words used in product discussion, code, tests, and agent t
 
 **Standalone web app** — Koi running as a top-level website, with human UI and WebMCP in the same page.
 
+**Self-hosted server** — The current single-owner Node service that persists Workspaces and
+Documents to bounded files, serves the web app, accepts authenticated REST commands, publishes
+SSE revision wake-ups, and exposes per-Document Streamable HTTP MCP. It is not a multiplayer
+service.
+
 **WebMCP** — The browser-facing agent tool surface registered by the top-level Koi website.
 
 **MCP server** — A local or hosted process that exposes Koi tools and UI resources through MCP.
@@ -87,6 +92,8 @@ This file defines the words used in product discussion, code, tests, and agent t
 - The Paper reference image shows one Page containing six Frames, not six Pages on one Canvas.
 - Canvas means the editor viewport; Page means the persistent spatial surface.
 - A Component instance is not arbitrary third-party JavaScript. Its renderer must be present in the trusted registry.
+- The self-hosted service and stdio MCP server are different entry surfaces. Hosted MCP is the
+  dedicated `/api/v1/documents/:documentId/mcp` route, not the ordinary REST command API.
 - tldraw, Onlook, GrapesJS, Mitosis, Panda, and pxpipe are reference material unless a later decision explicitly adopts them. They are not current Koi dependencies.
 
 ## Example dialogue

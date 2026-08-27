@@ -1,118 +1,136 @@
 # Koi repository and toolchain
 
-Status: toolchain decision accepted and repository topology proposed, 2026-08-27. The target topology does not decide the still-open delivery-order question.
+Status: implemented workspace, 2026-08-27.
 
 ## Decision summary
 
-Koi will use a pnpm workspace driven through Vite+. Vite+ supplies Vite with Rolldown, Vitest, Oxlint, Oxfmt, tsdown, and the workspace task runner. The official name is **Oxlint**, not `oxclint`.
+Koi is a pnpm 11.21 workspace driven through Vite+ 0.3.0. Vite+ supplies the Vite/Rolldown build,
+Vitest, Oxlint, Oxfmt, tsdown packaging, and workspace task runner. The repository does not add
+parallel ESLint, Prettier, or standalone Vitest configurations.
 
-The initial scaffold will pin the current Vite+ release rather than use a floating range. As of this decision that is `vite-plus@0.3.0`, which bundles Vite 8.2.2, Rolldown 1.2.5, Vitest 4.1.11, Oxlint 1.79.0, and Oxfmt 0.64.0. Vite+ is still labeled beta, so upgrades are explicit changes followed by `vp migrate`, `vp toolchain`, and the full project gates.
+Node.js 22.18 or newer is required. Versions are pinned in `package.json`,
+`pnpm-workspace.yaml`, and `pnpm-lock.yaml`; upgrades are explicit changes followed by the full
+repository gates.
 
-Koi will not add parallel ESLint, Prettier, standalone Oxlint/Oxfmt, or ordinary standalone Vitest configurations. Static policy belongs in the root `vite.config.ts`; app-specific Vite build and test behavior belongs in that app's config. React uses the maintained `@vitejs/plugin-react`, whose transform path uses Oxc in current Vite.
-
-## Target workspace
+## Workspace map
 
 ```text
 koi-design/
 ├── apps/
-│   ├── web/                  # standalone React app and first-class WebMCP
-│   ├── mcp-view/             # self-contained iframe View build
-│   └── mcp-server/           # one server with stdio and HTTP entrypoints
+│   ├── web/                  # React shell, IndexedDB authority/outbox, hosting, native WebMCP
+│   ├── mcp-view/             # self-contained iframe MCP View
+│   ├── mcp-server/           # stdio MCP + durable single-Projection repository
+│   └── server/               # authenticated REST/HTTP MCP persistence + static serving
 ├── packages/
-│   ├── core/                 # environment-neutral document and command domain
-│   ├── astryx/               # trusted profile, registry, renderer, and export
-│   └── editor/               # reusable React spatial editor
+│   ├── core/                 # document, commands, history, queries, serialization
+│   ├── astryx/               # trusted Astryx profile and renderer/export helpers
+│   ├── editor/               # reusable React spatial editor
+│   └── mcp/                  # shared MCP tools, resources, bounds, demo repository
 ├── tests/
-│   ├── contracts/            # entry-surface behavioral parity
-│   ├── e2e/                  # web, WebMCP, and MCP App journeys
-│   └── fixtures/             # representative canvas documents
+│   └── e2e/                  # assembled browser journeys
 ├── docs/
-├── vite.config.ts                # shared Vite+ check, task, and workspace policy
+│   └── adr/
+├── Dockerfile
+├── compose.yaml
+├── playwright.config.ts
 ├── pnpm-workspace.yaml
 ├── package.json
-└── pnpm-lock.yaml
+└── vite.config.ts
 ```
 
-Directories are created when their complete vertical slice begins; Koi will not commit empty future apps. If the challenge-first order is accepted, the first physical workspace contains `apps/web` and the three packages. `apps/mcp-view` and `apps/mcp-server` arrive together when the MCP App slice begins. A later Remotion showcase may live in `apps/showcase`; Hyperframes can remain an external production workflow. Neither belongs in the product runtime.
+Unit and protocol tests sit beside the package or app behavior they exercise. Repository-level
+browser journeys live in `tests/e2e`.
 
 ## Dependency direction
 
 ```text
-core ← astryx ← editor ← web or mcp-view
-  ↖──────────────── mcp-server
+core ← astryx ← editor ← web
+core ← mcp
+core + editor + mcp ← mcp-view
+core + mcp + mcp-view ← mcp-server
+core + mcp + mcp-view ← server
 ```
 
-- `packages/core` has no React, DOM, MCP, database, or Astryx runtime dependency. It owns the Document schema, commands, validation, queries, history, persistence ports, and portable Koi serialization.
-- `packages/astryx` depends on `core`. It owns the Koi Astryx profile, trusted component registry, browser renderer entrypoint, and supported native export. Browser and Node entrypoints remain explicit.
-- `packages/editor` depends on `core` and `astryx`. It owns the React editor shell, canvas interaction, visibility, render layers, overlays, and inspector.
-- Apps are composition roots. They may depend on packages, but apps never import another app and packages never import an app.
-- IndexedDB, SQLite, and later PostgreSQL implementations stay beside the app that runs them. Only their narrow transactional interfaces belong in `core`.
-- The MCP server has one set of handlers with stdio and HTTP transport entrypoints. The MCP View does not own durable storage; it talks through the host bridge and semantic client.
-- Packages expose public entrypoints. Cross-package deep imports are prohibited.
+- `packages/core` has no React, DOM, MCP, database, or Astryx runtime dependency. It owns all nine
+  Element kinds, validation, semantic operations, deterministic replay, undo, queries, and the
+  portable Koi representation. The current cross-surface geometry contract fixes rotation at `0`,
+  and one Projection may retain at most 64 undelivered Commands and 50,000 lifetime Commands.
+- `packages/astryx` owns the `koi.astryx/0.5.0` trusted registry and component-level HTML helpers.
+- `packages/editor` owns the store, camera, DOM/SVG/Canvas2D/overlay layers, direct interaction,
+  Frame visibility, shared drag-preview offsets, and inspector. Its per-Element subscriptions are
+  useful but do not isolate every committed render because the Canvas shell also consumes the full
+  Projection.
+- `packages/mcp` maps MCP tools to core commands, registers the MCP App resource, defines direct
+  and fingerprint-pinned paginated snapshot bounds, and provides an injectable in-memory demo
+  repository.
+- Apps are composition roots. Browser-only Projection, authority, and outbox persistence plus
+  hosted recovery stay in `apps/web`; file-backed REST and HTTP MCP persistence stay in
+  `apps/server`; the bounded single-Projection stdio file stays in `apps/mcp-server`.
+- Cross-package imports use public package exports. Packages do not import apps.
 
-## Internal module shape
+The self-host server and stdio MCP server are deliberately separate entrypoints. The self-host
+server gives each durable Document an authenticated stateless Streamable HTTP MCP endpoint and
+also supports the browser REST client. The stdio MCP server embeds the same interactive View and
+persists its one current Projection to `.koi/mcp/projection.json` or `KOI_MCP_DATA_FILE`. The two
+servers do not share a repository file. The stdio transport caps inbound messages at 4 MiB and the
+file repository separately admits four active-or-waiting mutations and four active-or-waiting
+Projection reads by default. Both MCP transports expose five semantic/model-visible tools and one
+app-only chunk reader; the latter reopens complete Views up to 32,000,000 bytes without placing
+pagination in the model tool catalog.
 
-```text
-apps/web/src/
-├── app/
-├── webmcp/
-└── persistence/indexeddb/
+## Build outputs
 
-apps/mcp-view/src/
-├── app/
-└── bridge/
+- `apps/web/dist` — standalone web assets.
+- `apps/mcp-view/dist/mcp-app.html` — one self-contained MCP App document.
+- `apps/mcp-server/dist/cli.mjs` — executable stdio server; `dist/index.mjs` is its module export.
+- `apps/server/dist/main.js` — bundled Node REST/static server.
+- `packages/core/dist/index.mjs` and `packages/astryx/dist/index.mjs` — public package entrypoints.
+- `packages/editor/dist/index.mjs` and `dist/style.css` — editor module and required stylesheet.
+- `packages/mcp/dist/index.mjs` and `dist/protocol.mjs` — MCP implementation and protocol-only
+  entrypoints.
 
-apps/mcp-server/src/
-├── entrypoints/              # stdio.ts and http.ts
-├── mcp/
-└── persistence/
-
-packages/core/src/
-├── document/
-├── commands/
-├── queries/
-├── history/
-├── persistence/
-├── agent-api/
-└── serialization/
-
-packages/astryx/src/
-├── profile/
-├── registry/
-├── render/
-└── export/
-
-packages/editor/src/
-├── shell/
-├── canvas/
-│   ├── camera/
-│   ├── interaction/
-│   ├── visibility/
-│   └── layers/             # DOM, SVG, HUD, and shader modules
-├── overlays/
-└── inspector/
-```
-
-Unit tests sit beside the behavior they exercise. Repository-level `tests/contracts` proves that human UI, WebMCP, and MCP adapters produce equivalent domain outcomes. End-to-end journeys stay outside individual packages because they exercise assembled products.
-
-Do not create generic `shared`, `utils`, or `types` dumping grounds. Camera, geometry, SVG, Canvas2D, shaders, virtualization, and overlays remain modules inside `editor` because they share interaction and geometry invariants. A package is extracted only when there is a real independent contract and consumer.
+Generated `dist` directories are not source artifacts. Reusable `packages/*` exports and the MCP
+View/server exports resolve to those built files, so build before running a direct app task,
+configuring an MCP host, starting a Node service, or producing a deployment image. The root `dev`,
+`check`, `test`, and `ready` scripts perform their required workspace builds.
 
 ## Daily commands
 
-- `vp install` installs workspace dependencies through pnpm.
-- `vp dev` and `vp build` run the current app's Vite/Rolldown path.
-- `vp check` runs Oxfmt, Oxlint, and TypeScript checks.
-- `vp test` runs the Vite+-provided Vitest for domain and component tests.
-- `vp exec playwright test` runs the separate Playwright Test suite.
-- `vp run -r build` or an explicit root task builds workspace members in dependency order.
+From the repository root:
 
-The MCP server uses normal ESM Node output through `vp pack`; it will not begin with Vite+'s experimental single-executable mode.
+```sh
+pnpm install --frozen-lockfile
+pnpm dev
+pnpm build
+pnpm check
+pnpm test
+pnpm test:e2e
+pnpm ready
+```
+
+- `pnpm dev` builds the workspace, then starts the web app at `127.0.0.1:4173`.
+- `pnpm build` builds all workspace members.
+- `pnpm check` builds first, then runs Oxfmt, Oxlint, and TypeScript checks.
+- `pnpm test` builds first, then runs the workspace Vitest and MCP protocol suites.
+- `pnpm test:e2e` builds first, then runs one bounded Chromium Playwright worker.
+- `pnpm ready` builds once, then runs checks, workspace tests, and the Chromium suite.
+
+After building its workspace dependencies, run a single member through the Vite+ task runner, for
+example
+`pnpm exec vp run @koi/web#dev` or `pnpm exec vp run @koi/mcp-server#build`.
+
+## Structure rules
+
+- Do not create generic `shared`, `utils`, or `types` dumping grounds.
+- Keep camera, geometry, rendering, virtualization, and overlays together in `editor` while they
+  share interaction invariants.
+- Add a package only when it has an independent contract and more than one real consumer.
+- Keep protocol mapping at app edges; domain behavior belongs in `core`.
+- Remove obsolete paths instead of adding compatibility layers.
 
 ## References
 
 - [Vite+ getting started](https://viteplus.dev/guide/)
 - [Vite+ monorepo guide](https://viteplus.dev/guide/monorepo)
 - [Vite+ check](https://viteplus.dev/guide/check)
-- [Vite+ troubleshooting and beta status](https://viteplus.dev/guide/troubleshooting)
 - [Vite+ 0.3.0 release](https://github.com/voidzero-dev/vite-plus/releases/tag/v0.3.0)
-- [Vite official plugins](https://vite.dev/plugins/)

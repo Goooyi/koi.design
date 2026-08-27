@@ -1,10 +1,31 @@
 {
   "name": "koi-design",
+  "version": "0.1.0",
   "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vp run -r --concurrency-limit 2 build",
+    "check": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 check",
+    "dev": "vp run -r --concurrency-limit 2 build && vp run @koi/web#dev",
+    "ready": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 check && vp run -r --concurrency-limit 2 test && vp exec playwright test --workers=1",
+    "test": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 test",
+    "test:e2e": "vp run -r --concurrency-limit 2 build && vp exec playwright test --workers=1"
+  },
   "devDependencies": {
     "@playwright/test": "1.62.1",
+    "@types/node": "catalog:",
     "vite": "npm:@voidzero-dev/vite-plus-core@0.3.0",
     "vite-plus": "0.3.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.21.0",
+      "onFail": "download"
+    }
+  },
+  "engines": {
+    "node": ">=22.18.0"
   },
   "packageManager": "pnpm@11.21.0"
 }

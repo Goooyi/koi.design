@@ -1,93 +1,88 @@
-# WebMCP Challenge 2026 plan
+# WebMCP Challenge 2026
 
-Status: recommended delivery plan pending owner confirmation, 2026-08-27.
+Status: product MVP implemented; submission packaging remains, 2026-08-27.
 
-## Outcome
+## Submission thesis
 
-Submit one coherent Koi workflow that could not be demonstrated as well with conventional browser automation: the agent and human operate the same live spatial document through semantic WebMCP tools, preserve each other's edits, and export the result as real web content.
+Koi demonstrates a workflow that conventional browser automation cannot express as cleanly: a
+human and an agent operate the same live spatial Document through semantic WebMCP tools, preserve
+each other's edits through version preconditions, and export a portable artifact made of real web
+elements.
 
-The [official Devpost page](https://webmcp.devpost.com/) and [OpenAI challenge page](https://openai.com/webmcp-challenge/) state a deadline of September 3, 2026 at 1:00 PM PDT, which is September 4 at 4:00 AM in Singapore. Devpost requires a live URL, a public source repository with a visible open-source license and setup instructions, and a public demonstration video shorter than three minutes.
+WebMCP is a first-class product surface, not an experimental adapter. The page registers a stable
+catalog centrally and routes tool calls through the same command reducer used by direct human
+interaction.
 
 ## Golden story
 
-1. Open a prepared Page containing several Astryx component Frames and a brand design source.
-2. Ask the browser agent to inspect the active selection and nearby composition through WebMCP.
-3. The agent creates a branded alternative Frame beside the originals and explains the semantic changes.
-4. The human directly drags a component, edits its label, and adds a note.
-5. The agent reinspects the exact changed IDs and revisions, then continues without overwriting the human edit or stealing Camera/Selection.
-6. The human reverts one agent operation as a single undo group.
-7. Export the portable Koi document and supported native HTML/CSS.
+1. Open a prepared Page containing several HTML-native Astryx Frames.
+2. Ask the browser agent to inspect context and selected Elements through native WebMCP.
+3. The agent creates a branded alternative Frame beside the originals.
+4. The human drags a component, edits a note, and draws an ink stroke.
+5. The agent reinspects exact IDs and versions, then continues without stealing Camera or
+   Selection.
+6. A stale agent edit receives a structured conflict instead of overwriting the human move.
+7. Export the portable `.koi.json` Document and open the same product through the MCP App View.
 
-This demonstrates first-class WebMCP leverage, actual human-agent collaboration, HTML/CSS-native design, local-first responsiveness, history, and portability in one short narrative.
+This story exercises agent leverage, human takeover, semantic collaboration, real HTML/CSS,
+history, and portability without a private service dependency.
 
-## Challenge cut line
+## Implemented challenge surface
 
-Build:
+- standalone infinite DOM-first canvas and trusted Astryx registry;
+- pan, zoom, select, drag, resize, text/note editing, shapes, connectors, ink, delete, and undo;
+- IndexedDB persistence and portable `.koi.json` import/export;
+- stable semantic commands, idempotency, expected-version conflicts, attribution, and outbox;
+- native WebMCP context, component-list, inspect, create, update, delete, arrange, and export tools;
+- self-contained, durable stdio MCP App and text fallbacks;
+- bounded public self-host topology with single-owner REST and Streamable HTTP MCP persistence;
+- deterministic domain, adapter, protocol, server, and real-input browser tests.
 
-- one local Workspace and Document with one Page;
-- multiple Frames containing trusted Astryx DOM;
-- pan, zoom, selection, create, move, resize, text edit, and undo;
-- IndexedDB projection/outbox and reload persistence;
-- semantic history with human/agent attribution;
-- top-level WebMCP context, inspect, create/update, arrange, and export tools;
-- one design-profile input and native web export path;
-- deterministic Playwright journey plus native Chrome and ChatGPT smoke tests;
-- a public deployment, repository documentation, license, and demo video;
-- a judged WebMCP workflow that builds and runs entirely from the public source without a private service dependency.
+## Submission work remaining
 
-Defer:
+- run and record the golden story through native Chrome WebMCP, not only the unit adapter;
+- add the stale human-versus-agent browser journey and accessibility scan;
+- capture a representative Chrome performance trace and verify deployment limits;
+- publish a live HTTPS URL and test it in a fresh browser session;
+- choose and add the repository license, then make the source public;
+- record a public video shorter than three minutes using Hyperframes or Remotion;
+- complete the current Devpost fields and recheck the official rules at submission time.
 
-- authentication and organization management;
-- real-time multiplayer and hosted sync;
-- full stdio MCP App product polish;
-- arbitrary component packages;
-- comments beyond the golden-story note primitive;
-- dense drawing tools, WebGPU, Wasm, and shader authoring UI.
+Licensing is intentionally undecided. The repository must not be described as open source until a
+license file is present.
 
-## Recommended delivery order
+## Stable WebMCP catalog
 
-1. Shared document/command core and standalone DOM canvas.
-2. IndexedDB projection/outbox and deterministic undo.
-3. Complete WebMCP vertical slice in real Chrome.
-4. Golden Playwright journey, performance trace, and ChatGPT browser smoke.
-5. Export, deployment, README, public license, and sub-three-minute video.
-6. Stdio MCP App adapter on the same core immediately after the submission slice.
-7. Hosted HTTP MCP and collaboration afterward.
-
-This changes delivery order, not product status: stdio MCP Apps and hosted MCP remain first-class surfaces in the system design.
-
-## Proposed WebMCP catalog for the demo
-
-Keep the catalog stable and small:
-
-- `get_canvas_context` — active Document/Page, Camera, Selection, visible Frames, and Revision.
-- `list_components` — trusted component kinds and validated editable properties.
-- `inspect_elements` — bounded semantic details for stable IDs.
-- `create_elements` — bounded creation with placement intent.
-- `update_elements` — validated property/text/geometry edits with preconditions.
-- `arrange_elements` — one reversible layout operation over protected targets.
-- `export_document` — portable Koi and supported native web output.
-
-Deletion can remain a deliberately confirmed UI action for the challenge unless the golden story proves it is necessary.
+- `get_canvas_context` — Document/Page, Camera, Selection, Revision, and pending sync summary.
+- `list_components` — trusted Astryx component kinds and editable properties.
+- `inspect_elements` — bounded semantic records for stable IDs.
+- `create_elements` — bounded creation as one agent command.
+- `update_elements` — validated property/text/geometry patches with expected versions.
+- `delete_elements` — bounded, version-checked deletion.
+- `arrange_elements` — one reversible placement operation over protected targets.
+- `export_document` — validated portable Koi JSON.
 
 ## Acceptance checklist
 
-- [ ] The top-level page registers native WebMCP tools; no browser-extension automation is needed for the demo.
-- [ ] Tool calls use the same commands, validation, history, conflict, and undo paths as human edits.
-- [ ] A mutating tool resolves only after local projection/outbox commit and returns command ID, changed IDs, revision, and sync status.
-- [ ] Agent work is visibly attributed and does not steal Camera or Selection.
-- [ ] The human edit is communicated as a semantic Koi event, not inferred from pixels.
-- [ ] A stale agent geometry update fails and replans without overwriting the human.
-- [ ] Reload restores the Page locally.
-- [ ] Native web export opens independently of Koi.
-- [ ] Playwright golden journey, Chrome native WebMCP smoke, accessibility scan, and representative performance trace pass.
-- [ ] Live URL works in a fresh synthetic account/session.
-- [ ] The submitter has confirmed eligibility under the country-of-residence and other official rules.
-- [ ] Repository is public with install/run/test instructions and a visible approved license.
-- [ ] Public video is shorter than three minutes and shows WebMCP, human takeover, undo, and export.
+- [x] Human UI and WebMCP mutate through the same editor/core command path.
+- [x] Mutating calls use stable command IDs, bounded batches, versions, and structured receipts.
+- [x] WebMCP mutation completion awaits the local persistence callback.
+- [x] Agent work is attributed and does not mutate Camera or Selection.
+- [x] Reload restores the standalone Page from IndexedDB.
+- [x] Stdio MCP exposes a sandboxed, self-contained View with deny-by-default resource CSP.
+- [x] Stdio MCP preserves its validated Projection and idempotency receipts across process restarts.
+- [x] An official client verifies authenticated hosted MCP and restart persistence.
+- [x] The public self-host build has no private runtime dependency.
+- [x] Real-pointer Playwright covers drag persistence, pen, editing, and portable export.
+- [ ] Native Chrome discovers and executes all Koi WebMCP tools on the built deployment.
+- [ ] A stored journey proves stale-agent conflict and replan after a human move.
+- [ ] Accessibility and representative performance evidence pass.
+- [ ] Live HTTPS URL works in a fresh session.
+- [ ] Repository is public with an approved visible license and setup instructions.
+- [ ] Public demonstration video is under three minutes.
 
-## Submission risks
+## Official references
 
-The largest risk is schedule dilution: implementing stdio, hosted collaboration, general whiteboard tools, and a universal component system before the judged WebMCP story works. The second is relying only on mocked WebMCP or AI visual tests. The third is publishing without a license that satisfies the challenge.
-
-The open-source license and final source boundary require owner approval. Apache-2.0 is the current recommendation because it permits commercial use while providing explicit patent terms. The complete self-hostable product remains public; a later private repository is limited to Koi Cloud's managed-service control plane and must not be required by the challenge workflow.
+Recheck the [Devpost challenge page](https://webmcp.devpost.com/) and
+[OpenAI challenge page](https://openai.com/webmcp-challenge/) immediately before submission; rules,
+dates, and required fields are external and may change.

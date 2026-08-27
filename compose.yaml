@@ -1,0 +1,47 @@
+services:
+  koi:
+    build:
+      context: .
+    init: true
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${KOI_PORT:-8787}:8787"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8787
+      KOI_AUTH_TOKEN: "${KOI_AUTH_TOKEN:?Set KOI_AUTH_TOKEN in .env; use openssl rand -hex 32}"
+      KOI_DATA_DIR: /data
+      KOI_STATIC_DIR: /app/web
+      KOI_PUBLIC_ORIGIN: "${KOI_PUBLIC_ORIGIN:-}"
+      NODE_OPTIONS: --max-old-space-size=512
+    volumes:
+      - koi-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    mem_limit: 768m
+    cpus: 2.0
+    stop_grace_period: 15s
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:8787/readyz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))
+      interval: 30s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+volumes:
+  koi-data:

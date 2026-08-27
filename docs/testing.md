@@ -1,164 +1,145 @@
 # Koi testing strategy
 
-Status: working agreement, 2026-08-27.
+Status: implemented baseline and release backlog, 2026-08-28.
 
-## Decision summary
+## Current evidence
 
-Koi will use real browsers and real input paths, but “human-like” does not mean replacing assertions with an AI watching screenshots. The reliable stack is layered:
+Koi's deterministic baseline is implemented and runs within bounded resources:
 
-1. Playwright Test is the deterministic regression and CI foundation.
-2. Playwright CLI and its agent skills become the coding agent's routine browser interface once a runnable app exists.
-3. Chrome DevTools MCP is the Chrome diagnostic, performance, memory, and native WebMCP interface.
-4. Playwright's CDP session covers deterministic Chromium protocol gaps.
-5. axe and Lighthouse add accessibility and performance checks.
-6. Midscene is an advisory visual and desktop-host lane, never the only merge gate.
-7. `captivus/chrome-agent` is deferred until a concrete multi-agent raw-CDP event-stream need appears.
+- Vitest covers the document schema, all nine Element kinds, command atomicity, idempotency,
+  preconditions, delete/restore, compensating undo, the 64-Command outbox and 50,000-Command history
+  boundaries, fixed-zero rotation, serialization, spatial queries, Astryx registry safety, editor
+  store/camera behavior, bounded WebMCP previews and model exports, MCP tools/View ordering,
+  animation-frame coalescing, awaited WebMCP durability, hosted outbox replay/checkpoints/conflict
+  stops, same-ID host-switch collision protection, byte-identical hosted publish retry,
+  outcome-unknown retention/reconciliation and source interaction locking, durable stdio
+  restart/idempotency/admission/bounds, hosted cursor reconstruction, REST persistence/security/SSE,
+  and hosted MCP authentication, body, batch, read-admission, and mutation-failure bounds.
+- A real MCP SDK client negotiates with the stdio server through an in-memory transport, discovers
+  the app-only chunk tool, reconstructs a Projection above the direct snapshot boundary, verifies
+  every result stays bounded, and retrieves the self-contained UI resource. View tests cover
+  paginated assembly, malformed and tampered chunks, mid-transfer changes, host-delivered large
+  import results, snapshot-free apply refresh deduplication, preserved acknowledgements when refresh
+  fails, and committed-import recovery when the Projection changes before the first or second
+  chunk. Deterministic coordination tests also cover exact retry after a commit-then-transport
+  failure, preserving optimistic state after two unconfirmed transport attempts, and retaining the
+  interaction lock until an authoritative reconciliation. Separate file-repository tests restart
+  the repository and verify concurrent command serialization, fail-fast mutation and read
+  admission, admission release, command and import replay, corruption refusal, file permissions,
+  rollback at the storage limit, syncing newly created path ancestry, and withholding initialization
+  or a renamed command/import until its pending directory sync is confirmed. The SDK client also
+  observes structured retryable failures from
+  all four read tools when admission is full.
+- An official Streamable HTTP client exercises a real localhost server through initialize,
+  tool/resource discovery, open, apply, import, and restart persistence. The server suite also
+  verifies hosted MCP authentication, one-message JSON-RPC admission, structured mutation
+  pressure/storage failures, request bounds, post-rename durability and revision wake-up recovery,
+  one request per HTTP socket, bounded connections, and stalled-socket destruction.
+- Eight Playwright journeys use real pointer and keyboard input to verify bounded virtualized DOM,
+  camera-driven visibility, drag persistence through IndexedDB, coherent Frame drag previews
+  across DOM/SVG/connectors, focused shortcuts, Frame creation, pen input, text editing, preserving
+  a human text draft across an agent update, durable authority-transition ordering, denied browser
+  storage, and the full `.koi.json` download path.
+- Playwright is fixed to one Chromium worker, 30-second test timeouts, video disabled, and traces
+  and screenshots retained only on failure.
+- An isolated native Chrome smoke discovered all eight WebMCP tools and executed bounded context
+  and element-inspection calls without console or browser-issue errors. The full native mutation
+  collaboration journey remains a release-backlog test.
 
-Vitest remains useful for pure reducers and schemas, but it cannot prove that pan, drag, focus, iframe bridges, accessibility, painting, or WebMCP work in a browser.
+Run the gates from the root:
 
-## Tool choices
+```sh
+pnpm build
+pnpm check
+pnpm test
+pnpm test:e2e
+# Or run the aggregate gate:
+pnpm ready
+```
 
-| Tool | Koi role | Why | Constraint |
-| --- | --- | --- | --- |
-| [Playwright Test](https://playwright.dev/docs/intro) | Stored end-to-end tests and CI | Real Chromium/Firefox/WebKit input, auto-waiting, role locators, traces, video, screenshots, iframe support, deterministic assertions | Visual baselines need pinned browser/OS/fonts |
-| [Playwright CLI](https://playwright.dev/agent-cli/capabilities) | Routine agent exploration and reproduction | Named isolated sessions, accessibility snapshots, screenshots, traces, network inspection, and optional live human takeover | Exploratory commands are not stored regression assertions |
-| [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp) | Autonomous diagnosis and exploratory testing | Input automation, screenshots, console/network, Lighthouse, Chrome traces, heap snapshots, and native `list_webmcp_tools` / `execute_webmcp_tool` | Chrome-only; browser contents are exposed to the MCP client |
-| [Playwright CDP session](https://playwright.dev/docs/api/class-cdpsession) | Deterministic WebMCP protocol coverage | Invokes Chromium domains from the same test runner without building a custom driver | Tip-of-tree CDP is not a compatibility contract |
-| [Midscene](https://github.com/web-infra-dev/midscene) | Nightly visual semantics and real desktop-host smoke | Screenshot-based location can inspect canvas, cross-origin iframe, and opaque native-host UI; desktop mode can use OS mouse/keyboard | Model-dependent, slower, less reproducible, and may send screenshots to a model provider |
-| [chrome-agent](https://github.com/captivus/chrome-agent) | Deferred protocol probe | Lightweight raw CDP and multi-agent event subscriptions | No locators, assertions, reports, cross-browser runner, or actionability model |
-| [axe with Playwright](https://playwright.dev/docs/accessibility-testing) | Accessibility regression checks | Catches machine-detectable violations after important UI states | Cannot understand painted Canvas pixels or replace manual review |
-| [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) | Repeatable loading budgets | Automates multiple Lighthouse runs and reports regression | Canvas gesture performance needs Chrome traces and custom marks instead |
+`pnpm check`, `pnpm test`, and `pnpm test:e2e` build workspace dependencies before their
+respective checks, so no separate build is required on a clean checkout. `pnpm ready` builds once,
+then runs format, lint, type, workspace test, and one-worker Chromium gates.
 
-Chrome DevTools MCP is the right immediate installation for this empty repository because it helps development before a test package exists. Playwright CLI becomes the default exploration path and Playwright Test becomes a repository dependency as soon as the web scaffold and package manager exist. Midscene should enter only after deterministic golden journeys are working.
+The current browser suite is a meaningful MVP regression gate, not complete release evidence.
+Automated native WebMCP mutation journeys, accessibility automation, performance/memory budgets,
+interactive third-party MCP host smoke tests, and cross-browser coverage remain outstanding.
 
-## Codex setup completed
+## Testing layers
 
-[`.codex/config.toml`](../.codex/config.toml) pins Chrome DevTools MCP 1.8.0 and enables:
+1. **Domain contracts:** fast deterministic tests for persistent invariants and structured errors.
+2. **Adapter contracts:** WebMCP, MCP, IndexedDB, and REST tests prove their mapping to semantic
+   commands without faking pointer events.
+3. **Browser journeys:** Playwright exercises actual rendered controls and input paths, then checks
+   both visible results and durable behavior.
+4. **Native protocol diagnostics:** Chrome DevTools MCP discovers and executes the browser's real
+   WebMCP catalog and records console/network evidence.
+5. **Accessibility and performance:** axe, Lighthouse, Chrome traces, and heap snapshots measure
+   assembled-product behavior.
+6. **Advisory visual testing:** Midscene may assess qualitative visual outcomes after deterministic
+   gates exist; it is never the only merge gate.
 
-- isolated temporary browser profiles;
-- headless operation suitable for SSH development;
-- coordinate-based vision tools;
-- heap/memory diagnostics;
-- Chrome's experimental native WebMCP domain;
-- disabled usage statistics and CrUX lookups;
-- redacted network headers and bounded WebP screenshots.
+## Testing tools
 
-The configuration uses Chrome's `--enable-features=WebMCP` flag. Chrome 150 or newer is required by the current DevTools MCP integration. Start a new Codex task or restart the app after future configuration changes; MCP servers are not guaranteed to hot-load into an existing task. This task loaded the configured server and smoke-tested `list_pages` and native `list_webmcp_tools` on 2026-08-27, so no restart is currently needed.
+| Tool                      | Current role                                                | Status                                                           |
+| ------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------- |
+| Vitest through Vite+      | Domain, adapter, component, and protocol tests              | Active                                                           |
+| Playwright Test 1.62.1    | Stored Chromium journeys                                    | Active; Chromium only                                            |
+| Playwright CLI skill      | Agent exploration and reproduction                          | Operator-local; verify in each agent environment                 |
+| Chrome DevTools MCP 1.8.0 | Console, network, Lighthouse, traces, memory, native WebMCP | Pinned in project config; verify runtime access per environment  |
+| axe Playwright            | Automated accessibility checks                              | Planned; not installed                                           |
+| Lighthouse CI             | Repeatable load budgets                                     | Planned; DevTools Lighthouse is available for manual diagnostics |
+| Midscene                  | Model-assisted web/native-host visual smoke                 | Deferred until deterministic gaps are known                      |
+| chrome-agent              | Raw multi-agent CDP subscriptions                           | Not adopted                                                      |
 
-Do not connect this tooling to a personal Chrome profile. Use isolated profiles and synthetic accounts. Treat screenshots, traces, video, storage state, heap snapshots, MCP results, and network logs as sensitive artifacts.
+The project-scoped `.codex/config.toml` launches isolated headless Chrome with WebMCP enabled.
+Never connect it to a personal Chrome profile or customer workspace. Screenshots, traces, storage
+state, heap snapshots, MCP results, and network logs are sensitive artifacts.
 
-## Test layers
+## Required next journeys
 
-### 1. Domain contracts
+Add stored regression coverage only for observable behavior or non-trivial boundaries:
 
-Fast tests cover observable invariants in the command core:
+1. A native Chrome WebMCP agent inspects a human drag, creates an alternative, and leaves Camera
+   and Selection unchanged.
+2. A stale agent geometry update conflicts with a newer human move, reinspects, and replans.
+3. A complete `.koi.json` round-trip reopens in a fresh browser profile.
+4. The browser connects to a real self-hosted server, persists a command, receives an authenticated
+   SSE wake-up, and survives server restart.
+5. An external MCP Apps host opens the iframe View, calls tools, handles theme/context changes,
+   reconnects, and shows structured failures.
+6. Keyboard-only navigation covers tools, canvas, Elements, editing, inspector, import/export, and
+   undo.
 
-- stable IDs and bounded operations;
-- idempotent command replay;
-- record- and field-level preconditions;
-- delete versus stale update;
-- one agent command per undo group;
-- compensating undo;
-- projection plus outbox atomicity;
-- deterministic replay.
+Use the official MCP Apps basic host for View lifecycle coverage and repeat claimed host support in
+the real host before release. Unit fakes prove adapter behavior; they are never described as native
+compatibility.
 
-The same create, move, conflict, undo, and export scenario must produce equivalent domain results when entered through human UI, WebMCP, or MCP adapters.
+## Performance and resource policy
 
-### 2. Deterministic browser journeys
+Representative fixtures should include the six-Frame exploration, one very tall Astryx Frame,
+multiple component studies, dense connectors/ink, and supported/offscreen Shader elements.
 
-Playwright uses actual `mouse`, `keyboard`, `touchscreen`, and wheel events against the rendered application. Assertions observe both the visual result and Koi's public semantic state; tests do not call reducers directly to imitate interaction.
+Measure:
 
-Required golden journeys are:
+- camera frame time, main-thread long tasks, React commits, layout, paint, and layer count;
+- mounted Frame and DOM counts as the viewport moves;
+- server body, connection, subscriber, queue, and storage limits;
+- retained Frames, observers, event listeners, and future GPU resources after repeated navigation;
+- supported, unavailable, and device-loss WebGPU states without loading a WebGL fallback.
 
-1. Create several Frames, pan, zoom, select, drag, resize, edit text, undo, reload, and observe the same Document.
-2. A human performs a coordinate drag; an agent reads the exact moved Element and revision, then creates an alternative without changing human Camera or Selection.
-3. An agent command conflicts with a newer human geometry edit, receives a structured failure, reinspects, and replans.
-4. Export a Page to the portable Koi document and supported native web output, then reopen it.
-5. Navigate by keyboard through canvas controls, Frames, text editing, dialogs, and undo history.
-
-State and command-log assertions come first. Intentional screenshots then catch rendering regressions that state cannot express.
-
-### 3. MCP App host tests
-
-Run the official MCP Apps `basic-host` against the hosted HTTP adapter and assert:
-
-- tool and `ui://` resource registration;
-- sandboxed iframe initialization;
-- View-to-host tool calls and results;
-- host context, theme, display mode, and resize updates;
-- cancellation, reconnect, CSP, and error states;
-- handlers are registered before the View connects.
-
-Local stdio still needs protocol integration tests and a release smoke test in each host Koi claims to support. The View is tested as disposable; persistence belongs to the MCP server's durable store.
-
-### 4. Native WebMCP tests
-
-CI unit tests may inject a small `document.modelContext` fake to prove Koi's adapter behavior, but passing them is not described as native compatibility.
-
-A Chrome lane launches with WebMCP enabled and uses DevTools MCP or Playwright CDP to verify:
-
-- stable top-level tool discovery and exact schemas;
-- success, structured failure, cancellation, and oversized-batch rejection;
-- registration removal after navigation/unmount;
-- immediate read-after-local-write consistency;
-- visible attribution and undo grouping;
-- adversarial document labels are returned as untrusted data, never instructions;
-- unsupported browsers retain the full human web app without fake compatibility.
-
-Before a release, repeat the golden challenge journey in ChatGPT's built-in browser. That real-host smoke cannot be replaced by a mock.
-
-### 5. Visual, accessibility, performance, and memory
-
-Use a pinned Linux/browser/font image for exact screenshots. Use Midscene only for qualitative assertions such as “the selected Frame is visually obvious” or “the connector does not obscure its label.” When Midscene finds a concrete regression, add a deterministic test.
-
-axe runs after every important application state. Because Canvas2D and WebGPU pixels have no inherent accessibility tree, Koi must expose semantic Element navigation and descriptions in DOM.
-
-Chrome performance traces cover representative fixtures:
-
-- the six-Frame Paper exploration;
-- one very tall Astryx foundations Frame;
-- multiple live component Frames;
-- dense connectors and committed ink;
-- several visible and offscreen shader elements.
-
-The initial camera acceptance criterion is a 60 Hz baseline: one camera style write per animation frame, no React commit caused by pan/zoom, and no avoidable layout or paint caused by the camera path. Budgets for live DOM, shader pixels, and ink density are set from measured fixture curves rather than Lighthouse's generic DOM warnings.
-
-Heap and resource-lifecycle tests open, edit, navigate away, and return repeatedly to catch retained Frames, observers, GPU resources, device-loss handlers, and event listeners.
-
-WebGPU fixtures cover supported, unavailable/denied, and device-loss states. They assert that Shader element records survive capability loss, the non-GPU editor remains usable, resources are released, and no WebGL runtime fallback is loaded.
+The implemented camera coalesces the world-transform hot path to at most one write per animation
+frame. Camera listeners also trigger a throttled React visibility commit at most once every 64 ms
+and one refresh when a pointer pan ends; tests and traces must distinguish that intended
+virtualization work from per-pointer React reconciliation. Product budgets for live DOM, ink,
+shader pixels, and memory must come from measured fixture curves rather than generic Lighthouse DOM
+warnings.
 
 ## Failure evidence
 
-Every browser failure should preserve enough evidence for an agent and a human to reconstruct the event:
+A browser failure should preserve the Playwright trace/action log, a screenshot, console errors,
+relevant network requests, and the Koi command/outbox state with secrets removed. Add a Chrome
+performance trace or heap snapshot for performance regressions.
 
-- Playwright trace and action log;
-- screenshot and video around the failure;
-- console and relevant network requests;
-- Koi command/event/outbox log with sensitive data removed;
-- Chrome performance trace or heap snapshot for performance lanes;
-- browser, viewport, device scale, fonts, locale, timezone, and feature flags.
-
-No individual screenshot assertion, AI assertion, DOM snapshot, or state assertion is sufficient alone for the core collaborative journeys.
-
-## Installation ownership and timing
-
-The coding agent can install and configure the stack. The user does not need to run setup commands.
-
-| Capability | Installation boundary | Timing | User involvement |
-| --- | --- | --- | --- |
-| Vite+ | Pinned global `vp` plus pinned local `vite-plus`; pnpm workspace | At application scaffold | Approve the global download if the environment requests it |
-| Playwright Test | Pinned repository dependency, installed through Vite+; version-matched browser cache | Immediately after the web scaffold exists | None beyond a possible browser-download approval |
-| Playwright CLI | Agent tool, preferably a pinned global `@playwright/cli`; the repository-bundled CLI is available when exact test-version parity matters | With the first runnable app | None |
-| Chrome DevTools MCP | Project-scoped `.codex/config.toml` invoking pinned `chrome-devtools-mcp` | Complete and loaded in this task | Restart only after a future configuration change fails to hot-load |
-| Midscene web | Pinned `@midscene/web` repository dependency using its Playwright integration | After deterministic golden journeys work | None when reusing the existing Codex OAuth session; approve a different model/provider only if chosen |
-| Midscene desktop | Separate `@midscene/computer` advisory lane | Only when testing a native MCP host | Grant macOS Accessibility permission and keep the desktop session unlocked |
-
-Installing repository dependencies before a package manifest exists would create throwaway scaffolding, so Playwright Test and Midscene wait for the Vite+ workspace. Chrome DevTools MCP is already configured because it is useful before an application test package exists.
-
-At scaffold time, add pinned `@playwright/test`, `@axe-core/playwright`, and `@lhci/cli`, then install the version-matched Chromium browser. Add Firefox and WebKit when cross-browser journeys begin. Configure traces on first retry, one CI worker initially, reduced motion, fixed locale/timezone/color scheme, and a dedicated `chrome-webmcp` project.
-
-Install Playwright CLI's official skills for the agent. Keep exploratory CLI sessions separate per agent and use its live dashboard when human supervision or takeover is useful.
-
-Midscene supports `codex://app-server`, so an existing Codex OAuth login can run the initial advisory lane without committing an API key. This route still sends screenshots and possibly DOM context to the selected model and can be slower or use more tokens than a direct provider. Koi uses synthetic workspaces and keeps all provider configuration out of version control.
-
-Do not add chrome-agent unless raw long-running CDP subscriptions across multiple agents become an observed requirement.
+No screenshot, AI judgment, DOM snapshot, or state assertion alone is sufficient for the central
+human-agent collaboration journey.
