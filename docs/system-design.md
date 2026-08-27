@@ -56,6 +56,24 @@ Viewport
 └── DOM overlay — handles, text editing, comments and toolbars
 ```
 
+### What each rendering layer solves
+
+These layers are not competing canvas implementations. They share one Document and one camera, while each renders the kind of content browsers handle best.
+
+| Layer | Coordinate space and lifetime | Responsibility |
+| --- | --- | --- |
+| DOM Frames | World space; durable | Actual HTML/CSS, Astryx components, text, notes, images, and product UI |
+| SVG plane | World space; durable | Selectable connectors, geometric shapes, and initially committed pen paths |
+| Canvas2D HUD | Screen space; transient | In-progress pen strokes, lasso, selection marquee, snap guides, hover feedback, and cursors |
+| DOM overlay | Screen space; transient UI | Text inputs, comment popovers, resize handles, context menus, toolbars, keyboard focus, and ARIA semantics |
+| WebGL2 leaf | Inside a world-space Frame; durable element with animated pixels | Trusted procedural shaders and other bounded GPU effects |
+
+HUD means heads-up display: one transparent `<canvas>` lies above the world and is redrawn once per animation frame during an interaction. A pointer move therefore changes pixels in one bitmap instead of creating React, DOM, or SVG nodes. On pointer-up, Koi commits one semantic operation, such as a simplified SVG path, and clears the HUD. The HUD is deliberately unsuitable for editable text or accessible controls because its pixels have no individual DOM identity.
+
+The DOM overlay is a separate layer above the transformed world. Koi converts an Element's world position to screen position and places ordinary HTML controls there. The controls stay readable at a constant screen size and retain native input, selection, focus, keyboard, and accessibility behavior while the content beneath them pans and zooms.
+
+WebGL2 is already GPU accelerated. It runs GLSL shaders in a `<canvas>` and directly matches Paper Shaders' rendering model. WebGPU is a newer render-and-compute API, but it does not accelerate DOM layout and is not automatically faster for a small isolated shader. Koi will prefer WebGL2 for the bounded shader leaf and consider WebGPU only for a measured workload such as very dense ink, particles, or image computation.
+
 ### Why one camera transform
 
 Pan and zoom update one transform on `WorldRoot` once per animation frame, outside React reconciliation. A transform can stay in the compositor path; it is not intrinsically a source of lag. The common causes of lag are synchronous layout reads, React commits during gestures, paint-heavy effects, main-thread long tasks, excessive compositor layers, and repeated rerasterization while zooming.
@@ -66,15 +84,17 @@ Pan and zoom update one transform on `WorldRoot` once per animation frame, outsi
 
 HTML/CSS fidelity is the product, not an implementation accident. Actual DOM preserves flex/grid behavior, editable text, semantics, accessibility, browser layout, Astryx rendering, and useful native web export. Replacing it with a custom pixel renderer would require Koi to rebuild layout, font shaping, focus, text editing, accessibility, and component behavior while losing source-of-truth fidelity.
 
-The DOM does have a cost. Koi will scale at top-level Frame boundaries:
+The DOM does have a cost. Koi will scale at top-level Frame boundaries using the following mechanisms:
 
-1. Subscribe renderers to individual records so a node edit does not rerender the Page.
-2. Batch layout reads and writes; cache geometry through `ResizeObserver`.
-3. Use containment at fixed-size Frame boundaries.
-4. Maintain a world-space visibility index and mount visible Frames plus overscan.
-5. Keep selected, edited, dragged, or agent-highlighted Frames live.
-6. Show cached previews for distant or dense Frames while retaining bounds, labels, selection, and connector anchors.
-7. Treat `content-visibility` as a secondary browser optimization, not the visibility model.
+1. **Record-level subscriptions:** a Frame renderer subscribes to its own record and required design tokens rather than to the entire `elements` collection. Moving Frame A rerenders A and affected relationship/selection visuals, not every Frame. Camera state stays in an interaction controller and writes one root transform per animation frame instead of causing React commits.
+2. **Cached geometry:** world bounds and connector anchors are retained in a geometry cache. `ResizeObserver` refreshes a Frame only when its rendered size actually changes. Pointer movement, hit testing, and connector routing read the cache instead of repeatedly calling `getBoundingClientRect()`, which could force synchronous layout.
+3. **CSS containment:** a fixed-size Frame uses containment to tell the browser that its internal layout and painting cannot affect unrelated Frames. This narrows invalidation when a component changes. Size containment is not applied to a Frame whose dimensions must be derived from its children.
+4. **Spatial indexing:** a world-space index maps bounding rectangles to Element IDs. Viewport, hit-test, lasso, and nearby-element queries inspect only candidates in the requested region rather than scanning every Element. Koi begins with a simple uniform grid and adopts a more complex tree only if measurement justifies it.
+5. **Frame virtualization:** every Frame remains an exact Document record, but Koi mounts live DOM only for Frames intersecting the viewport plus an overscan margin. The margin prevents visible pop-in while panning. Selected, edited, dragged, or agent-highlighted Frames remain live even when just outside the viewport. Virtualization happens around whole Frames, never inside the HTML/CSS composition being designed.
+6. **Distant previews:** when a Frame is so far away that its contents are subpixel, Koi can show a cached image or lightweight shell while preserving exact bounds, title, selection, and connector anchors. The live DOM returns when the Frame is near, selected, or edited. Preview invalidation follows document changes, not camera movement.
+7. **Browser assistance:** `content-visibility` may reduce work further, but it is a secondary browser optimization rather than Koi's visibility model.
+
+The rollout remains evidence-driven. The first small Page may keep all Frames live. Record subscriptions, a camera path outside React, containment, and geometry caching come first; the spatial index, Frame virtualization, and distant previews are enabled when representative fixtures show they are needed.
 
 There is no useful universal DOM-node cap for an editor. Koi will establish limits from representative Page benchmarks, including the six-Frame Paper study, a tall Astryx foundations Frame, multiple component Frames, dense ink, and shader fixtures.
 
@@ -243,6 +263,9 @@ Mitosis and Panda may inform the design, but neither is currently required. The 
 - [CSS animation performance](https://web.dev/articles/animations-guide)
 - [DOM size and interactivity](https://web.dev/articles/dom-size-and-interactivity)
 - [`content-visibility`](https://web.dev/articles/content-visibility)
+- [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
+- [CSS containment](https://developer.mozilla.org/en-US/docs/Web/CSS/contain)
+- [WebGL2 API](https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext)
 - [WebGPU API](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API)
 - [Paper Shaders](https://github.com/paper-design/shaders)
 - [Zed: Introducing DeltaDB](https://zed.dev/blog/introducing-deltadb)

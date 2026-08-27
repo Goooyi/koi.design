@@ -16,6 +16,7 @@ The project is currently in system-design and challenge-prototype stage.
 
 - [Domain language](CONTEXT.md)
 - [System design](docs/system-design.md)
+- [Repository and toolchain](docs/project-structure.md)
 - [Testing strategy](docs/testing.md)
 - [WebMCP Challenge plan](docs/challenge-2026.md)
 - [Open decision queue](docs/open-questions.md)

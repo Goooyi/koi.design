@@ -138,10 +138,25 @@ Every browser failure should preserve enough evidence for an agent and a human t
 
 No individual screenshot assertion, AI assertion, DOM snapshot, or state assertion is sufficient alone for the core collaborative journeys.
 
-## Deferred installation
+## Installation ownership and timing
 
-Once the application scaffold chooses its package manager, add pinned development dependencies for `@playwright/test`, `@axe-core/playwright`, and `@lhci/cli`, then install the three Playwright browser engines. Configure traces on first retry, one CI worker initially, reduced motion, fixed locale/timezone/color scheme, and a dedicated `chrome-webmcp` project.
+The coding agent can install and configure the stack. The user does not need to run setup commands.
 
-Install a pinned `@playwright/cli` for agent exploration and install its official skills at that point. Keep exploratory CLI sessions separate per agent and use its live dashboard when human supervision or takeover is useful.
+| Capability | Installation boundary | Timing | User involvement |
+| --- | --- | --- | --- |
+| Vite+ | Pinned global `vp` plus pinned local `vite-plus`; pnpm workspace | At application scaffold | Approve the global download if the environment requests it |
+| Playwright Test | Pinned repository dependency, installed through Vite+; version-matched browser cache | Immediately after the web scaffold exists | None beyond a possible browser-download approval |
+| Playwright CLI | Agent tool, preferably a pinned global `@playwright/cli`; the repository-bundled CLI is available when exact test-version parity matters | With the first runnable app | None |
+| Chrome DevTools MCP | Project-scoped `.codex/config.toml` invoking pinned `chrome-devtools-mcp` | Complete | Start a new Codex task or restart the app so it loads |
+| Midscene web | Pinned `@midscene/web` repository dependency using its Playwright integration | After deterministic golden journeys work | None when reusing the existing Codex OAuth session; approve a different model/provider only if chosen |
+| Midscene desktop | Separate `@midscene/computer` advisory lane | Only when testing a native MCP host | Grant macOS Accessibility permission and keep the desktop session unlocked |
 
-Add Midscene only for the advisory lane and decide its model/privacy boundary first. Do not add chrome-agent unless raw long-running CDP subscriptions across multiple agents become an observed requirement.
+Installing repository dependencies before a package manifest exists would create throwaway scaffolding, so Playwright Test and Midscene wait for the Vite+ workspace. Chrome DevTools MCP is already configured because it is useful before an application test package exists.
+
+At scaffold time, add pinned `@playwright/test`, `@axe-core/playwright`, and `@lhci/cli`, then install the version-matched Chromium browser. Add Firefox and WebKit when cross-browser journeys begin. Configure traces on first retry, one CI worker initially, reduced motion, fixed locale/timezone/color scheme, and a dedicated `chrome-webmcp` project.
+
+Install Playwright CLI's official skills for the agent. Keep exploratory CLI sessions separate per agent and use its live dashboard when human supervision or takeover is useful.
+
+Midscene supports `codex://app-server`, so an existing Codex OAuth login can run the initial advisory lane without committing an API key. This route still sends screenshots and possibly DOM context to the selected model and can be slower or use more tokens than a direct provider. Koi uses synthetic workspaces and keeps all provider configuration out of version control.
+
+Do not add chrome-agent unless raw long-running CDP subscriptions across multiple agents become an observed requirement.
