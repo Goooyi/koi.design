@@ -1,0 +1,20 @@
+[mcp_servers.chrome-devtools]
+command = "npx"
+args = [
+  "-y",
+  "chrome-devtools-mcp@1.8.0",
+  "--headless=true",
+  "--isolated=true",
+  "--viewport=1440x1000",
+  "--experimentalVision=true",
+  "--memoryDebugging=true",
+  "--categoryExperimentalWebmcp=true",
+  "--chromeArg=--enable-features=WebMCP",
+  "--usageStatistics=false",
+  "--performanceCrux=false",
+  "--redactNetworkHeaders=true",
+  "--screenshotFormat=webp",
+  "--screenshotQuality=85",
+  "--screenshotMaxWidth=1800",
+]
+startup_timeout_ms = 30_000
