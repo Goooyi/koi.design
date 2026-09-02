@@ -1,0 +1,3181 @@
+{
+  "schemaVersion": 1,
+  "generatedFromCommit": "813d16f83ddfcc63ecf00b2818a115ae69fb98ad",
+  "tools": [
+    {
+      "name": "arrange_elements",
+      "description": "Move or resize a bounded batch using expected versions, so layout never silently replaces newer geometry.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "description": "Stable caller-generated id used for safe retries."
+          },
+          "placements": {
+            "minItems": 1,
+            "maxItems": 32,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "pageId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+                  "description": "Target Page id. Defaults to the active Page when omitted."
+                },
+                "elementId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "expectedVersion": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "x": {
+                  "type": "number",
+                  "minimum": -1000000000,
+                  "maximum": 1000000000
+                },
+                "y": {
+                  "type": "number",
+                  "minimum": -1000000000,
+                  "maximum": 1000000000
+                },
+                "width": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100000000
+                },
+                "height": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100000000
+                }
+              },
+              "required": ["pageId", "elementId", "expectedVersion", "x", "y"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["commandId", "placements"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "create_elements",
+      "description": "Create a bounded batch of semantic Koi Elements and commit it as one visible, undoable agent action.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "description": "Stable caller-generated id used for safe retries."
+          },
+          "pageId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "description": "Target Page id. Defaults to the active Page when omitted."
+          },
+          "elements": {
+            "minItems": 1,
+            "maxItems": 32,
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "schemaVersion": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "parentId": {
+                      "default": null,
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "geometry": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "width": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "height": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "rotation": {
+                          "default": 0,
+                          "type": "number",
+                          "const": 0
+                        }
+                      },
+                      "required": ["x", "y", "width", "height"],
+                      "additionalProperties": false
+                    },
+                    "kind": {
+                      "type": "string",
+                      "const": "frame"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "clipContent": {
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "background": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "schemaVersion": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "parentId": {
+                      "default": null,
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "geometry": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "width": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "height": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "rotation": {
+                          "default": 0,
+                          "type": "number",
+                          "const": 0
+                        }
+                      },
+                      "required": ["x", "y", "width", "height"],
+                      "additionalProperties": false
+                    },
+                    "kind": {
+                      "type": "string",
+                      "const": "component"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "profile": {
+                          "type": "string",
+                          "const": "koi.astryx"
+                        },
+                        "profileVersion": {
+                          "type": "string",
+                          "const": "0.5.0"
+                        },
+                        "componentId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "props": {
+                          "default": {},
+                          "type": "object",
+                          "maxProperties": 256,
+                          "propertyNames": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 512
+                          },
+                          "additionalProperties": {
+                            "$ref": "#/$defs/koiJsonValue23"
+                          }
+                        }
+                      },
+                      "required": ["profile", "profileVersion", "componentId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "schemaVersion": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "parentId": {
+                      "default": null,
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "geometry": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "width": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "height": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "rotation": {
+                          "default": 0,
+                          "type": "number",
+                          "const": 0
+                        }
+                      },
+                      "required": ["x", "y", "width", "height"],
+                      "additionalProperties": false
+                    },
+                    "kind": {
+                      "type": "string",
+                      "const": "text"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "content": {
+                          "type": "string",
+                          "maxLength": 100000
+                        },
+                        "style": {
+                          "default": {},
+                          "type": "object",
+                          "properties": {
+                            "fontFamily": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 256
+                            },
+                            "fontSize": {
+                              "type": "number",
+                              "exclusiveMinimum": 0,
+                              "maximum": 10000
+                            },
+                            "fontWeight": {
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 1000
+                            },
+                            "color": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 256
+                            },
+                            "align": {
+                              "type": "string",
+                              "enum": ["start", "center", "end", "justify"]
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": ["content"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "schemaVersion": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "parentId": {
+                      "default": null,
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "geometry": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "width": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "height": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "rotation": {
+                          "default": 0,
+                          "type": "number",
+                          "const": 0
+                        }
+                      },
+                      "required": ["x", "y", "width", "height"],
+                      "additionalProperties": false
+                    },
+                    "kind": {
+                      "type": "string",
+                      "const": "note"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "content": {
+                          "type": "string",
+                          "maxLength": 100000
+                        },
+                        "color": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        }
+                      },
+                      "required": ["content"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "schemaVersion": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "parentId": {
+                      "default": null,
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "geometry": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "width": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "height": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "rotation": {
+                          "default": 0,
+                          "type": "number",
+                          "const": 0
+                        }
+                      },
+                      "required": ["x", "y", "width", "height"],
+                      "additionalProperties": false
+                    },
+                    "kind": {
+                      "type": "string",
+                      "const": "shape"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "shape": {
+                          "type": "string",
+                          "enum": ["rectangle", "ellipse", "line", "arrow"]
+                        },
+                        "fill": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "stroke": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "strokeWidth": {
+                          "default": 1,
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 10000
+                        }
+                      },
+                      "required": ["shape"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "schemaVersion": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "parentId": {
+                      "default": null,
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "geometry": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "width": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "height": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "rotation": {
+                          "default": 0,
+                          "type": "number",
+                          "const": 0
+                        }
+                      },
+                      "required": ["x", "y", "width", "height"],
+                      "additionalProperties": false
+                    },
+                    "kind": {
+                      "type": "string",
+                      "const": "connector"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "from": {
+                          "type": "object",
+                          "properties": {
+                            "elementId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "anchor": {
+                              "default": "auto",
+                              "type": "string",
+                              "enum": ["auto", "top", "right", "bottom", "left", "center"]
+                            }
+                          },
+                          "required": ["elementId"],
+                          "additionalProperties": false
+                        },
+                        "to": {
+                          "type": "object",
+                          "properties": {
+                            "elementId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "anchor": {
+                              "default": "auto",
+                              "type": "string",
+                              "enum": ["auto", "top", "right", "bottom", "left", "center"]
+                            }
+                          },
+                          "required": ["elementId"],
+                          "additionalProperties": false
+                        },
+                        "route": {
+                          "default": "straight",
+                          "type": "string",
+                          "enum": ["straight", "orthogonal", "bezier"]
+                        },
+                        "points": {
+                          "default": [],
+                          "maxItems": 1024,
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "x": {
+                                "type": "number",
+                                "minimum": -1000000000,
+                                "maximum": 1000000000
+                              },
+                              "y": {
+                                "type": "number",
+                                "minimum": -1000000000,
+                                "maximum": 1000000000
+                              }
+                            },
+                            "required": ["x", "y"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "stroke": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "strokeWidth": {
+                          "default": 1,
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 10000
+                        }
+                      },
+                      "required": ["from", "to"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "schemaVersion": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "parentId": {
+                      "default": null,
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "geometry": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "width": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "height": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "rotation": {
+                          "default": 0,
+                          "type": "number",
+                          "const": 0
+                        }
+                      },
+                      "required": ["x", "y", "width", "height"],
+                      "additionalProperties": false
+                    },
+                    "kind": {
+                      "type": "string",
+                      "const": "ink"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "points": {
+                          "minItems": 2,
+                          "maxItems": 4096,
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "x": {
+                                "type": "number",
+                                "minimum": -1000000000,
+                                "maximum": 1000000000
+                              },
+                              "y": {
+                                "type": "number",
+                                "minimum": -1000000000,
+                                "maximum": 1000000000
+                              },
+                              "pressure": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                              }
+                            },
+                            "required": ["x", "y"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "color": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "width": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 10000
+                        }
+                      },
+                      "required": ["points", "color", "width"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "schemaVersion": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "parentId": {
+                      "default": null,
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "geometry": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "width": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "height": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "rotation": {
+                          "default": 0,
+                          "type": "number",
+                          "const": 0
+                        }
+                      },
+                      "required": ["x", "y", "width", "height"],
+                      "additionalProperties": false
+                    },
+                    "kind": {
+                      "type": "string",
+                      "const": "image"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "assetId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "alt": {
+                          "default": "",
+                          "type": "string",
+                          "maxLength": 10000
+                        },
+                        "fit": {
+                          "default": "contain",
+                          "type": "string",
+                          "enum": ["contain", "cover", "fill", "none"]
+                        }
+                      },
+                      "required": ["assetId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "schemaVersion": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "parentId": {
+                      "default": null,
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "geometry": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "width": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "height": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "rotation": {
+                          "default": 0,
+                          "type": "number",
+                          "const": 0
+                        }
+                      },
+                      "required": ["x", "y", "width", "height"],
+                      "additionalProperties": false
+                    },
+                    "kind": {
+                      "type": "string",
+                      "const": "shader"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "shaderId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "parameters": {
+                          "default": {},
+                          "type": "object",
+                          "maxProperties": 256,
+                          "propertyNames": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 512
+                          },
+                          "additionalProperties": {
+                            "$ref": "#/$defs/koiJsonValue23"
+                          }
+                        },
+                        "playbackSpeed": {
+                          "default": 1,
+                          "type": "number",
+                          "minimum": -100,
+                          "maximum": 100
+                        },
+                        "deterministicFrame": {
+                          "default": 0,
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "quality": {
+                          "default": 1,
+                          "type": "number",
+                          "minimum": 0.1,
+                          "maximum": 2
+                        },
+                        "fallbackAssetId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        }
+                      },
+                      "required": ["shaderId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          }
+        },
+        "required": ["commandId", "elements"],
+        "additionalProperties": false,
+        "$defs": {
+          "koiJsonValue0": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              }
+            ]
+          },
+          "koiJsonValue1": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue0"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue0"
+                }
+              }
+            ]
+          },
+          "koiJsonValue2": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue1"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue1"
+                }
+              }
+            ]
+          },
+          "koiJsonValue3": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue2"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue2"
+                }
+              }
+            ]
+          },
+          "koiJsonValue4": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue3"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue3"
+                }
+              }
+            ]
+          },
+          "koiJsonValue5": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue4"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue4"
+                }
+              }
+            ]
+          },
+          "koiJsonValue6": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue5"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue5"
+                }
+              }
+            ]
+          },
+          "koiJsonValue7": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue6"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue6"
+                }
+              }
+            ]
+          },
+          "koiJsonValue8": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue7"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue7"
+                }
+              }
+            ]
+          },
+          "koiJsonValue9": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue8"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue8"
+                }
+              }
+            ]
+          },
+          "koiJsonValue10": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue9"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue9"
+                }
+              }
+            ]
+          },
+          "koiJsonValue11": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue10"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue10"
+                }
+              }
+            ]
+          },
+          "koiJsonValue12": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue11"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue11"
+                }
+              }
+            ]
+          },
+          "koiJsonValue13": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue12"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue12"
+                }
+              }
+            ]
+          },
+          "koiJsonValue14": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue13"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue13"
+                }
+              }
+            ]
+          },
+          "koiJsonValue15": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue14"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue14"
+                }
+              }
+            ]
+          },
+          "koiJsonValue16": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue15"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue15"
+                }
+              }
+            ]
+          },
+          "koiJsonValue17": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue16"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue16"
+                }
+              }
+            ]
+          },
+          "koiJsonValue18": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue17"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue17"
+                }
+              }
+            ]
+          },
+          "koiJsonValue19": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue18"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue18"
+                }
+              }
+            ]
+          },
+          "koiJsonValue20": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue19"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue19"
+                }
+              }
+            ]
+          },
+          "koiJsonValue21": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue20"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue20"
+                }
+              }
+            ]
+          },
+          "koiJsonValue22": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue21"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue21"
+                }
+              }
+            ]
+          },
+          "koiJsonValue23": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue22"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue22"
+                }
+              }
+            ]
+          },
+          "koiJsonValue24": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue23"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue23"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "delete_elements",
+      "description": "Delete a bounded batch by stable id and expected version as one undoable agent action.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "description": "Stable caller-generated id used for safe retries."
+          },
+          "elements": {
+            "minItems": 1,
+            "maxItems": 32,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "pageId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+                  "description": "Target Page id. Defaults to the active Page when omitted."
+                },
+                "elementId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "expectedVersion": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": ["pageId", "elementId", "expectedVersion"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["commandId", "elements"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "export_document",
+      "description": "Return the validated portable .koi.json representation of the current Document.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_canvas_context",
+      "description": "Read the active Koi Document, Page, camera, selection, revision, and sync summary before planning edits.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "inspect_elements",
+      "description": "Read bounded previews of up to 32 Koi Elements by stable id, including geometry, version, and semantic properties.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "elementIds": {
+            "minItems": 1,
+            "maxItems": 32,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "required": ["elementIds"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_components",
+      "description": "List the trusted Astryx components that Koi can place as native HTML/CSS instances.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "update_elements",
+      "description": "Patch a bounded batch by stable id and expected version; stale edits fail instead of overwriting human work.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "description": "Stable caller-generated id used for safe retries."
+          },
+          "updates": {
+            "minItems": 1,
+            "maxItems": 32,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "pageId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+                  "description": "Target Page id. Defaults to the active Page when omitted."
+                },
+                "elementId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "expectedVersion": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "changes": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 512
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "parentId": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "geometry": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -1000000000,
+                          "maximum": 1000000000
+                        },
+                        "width": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "height": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100000000
+                        },
+                        "rotation": {
+                          "default": 0,
+                          "type": "number",
+                          "const": 0
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "properties": {
+                      "type": "object",
+                      "maxProperties": 256,
+                      "propertyNames": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      "additionalProperties": {
+                        "$ref": "#/$defs/koiJsonValue23"
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "required": ["pageId", "elementId", "expectedVersion", "changes"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["commandId", "updates"],
+        "additionalProperties": false,
+        "$defs": {
+          "koiJsonValue0": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              }
+            ]
+          },
+          "koiJsonValue1": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue0"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue0"
+                }
+              }
+            ]
+          },
+          "koiJsonValue2": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue1"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue1"
+                }
+              }
+            ]
+          },
+          "koiJsonValue3": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue2"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue2"
+                }
+              }
+            ]
+          },
+          "koiJsonValue4": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue3"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue3"
+                }
+              }
+            ]
+          },
+          "koiJsonValue5": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue4"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue4"
+                }
+              }
+            ]
+          },
+          "koiJsonValue6": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue5"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue5"
+                }
+              }
+            ]
+          },
+          "koiJsonValue7": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue6"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue6"
+                }
+              }
+            ]
+          },
+          "koiJsonValue8": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue7"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue7"
+                }
+              }
+            ]
+          },
+          "koiJsonValue9": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue8"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue8"
+                }
+              }
+            ]
+          },
+          "koiJsonValue10": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue9"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue9"
+                }
+              }
+            ]
+          },
+          "koiJsonValue11": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue10"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue10"
+                }
+              }
+            ]
+          },
+          "koiJsonValue12": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue11"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue11"
+                }
+              }
+            ]
+          },
+          "koiJsonValue13": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue12"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue12"
+                }
+              }
+            ]
+          },
+          "koiJsonValue14": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue13"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue13"
+                }
+              }
+            ]
+          },
+          "koiJsonValue15": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue14"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue14"
+                }
+              }
+            ]
+          },
+          "koiJsonValue16": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue15"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue15"
+                }
+              }
+            ]
+          },
+          "koiJsonValue17": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue16"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue16"
+                }
+              }
+            ]
+          },
+          "koiJsonValue18": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue17"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue17"
+                }
+              }
+            ]
+          },
+          "koiJsonValue19": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue18"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue18"
+                }
+              }
+            ]
+          },
+          "koiJsonValue20": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue19"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue19"
+                }
+              }
+            ]
+          },
+          "koiJsonValue21": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue20"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue20"
+                }
+              }
+            ]
+          },
+          "koiJsonValue22": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue21"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue21"
+                }
+              }
+            ]
+          },
+          "koiJsonValue23": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue22"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue22"
+                }
+              }
+            ]
+          },
+          "koiJsonValue24": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number",
+                "minimum": -1.7976931348623157e308,
+                "maximum": 1.7976931348623157e308
+              },
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "array",
+                "maxItems": 256,
+                "items": {
+                  "$ref": "#/$defs/koiJsonValue23"
+                }
+              },
+              {
+                "type": "object",
+                "maxProperties": 256,
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/koiJsonValue23"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
