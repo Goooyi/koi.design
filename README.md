@@ -48,6 +48,11 @@ pnpm exec playwright install chromium
 On Debian or Ubuntu machines that do not already have the browser system libraries, use
 `pnpm exec playwright install --with-deps chromium` instead.
 
+The release-grade `pnpm audit:browser` command separately requires the current stable Google
+Chrome. On macOS, install it in `/Applications`; on Linux, make `google-chrome` or
+`google-chrome-stable` available on `PATH`. The audit deliberately measures the judge-facing
+browser rather than Playwright's pinned test browser. Run `pnpm doctor` to verify both browsers.
+
 Useful repository gates:
 
 ```sh
@@ -78,7 +83,8 @@ continues to produce the full self-hostable web client.
 ```sh
 pnpm challenge:verify
 pnpm challenge:dev       # Cloudflare Pages emulator on http://127.0.0.1:4174
-pnpm challenge:deploy    # Requires an authenticated Wrangler account
+pnpm challenge:setup     # One time: create the Pages project with production branch main
+pnpm challenge:deploy    # Requires an authenticated Wrangler account and existing project
 ```
 
 `challenge:verify` rejects dirty release trees, missing security/cache metadata, source maps,
@@ -90,9 +96,11 @@ browser audit. Cloudflare Pages provides its documented SPA fallback when a top-
 is absent.
 
 The configuration names a dedicated Direct Upload project so the submitted deployment can remain
-pinned while Stage 2 moves on. Direct Upload projects cannot later be converted to Git-integrated
-Pages projects; use a different Pages project if continuous Git deployment is wanted later. After
-deployment, rerun the same clean-profile audit against HTTPS:
+pinned while Stage 2 moves on. Run `challenge:setup` exactly once before the first deployment; it
+sets `main` explicitly as the production branch and intentionally fails if that project already
+exists. Direct Upload projects cannot later be converted to Git-integrated Pages projects; use a
+different Pages project if continuous Git deployment is wanted later. After deployment, rerun the
+same clean-profile audit against HTTPS:
 
 ```sh
 KOI_AUDIT_URL=https://<deployment>.pages.dev pnpm audit:browser

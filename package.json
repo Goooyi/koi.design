@@ -7,9 +7,10 @@
   "scripts": {
     "audit:browser": "pnpm challenge:build && node scripts/capture-browser-audit.mjs",
     "build": "vp run -r --concurrency-limit 2 build",
-    "challenge:build": "pnpm --filter @koi/web build:challenge",
+    "challenge:build": "vp run --filter '@koi/web^...' --concurrency-limit 2 build && pnpm --filter @koi/web build:challenge",
     "challenge:deploy": "pnpm challenge:verify && WRANGLER_WRITE_LOGS=false wrangler pages deploy --cwd apps/web --branch main --commit-dirty=false",
     "challenge:dev": "pnpm challenge:build && WRANGLER_WRITE_LOGS=false wrangler pages dev --cwd apps/web --ip 127.0.0.1 --port 4174 --log-level warn",
+    "challenge:setup": "WRANGLER_WRITE_LOGS=false wrangler pages project create koi-design-webmcp-challenge --production-branch main --cwd apps/web",
     "challenge:verify": "pnpm challenge:build && node scripts/verify-challenge-build.mjs",
     "check": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 check",
     "dev": "vp run -r --concurrency-limit 2 build && vp run @koi/web#dev",

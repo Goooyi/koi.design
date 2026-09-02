@@ -91,7 +91,13 @@ const requiredChecks = [
   { name: "vitePlus", pass: vitePlus.available, detail: vitePlus.output },
   { name: "playwright", pass: playwright.available, detail: playwright.output },
   { name: "bundledChromium", pass: bundledChromium, detail: bundledChromiumPath },
-  { name: "stableChrome", pass: chrome.available, detail: chrome.output },
+  {
+    name: "stableChrome",
+    pass: chrome.available,
+    detail: chrome.output,
+    remediation:
+      "Install stable Google Chrome in /Applications on macOS or expose google-chrome on PATH on Linux.",
+  },
   { name: "wrangler", pass: wrangler.available, detail: wrangler.output },
   {
     name: "platform",

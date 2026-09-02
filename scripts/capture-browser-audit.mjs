@@ -17,7 +17,8 @@ const auditStartedAt = Date.now();
 const repositoryRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const distributionRoot = path.join(repositoryRoot, "apps", "web", "dist");
 const evidenceRoot = path.join(repositoryRoot, "docs", "evidence");
-const reportPath = path.join(evidenceRoot, "browser-audit.json");
+const reportRelativePath = "docs/evidence/browser-audit.json";
+const reportPath = path.join(repositoryRoot, reportRelativePath);
 const tracePath = path.join(repositoryRoot, "test-results", "performance", "chrome-trace.json.gz");
 const viewport = { width: 1_440, height: 900 };
 const traceCategories = [
@@ -71,6 +72,35 @@ function sourceCommit() {
     cwd: repositoryRoot,
     encoding: "utf8",
   }).trim();
+}
+
+function assertAuditableSourceTree() {
+  const statusWithoutOutput = execFileSync(
+    "git",
+    [
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all",
+      "--",
+      ".",
+      `:(exclude)${reportRelativePath}`,
+    ],
+    { cwd: repositoryRoot, encoding: "utf8" },
+  ).trim();
+  if (statusWithoutOutput) {
+    throw new Error(
+      `Browser evidence requires clean source inputs; commit or remove these changes:\n${statusWithoutOutput}`,
+    );
+  }
+  const priorOutputStatus = execFileSync(
+    "git",
+    ["status", "--porcelain=v1", "--untracked-files=all", "--", reportRelativePath],
+    { cwd: repositoryRoot, encoding: "utf8" },
+  ).trim();
+  return {
+    sourceInputsClean: true,
+    priorGeneratedReportDirty: Boolean(priorOutputStatus),
+  };
 }
 
 function percentile(values, fraction) {
@@ -128,7 +158,7 @@ function selectedHeaders(headers) {
   };
 }
 
-async function inspectConfiguredHost(page, mainResponse, targetUrl) {
+async function inspectConfiguredHost(page, mainResponse, targetUrl, expectedBuildId) {
   if (!mainResponse) throw new Error("The challenge navigation returned no HTTP response");
   const assetPath =
     (await page.locator('script[src^="/assets/"]').first().getAttribute("src")) ??
@@ -175,7 +205,7 @@ async function inspectConfiguredHost(page, mainResponse, targetUrl) {
   if (observations.health.status !== 200 || observations.health.body.status !== "ok") {
     failures.push("health endpoint did not return the expected ok document");
   }
-  if (observations.health.body.buildId !== sourceCommit()) {
+  if (observations.health.body.buildId !== expectedBuildId) {
     failures.push("health endpoint build ID differs from the audited commit");
   }
   if (!observations.health.headers.cacheControl?.includes("no-store")) {
@@ -337,6 +367,8 @@ function makeBudgetResults(actual, maximums) {
   }));
 }
 
+const generatedFromCommit = sourceCommit();
+const sourceTree = assertAuditableSourceTree();
 const configuredTarget = resolveAuditTarget();
 const staticServer = configuredTarget ? null : await serveStaticDirectory(distributionRoot);
 const targetUrl = configuredTarget ?? staticServer.url;
@@ -440,7 +472,7 @@ try {
     throw new Error("The challenge deployment unexpectedly exposes the self-host connection flow");
   }
   const hostInspection = configuredTarget
-    ? await inspectConfiguredHost(page, mainResponse, targetUrl)
+    ? await inspectConfiguredHost(page, mainResponse, targetUrl, generatedFromCommit)
     : { failures: [], observations: null };
   await page.getByRole("button", { name: /^Hand/ }).click();
   const canvas = page.getByRole("region", { name: /infinite canvas/ });
@@ -620,7 +652,8 @@ try {
   const report = {
     schemaVersion: 1,
     capturedAt: new Date().toISOString(),
-    generatedFromCommit: sourceCommit(),
+    generatedFromCommit,
+    sourceTree,
     fixture: {
       id: "stage1-welcome-document",
       documentId: "welcome-document",
