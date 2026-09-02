@@ -13,26 +13,56 @@ import { chromium } from "@playwright/test";
 
 import { serveStaticDirectory } from "./lib/serve-static-directory.mjs";
 
+const auditStartedAt = Date.now();
 const repositoryRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const distributionRoot = path.join(repositoryRoot, "apps", "web", "dist");
 const evidenceRoot = path.join(repositoryRoot, "docs", "evidence");
 const reportPath = path.join(evidenceRoot, "browser-audit.json");
-const tracePath = path.join(evidenceRoot, "performance-trace.json.gz");
+const tracePath = path.join(repositoryRoot, "test-results", "performance", "chrome-trace.json.gz");
 const viewport = { width: 1_440, height: 900 };
+const traceCategories = [
+  "blink.user_timing",
+  "devtools.timeline",
+  "disabled-by-default-devtools.timeline",
+  "disabled-by-default-devtools.timeline.frame",
+  "disabled-by-default-devtools.timeline.layers",
+];
 
-const budgets = {
+const fixedBudgets = {
   accessibilityViolations: 0,
   consoleAndPageErrors: 0,
   failedRequests: 0,
   httpErrors: 0,
   crossOriginResources: 0,
-  domNodes: 5_000,
-  mountedFrames: 8,
-  p95FrameIntervalMs: 100,
-  longestTaskMs: 250,
+  instrumentationFailures: 0,
+  peakDomNodes: 300,
+  peakDomElements: 24,
+  peakMountedFrames: 4,
+  farRightMountedFrames: 2,
+  resetStateMismatch: 0,
+  p95FrameIntervalMs: 34,
+  frameIntervalsOver50MsPercent: 2,
+  longTaskCount: 2,
+  totalLongTaskMs: 150,
+  longestTaskMs: 100,
+  runTaskMaximumMs: 75,
+  layoutTotalMs: 75,
+  layoutMaximumMs: 8,
+  updateLayoutTreeTotalMs: 75,
+  updateLayoutTreeMaximumMs: 8,
+  paintTotalMs: 100,
+  paintMaximumMs: 8,
+  ccActiveTreeLayerRecords: 200,
+  idleTailReactCommits: 2,
+  retainedDocuments: 0,
+  retainedFrames: 0,
+  retainedNodes: 25,
+  retainedEventListeners: 25,
+  retainedJsHeapBytes: 4 * 1_024 * 1_024,
   encodedResourceBytes: 2 * 1_024 * 1_024,
-  jsHeapUsedBytes: 128 * 1_024 * 1_024,
-  compressedTraceBytes: 4 * 1_024 * 1_024,
+  finalJsHeapUsedBytes: 128 * 1_024 * 1_024,
+  rawTraceBytes: 32 * 1_024 * 1_024,
+  harnessRuntimeMs: 30_000,
 };
 
 function sourceCommit() {
@@ -48,18 +78,24 @@ function percentile(values, fraction) {
   return ordered[Math.min(ordered.length - 1, Math.ceil(ordered.length * fraction) - 1)];
 }
 
+function round(value) {
+  return Math.round(value * 1_000) / 1_000;
+}
+
 function distribution(values) {
   return {
     count: values.length,
-    min: values.length === 0 ? 0 : Math.min(...values),
-    p50: percentile(values, 0.5),
-    p95: percentile(values, 0.95),
-    max: values.length === 0 ? 0 : Math.max(...values),
+    min: round(values.length === 0 ? 0 : Math.min(...values)),
+    p50: round(percentile(values, 0.5)),
+    p95: round(percentile(values, 0.95)),
+    max: round(values.length === 0 ? 0 : Math.max(...values)),
+    total: round(values.reduce((total, value) => total + value, 0)),
   };
 }
 
 function publicUrl(rawUrl) {
   const url = new URL(rawUrl);
+  if (url.protocol !== "http:" && url.protocol !== "https:") return `${url.protocol}`;
   url.username = "";
   url.password = "";
   url.search = "";
@@ -115,21 +151,110 @@ async function sampleCanvas(page, label) {
     (sampleLabel) => ({
       label: sampleLabel,
       domNodes: document.querySelectorAll("*").length,
+      domElements: document.querySelectorAll(".koi-dom-element").length,
       mountedFrames: document.querySelectorAll('[data-element-kind="frame"]').length,
-      mountedFrameIds: [...document.querySelectorAll('[data-element-kind="frame"]')].map(
-        (element) => element.getAttribute("data-element-id"),
-      ),
+      mountedFrameIds: [...document.querySelectorAll('[data-element-kind="frame"]')]
+        .map((element) => element.getAttribute("data-element-id"))
+        .sort((left, right) => (left ?? "").localeCompare(right ?? "")),
     }),
     label,
   );
+}
+
+async function panCanvas(page, box, swipes) {
+  const samples = [];
+  for (let swipe = 0; swipe < swipes; swipe += 1) {
+    await page.mouse.move(box.x + box.width - 50, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + 50, box.y + box.height / 2, { steps: 6 });
+    await page.mouse.up();
+    samples.push(await sampleCanvas(page, `pan-${swipe + 1}`));
+  }
+  return samples;
 }
 
 function metricMap(metrics) {
   return Object.fromEntries(metrics.map(({ name, value }) => [name, value]));
 }
 
-function makeBudgetResults(actual) {
-  return Object.entries(budgets).map(([name, maximum]) => ({
+function metricDelta(before, after, name, scale = 1) {
+  return round(((after[name] ?? 0) - (before[name] ?? 0)) * scale);
+}
+
+function eventDurationWithinWindow(event, start, end) {
+  if (event.ph !== "X" || typeof event.ts !== "number" || typeof event.dur !== "number") return 0;
+  const overlapStart = Math.max(start, event.ts);
+  const overlapEnd = Math.min(end, event.ts + event.dur);
+  return Math.max(0, overlapEnd - overlapStart) / 1_000;
+}
+
+function traceMetric(events, name, start, end) {
+  const durations = events
+    .filter((event) => event.name === name)
+    .map((event) => eventDurationWithinWindow(event, start, end))
+    .filter((duration) => duration > 0);
+  return distribution(durations);
+}
+
+function summarizeTrace(rawTrace) {
+  const parsed = JSON.parse(rawTrace.toString("utf8"));
+  const events = parsed.traceEvents;
+  if (!Array.isArray(events)) throw new Error("Chrome trace does not contain traceEvents");
+  const start = events.find(
+    (event) => event.name === "koi-perf-start" && Number.isFinite(event.ts),
+  );
+  const end = [...events]
+    .reverse()
+    .find((event) => event.name === "koi-perf-end" && Number.isFinite(event.ts));
+  if (!start || !end || end.ts <= start.ts)
+    throw new Error("Chrome trace is missing valid Koi marks");
+  const rendererThread = events.find(
+    (event) =>
+      event.ph === "M" && event.name === "thread_name" && event.args?.name === "CrRendererMain",
+  );
+  if (!rendererThread) throw new Error("Chrome trace is missing the renderer-main thread marker");
+  const rendererEvents = events.filter(
+    (event) => event.pid === rendererThread.pid && event.tid === rendererThread.tid,
+  );
+  return {
+    markerWindowMs: round((end.ts - start.ts) / 1_000),
+    ccActiveTreeLayerRecords: distribution(
+      events
+        .filter((event) => event.name === "LayerTreeHostImpl:snapshot")
+        .map((event) => event.args?.snapshot?.active_tree?.layers)
+        .filter((layers) => Array.isArray(layers))
+        .map((layers) => layers.length),
+    ),
+    rendererMain: {
+      RunTask: traceMetric(rendererEvents, "RunTask", start.ts, end.ts),
+      Layout: traceMetric(rendererEvents, "Layout", start.ts, end.ts),
+      UpdateLayoutTree: traceMetric(rendererEvents, "UpdateLayoutTree", start.ts, end.ts),
+      Paint: traceMetric(rendererEvents, "Paint", start.ts, end.ts),
+    },
+  };
+}
+
+function retainedCounters(before, after, performanceBefore, performanceAfter) {
+  return {
+    documents: Math.max(0, after.dom.documents - before.dom.documents),
+    frames: Math.max(0, (performanceAfter.Frames ?? 0) - (performanceBefore.Frames ?? 0)),
+    nodes: Math.max(0, after.dom.nodes - before.dom.nodes),
+    eventListeners: Math.max(0, after.dom.jsEventListeners - before.dom.jsEventListeners),
+    jsHeapBytes: Math.max(0, after.heap.usedSize - before.heap.usedSize),
+  };
+}
+
+function resetMismatch(initial, reset) {
+  return Number(
+    initial.domNodes !== reset.domNodes ||
+      initial.domElements !== reset.domElements ||
+      initial.mountedFrames !== reset.mountedFrames ||
+      initial.mountedFrameIds.join("\n") !== reset.mountedFrameIds.join("\n"),
+  );
+}
+
+function makeBudgetResults(actual, maximums) {
+  return Object.entries(maximums).map(([name, maximum]) => ({
     name,
     actual: actual[name],
     maximum,
@@ -140,22 +265,48 @@ function makeBudgetResults(actual) {
 const configuredTarget = resolveAuditTarget();
 const staticServer = configuredTarget ? null : await serveStaticDirectory(distributionRoot);
 const targetUrl = configuredTarget ?? staticServer.url;
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ channel: "chrome", headless: true });
 
 try {
-  const context = await browser.newContext({ viewport });
+  const context = await browser.newContext({ viewport, deviceScaleFactor: 1 });
   await context.addInitScript(() => {
     const audit = {
+      allReactCommits: [],
       frameIntervals: [],
       longTasks: [],
+      reactCommits: [],
       lastFrame: null,
+      longTaskObserverSupported: PerformanceObserver.supportedEntryTypes.includes("longtask"),
       recording: false,
     };
     Object.defineProperty(window, "__koiBrowserAudit", { value: audit });
-    new PerformanceObserver((entries) => {
-      if (!audit.recording) return;
-      for (const entry of entries.getEntries()) audit.longTasks.push(entry.duration);
-    }).observe({ type: "longtask", buffered: true });
+    if (audit.longTaskObserverSupported) {
+      new PerformanceObserver((entries) => {
+        if (!audit.recording) return;
+        for (const entry of entries.getEntries()) audit.longTasks.push(entry.duration);
+      }).observe({ type: "longtask", buffered: true });
+    }
+    let nextRendererId = 0;
+    Object.defineProperty(window, "__REACT_DEVTOOLS_GLOBAL_HOOK__", {
+      configurable: true,
+      value: {
+        supportsFiber: true,
+        renderers: new Map(),
+        inject(renderer) {
+          nextRendererId += 1;
+          this.renderers.set(nextRendererId, renderer);
+          return nextRendererId;
+        },
+        onCommitFiberRoot() {
+          const timestamp = performance.now();
+          audit.allReactCommits.push(timestamp);
+          if (audit.recording) audit.reactCommits.push(timestamp);
+        },
+        onCommitFiberUnmount() {},
+        onPostCommitFiberRoot() {},
+        checkDCE() {},
+      },
+    });
     const tick = (timestamp) => {
       if (audit.recording) {
         if (audit.lastFrame !== null) audit.frameIntervals.push(timestamp - audit.lastFrame);
@@ -197,52 +348,94 @@ try {
   });
 
   await Promise.all([
+    client.send("HeapProfiler.enable"),
     client.send("LayerTree.enable"),
     client.send("Performance.enable"),
-    client.send("Tracing.start", {
-      categories: [
-        "blink.user_timing",
-        "devtools.timeline",
-        "disabled-by-default-devtools.timeline.frame",
-        "loading",
-      ].join(","),
-      options: "record-as-much-as-possible",
-      transferMode: "ReturnAsStream",
-    }),
   ]);
   await page.goto(targetUrl, { waitUntil: "networkidle" });
   await page.getByRole("region", { name: /Explorations infinite canvas/ }).waitFor();
-  const canvasSamples = [await sampleCanvas(page, "initial")];
-
-  await page.evaluate(() => {
-    window.__koiBrowserAudit.frameIntervals.length = 0;
-    window.__koiBrowserAudit.longTasks.length = 0;
-    window.__koiBrowserAudit.recording = true;
-  });
   await page.getByRole("button", { name: /^Hand/ }).click();
   const canvas = page.getByRole("region", { name: /infinite canvas/ });
   const box = await canvas.boundingBox();
   if (!box) throw new Error("The canvas has no measurable browser bounds");
-  for (let swipe = 0; swipe < 2; swipe += 1) {
-    await page.mouse.move(box.x + box.width - 50, box.y + box.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(box.x + 50, box.y + box.height / 2, { steps: 6 });
-    await page.mouse.up();
-    canvasSamples.push(await sampleCanvas(page, `pan-${swipe + 1}`));
-  }
-  await page.locator('[data-element-id="frame-gpu"]').waitFor();
+
+  // Warm the camera/virtualization path before measuring it.
+  await panCanvas(page, box, 2);
   await page.getByRole("button", { name: "Reset view" }).click();
   await page.locator('[data-element-id="frame-brief"]').waitFor();
-  canvasSamples.push(await sampleCanvas(page, "reset"));
-  const browserTiming = await page.evaluate(() => {
-    window.__koiBrowserAudit.recording = false;
-    return {
-      frameIntervals: [...window.__koiBrowserAudit.frameIntervals],
-      longTasks: [...window.__koiBrowserAudit.longTasks],
-    };
+  await settleAnimationFrames(page, 15);
+  const initialSample = await sampleCanvas(page, "initial-after-warmup");
+  await client.send("HeapProfiler.collectGarbage");
+  const memoryBefore = {
+    dom: await client.send("Memory.getDOMCounters"),
+    heap: await client.send("Runtime.getHeapUsage"),
+  };
+  const performanceBefore = metricMap((await client.send("Performance.getMetrics")).metrics);
+
+  await client.send("Tracing.start", {
+    categories: traceCategories.join(","),
+    options: "record-as-much-as-possible",
+    transferMode: "ReturnAsStream",
+  });
+  await settleAnimationFrames(page, 15);
+  const instrumentationBefore = await page.evaluate(() => ({
+    initialReactCommits: window.__koiBrowserAudit.allReactCommits.length,
+    longTaskObserverSupported: window.__koiBrowserAudit.longTaskObserverSupported,
+  }));
+  await page.evaluate(() => {
+    const audit = window.__koiBrowserAudit;
+    audit.frameIntervals.length = 0;
+    audit.longTasks.length = 0;
+    audit.reactCommits.length = 0;
+    audit.recording = true;
+    performance.mark("koi-perf-start");
   });
 
-  const cdpMetrics = metricMap((await client.send("Performance.getMetrics")).metrics);
+  const panSamples = await panCanvas(page, box, 3);
+  await page.locator('[data-element-id="frame-gpu"]').waitFor();
+  await page.locator('[data-element-id="frame-brief"]').waitFor({ state: "detached" });
+  await page.getByRole("button", { name: "Reset view" }).click();
+  await page.locator('[data-element-id="frame-brief"]').waitFor();
+  const resetSample = await sampleCanvas(page, "reset");
+  await settleAnimationFrames(page, 15);
+  const browserTiming = await page.evaluate(() => {
+    performance.mark("koi-perf-end");
+    const audit = window.__koiBrowserAudit;
+    audit.recording = false;
+    return {
+      endedAt: performance.now(),
+      frameIntervals: [...audit.frameIntervals],
+      longTasks: [...audit.longTasks],
+      reactCommits: [...audit.reactCommits],
+    };
+  });
+  const performanceAfter = metricMap((await client.send("Performance.getMetrics")).metrics);
+
+  const traceComplete = new Promise((resolve) => client.once("Tracing.tracingComplete", resolve));
+  await client.send("Tracing.end");
+  const { stream } = await traceComplete;
+  if (!stream) throw new Error("Chrome completed tracing without returning a stream");
+  const rawTrace = await readTrace(client, stream);
+  const traceSummary = summarizeTrace(rawTrace);
+  const compressedTrace = gzipSync(rawTrace, { level: 9 });
+  await fs.mkdir(path.dirname(tracePath), { recursive: true });
+  await fs.writeFile(tracePath, compressedTrace);
+
+  await client.send("HeapProfiler.collectGarbage");
+  const memoryAfter = {
+    dom: await client.send("Memory.getDOMCounters"),
+    heap: await client.send("Runtime.getHeapUsage"),
+  };
+  const performanceAfterGc = metricMap((await client.send("Performance.getMetrics")).metrics);
+  const retained = retainedCounters(
+    memoryBefore,
+    memoryAfter,
+    performanceBefore,
+    performanceAfterGc,
+  );
+  const accessibility = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+    .analyze();
   const resourceSummary = await page.evaluate(() => {
     const resources = [
       ...performance.getEntriesByType("navigation"),
@@ -266,50 +459,94 @@ try {
     };
   });
 
-  const accessibility = await new AxeBuilder({ page })
-    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
-    .analyze();
+  const instrumentationFailures = [];
+  if (!instrumentationBefore.longTaskObserverSupported) {
+    instrumentationFailures.push("Chrome did not expose PerformanceObserver longtask entries");
+  }
+  if (instrumentationBefore.initialReactCommits === 0) {
+    instrumentationFailures.push("The React commit hook was not observed during application load");
+  }
+  for (const [name, metric] of Object.entries(traceSummary.rendererMain)) {
+    if (metric.count === 0) instrumentationFailures.push(`Chrome trace did not contain ${name}`);
+  }
+  if (traceSummary.ccActiveTreeLayerRecords.count === 0) {
+    instrumentationFailures.push("Chrome trace did not contain compositor layer snapshots");
+  }
 
-  const traceComplete = new Promise((resolve) => client.once("Tracing.tracingComplete", resolve));
-  await client.send("Tracing.end");
-  const { stream } = await traceComplete;
-  if (!stream) throw new Error("Chromium completed tracing without returning a stream");
-  const rawTrace = await readTrace(client, stream);
-  const compressedTrace = gzipSync(rawTrace, { level: 9 });
-  await fs.mkdir(evidenceRoot, { recursive: true });
-  await fs.writeFile(tracePath, compressedTrace);
-
+  const canvasSamples = [initialSample, ...panSamples, resetSample];
+  const farRightSample = panSamples.at(-1);
+  if (!farRightSample)
+    throw new Error("The performance journey did not produce a far-right sample");
   const frameDistribution = distribution(browserTiming.frameIntervals);
   const longTaskDistribution = distribution(browserTiming.longTasks);
+  const idleTailReactCommits = browserTiming.reactCommits.filter(
+    (timestamp) => timestamp >= browserTiming.endedAt - 250,
+  ).length;
+  const maximums = {
+    ...fixedBudgets,
+    reactCommits: Math.ceil(traceSummary.markerWindowMs / 64) + 8,
+  };
   const actual = {
     accessibilityViolations: accessibility.violations.length,
     consoleAndPageErrors: consoleAndPageErrors.length,
     failedRequests: failedRequests.length,
     httpErrors: httpErrors.length,
     crossOriginResources: resourceSummary.crossOrigin.length,
-    domNodes: Math.max(...canvasSamples.map((sample) => sample.domNodes)),
-    mountedFrames: Math.max(...canvasSamples.map((sample) => sample.mountedFrames)),
+    instrumentationFailures: instrumentationFailures.length,
+    peakDomNodes: Math.max(...canvasSamples.map((sample) => sample.domNodes)),
+    peakDomElements: Math.max(...canvasSamples.map((sample) => sample.domElements)),
+    peakMountedFrames: Math.max(...canvasSamples.map((sample) => sample.mountedFrames)),
+    farRightMountedFrames: farRightSample.mountedFrames,
+    resetStateMismatch: resetMismatch(initialSample, resetSample),
     p95FrameIntervalMs: frameDistribution.p95,
+    frameIntervalsOver50MsPercent: round(
+      (browserTiming.frameIntervals.filter((duration) => duration > 50).length /
+        Math.max(1, browserTiming.frameIntervals.length)) *
+        100,
+    ),
+    longTaskCount: longTaskDistribution.count,
+    totalLongTaskMs: longTaskDistribution.total,
     longestTaskMs: longTaskDistribution.max,
+    runTaskMaximumMs: traceSummary.rendererMain.RunTask.max,
+    layoutTotalMs: traceSummary.rendererMain.Layout.total,
+    layoutMaximumMs: traceSummary.rendererMain.Layout.max,
+    updateLayoutTreeTotalMs: traceSummary.rendererMain.UpdateLayoutTree.total,
+    updateLayoutTreeMaximumMs: traceSummary.rendererMain.UpdateLayoutTree.max,
+    paintTotalMs: traceSummary.rendererMain.Paint.total,
+    paintMaximumMs: traceSummary.rendererMain.Paint.max,
+    ccActiveTreeLayerRecords: traceSummary.ccActiveTreeLayerRecords.max,
+    reactCommits: browserTiming.reactCommits.length,
+    idleTailReactCommits,
+    retainedDocuments: retained.documents,
+    retainedFrames: retained.frames,
+    retainedNodes: retained.nodes,
+    retainedEventListeners: retained.eventListeners,
+    retainedJsHeapBytes: retained.jsHeapBytes,
     encodedResourceBytes: resourceSummary.encodedBodyBytes,
-    jsHeapUsedBytes: cdpMetrics.JSHeapUsedSize ?? 0,
-    compressedTraceBytes: compressedTrace.byteLength,
+    finalJsHeapUsedBytes: memoryAfter.heap.usedSize,
+    rawTraceBytes: rawTrace.byteLength,
+    harnessRuntimeMs: Date.now() - auditStartedAt,
   };
-  const budgetResults = makeBudgetResults(actual);
+  const budgetResults = makeBudgetResults(actual, maximums);
   const report = {
     schemaVersion: 1,
     capturedAt: new Date().toISOString(),
     generatedFromCommit: sourceCommit(),
     fixture: {
       id: "stage1-welcome-document",
-      interaction: "load, pan twice to distant Frames, reset camera",
+      documentId: "welcome-document",
+      frameCount: 4,
+      elementCount: 22,
+      interaction: "warm up, then pan three times to the far-right Frame and reset the camera",
       viewport,
+      claimScope: "Stage 1 demo regression sentinel; not a general canvas-capacity claim",
     },
     environment: {
       url: publicUrl(targetUrl),
       scope: configuredTarget ? "deployed-https" : "loopback-production-build",
       browser: browser.version(),
       node: process.version,
+      playwright: "1.62.1",
       platform: process.platform,
       architecture: process.arch,
       cpuModel: os.cpus()[0]?.model ?? "unknown",
@@ -341,22 +578,53 @@ try {
       ),
     },
     reliability: { consoleAndPageErrors, failedRequests, httpErrors },
-    rendering: {
-      canvasSamples,
+    instrumentation: {
+      failures: instrumentationFailures,
+      initialReactCommits: instrumentationBefore.initialReactCommits,
       compositorLayers: {
         eventCount: layerTreeEventCount,
         maximum: layerTreeEventCount === 0 ? null : maxLayerCount,
       },
+    },
+    rendering: {
+      canvasSamples,
+      markerWindowMs: traceSummary.markerWindowMs,
       frameIntervalsMs: frameDistribution,
+      frameIntervalsOver50MsPercent: actual.frameIntervalsOver50MsPercent,
       longTasksMs: longTaskDistribution,
+      reactCommits: {
+        total: browserTiming.reactCommits.length,
+        idleTail250Ms: idleTailReactCommits,
+      },
+      rendererMainTraceEvents: traceSummary.rendererMain,
+      ccActiveTreeLayerRecords: traceSummary.ccActiveTreeLayerRecords,
+    },
+    memory: {
+      before: memoryBefore,
+      after: memoryAfter,
+      retained,
+    },
+    performanceMetricDeltas: {
+      LayoutCount: metricDelta(performanceBefore, performanceAfter, "LayoutCount"),
+      RecalcStyleCount: metricDelta(performanceBefore, performanceAfter, "RecalcStyleCount"),
+      LayoutDurationMs: metricDelta(performanceBefore, performanceAfter, "LayoutDuration", 1_000),
+      RecalcStyleDurationMs: metricDelta(
+        performanceBefore,
+        performanceAfter,
+        "RecalcStyleDuration",
+        1_000,
+      ),
+      ScriptDurationMs: metricDelta(performanceBefore, performanceAfter, "ScriptDuration", 1_000),
+      TaskDurationMs: metricDelta(performanceBefore, performanceAfter, "TaskDuration", 1_000),
     },
     resources: {
       ...resourceSummary,
       crossOrigin: resourceSummary.crossOrigin.map((url) => publicUrl(url)),
     },
-    cdpMetrics,
     trace: {
-      path: path.relative(repositoryRoot, tracePath),
+      categories: traceCategories,
+      localPath: path.relative(repositoryRoot, tracePath),
+      rawTracePublished: false,
       rawBytes: rawTrace.byteLength,
       compressedBytes: compressedTrace.byteLength,
       sha256: createHash("sha256").update(compressedTrace).digest("hex"),
@@ -364,6 +632,7 @@ try {
     budgets: budgetResults,
     passed: budgetResults.every(({ pass }) => pass),
   };
+  await fs.mkdir(evidenceRoot, { recursive: true });
   await fs.writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
 
   const vitePlus = path.join(
@@ -385,7 +654,7 @@ try {
     throw new Error(`Browser audit exceeded its Stage 1 budgets: ${failures}`);
   }
   console.log(
-    `Browser audit passed ${budgetResults.length} budgets; trace ${compressedTrace.byteLength} bytes compressed.`,
+    `Browser audit passed ${budgetResults.length} budgets; local trace ${compressedTrace.byteLength} bytes compressed.`,
   );
 } finally {
   await browser.close();
