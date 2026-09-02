@@ -1,0 +1,32 @@
+{
+  "@astryxdesign/core@0.5.0": {
+    "license": "MIT",
+    "evidenceUrl": "https://github.com/facebook/astryx/blob/ea888ef33283ea44e37817d36bc8e84a0568bc30/LICENSE",
+    "note": "npm provenance for v0.5.0 resolves to ea888ef33283ea44e37817d36bc8e84a0568bc30; the published core tarball declares MIT but omits LICENSE."
+  },
+  "@stylexjs/stylex@0.19.0": {
+    "license": "MIT",
+    "evidenceUrl": "https://github.com/facebook/stylex/blob/5f51b24444abced04b213726977b9d67339bb26d/LICENSE",
+    "note": "The official 0.19.0 tag resolves to 5f51b24444abced04b213726977b9d67339bb26d; the published tarball declares MIT but omits LICENSE."
+  },
+  "@yuku-codegen/binding-darwin-arm64@0.5.48": {
+    "license": "NOASSERTION",
+    "evidenceUrl": "https://github.com/yuku-toolchain/yuku/blob/8c02a1c36ad0cbce9a53eb0db4da9232a4257fe6/npm/yuku-codegen/%40yuku-codegen/binding-darwin-arm64/package.json",
+    "note": "The package has no license field or license file. npm provenance ties it to the MIT-licensed v0.5.48 repository commit, but does not independently license the native binary. Build-only; not distributed in Koi browser artifacts. Re-audit before distributing node_modules, a CLI, or an OCI image."
+  },
+  "@yuku-parser/binding-darwin-arm64@0.5.48": {
+    "license": "NOASSERTION",
+    "evidenceUrl": "https://github.com/yuku-toolchain/yuku/blob/8c02a1c36ad0cbce9a53eb0db4da9232a4257fe6/npm/yuku-parser/%40yuku-parser/binding-darwin-arm64/package.json",
+    "note": "The package has no license field or license file. npm provenance ties it to the MIT-licensed v0.5.48 repository commit, but does not independently license the native binary. Build-only; not distributed in Koi browser artifacts. Re-audit before distributing node_modules, a CLI, or an OCI image."
+  },
+  "yuku-codegen@0.5.48": {
+    "license": "MIT",
+    "evidenceUrl": "https://github.com/yuku-toolchain/yuku/blob/8c02a1c36ad0cbce9a53eb0db4da9232a4257fe6/LICENSE",
+    "note": "npm provenance for v0.5.48 resolves to 8c02a1c36ad0cbce9a53eb0db4da9232a4257fe6; the published package declares MIT but omits LICENSE."
+  },
+  "yuku-parser@0.5.48": {
+    "license": "MIT",
+    "evidenceUrl": "https://github.com/yuku-toolchain/yuku/blob/8c02a1c36ad0cbce9a53eb0db4da9232a4257fe6/LICENSE",
+    "note": "npm provenance for v0.5.48 resolves to 8c02a1c36ad0cbce9a53eb0db4da9232a4257fe6; the published package declares MIT but omits LICENSE."
+  }
+}

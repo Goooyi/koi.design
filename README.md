@@ -266,6 +266,8 @@ decisions live in [docs/adr](docs/adr); remaining product choices are tracked in
 
 ## License
 
-The project license is intentionally undecided. No `LICENSE` file has been added yet. Decide and
-publish a license before describing the repository as open source or accepting external
-contributions.
+Koi is open source under [AGPL-3.0-or-later](LICENSE). Third-party acknowledgements and the
+version-pinned dependency and asset audit are in [NOTICE](NOTICE) and
+[docs/licenses](docs/licenses). Contributions use [Developer Certificate of Origin 1.1
+sign-off](CONTRIBUTING.md); the Koi name and visual identity remain subject to the separate
+[trademark policy](TRADEMARKS.md).

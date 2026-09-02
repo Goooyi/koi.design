@@ -2,11 +2,13 @@
   "name": "koi-design",
   "version": "0.1.0",
   "private": true,
+  "license": "AGPL-3.0-or-later",
   "type": "module",
   "scripts": {
     "build": "vp run -r --concurrency-limit 2 build",
     "check": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 check",
     "dev": "vp run -r --concurrency-limit 2 build && vp run @koi/web#dev",
+    "licenses:generate": "node scripts/generate-license-evidence.mjs",
     "ready": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 check && vp run -r --concurrency-limit 2 test && vp exec playwright test --workers=1",
     "test": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 test",
     "test:e2e": "vp run -r --concurrency-limit 2 build && vp exec playwright test --workers=1"

@@ -1,0 +1,75 @@
+Koi Design
+Copyright (C) 2026 Koi Design contributors
+
+Koi is licensed under the GNU Affero General Public License, version 3 or later. See LICENSE.
+
+This distribution includes third-party open-source software. The generated, version-pinned
+inventory at docs/evidence/third-party-licenses.json records every package version installed in the
+audited environment, its declared license, local license-file hashes, direct workspace use, and any
+authoritative upstream evidence used when a package tarball omitted its license text.
+
+Material runtime acknowledgements
+=================================
+
+AstryX core and neutral theme
+  Copyright (c) 2026 Meta Platforms, Inc.
+  MIT License
+  https://github.com/facebook/astryx
+
+StyleX
+  Copyright Meta Platforms, Inc. and affiliates.
+  MIT License
+  https://github.com/facebook/stylex
+
+React and React DOM
+  Copyright Meta Platforms, Inc. and affiliates.
+  MIT License
+  https://github.com/facebook/react
+
+Lucide icons
+  Copyright (c) 2026 Lucide Icons and Contributors
+  ISC License
+  https://github.com/lucide-icons/lucide
+
+Feather-derived icons included by Lucide
+  Copyright (c) 2013-present Cole Bemis
+  MIT License
+  https://github.com/feathericons/feather
+
+Model Context Protocol SDK and MCP Apps SDK
+  MIT License
+  https://github.com/modelcontextprotocol/typescript-sdk
+  https://github.com/modelcontextprotocol/ext-apps
+
+Hono and @hono/node-server
+  MIT License
+  https://github.com/honojs/hono
+
+idb
+  ISC License
+  https://github.com/jakearchibald/idb
+
+Zod
+  MIT License
+  https://github.com/colinhacks/zod
+
+Yuku parser/codegen build tooling
+  Copyright (c) 2026 Yuku
+  MIT License for the source packages
+  https://github.com/yuku-toolchain/yuku
+
+  The platform-native binding packages used only while building Koi omit a package-level license
+  assertion. Their npm provenance resolves to the MIT-licensed Yuku repository, but Koi does not
+  redistribute those native binaries in its browser artifacts. See the exact NOASSERTION entries
+  and redistribution caveat in docs/evidence/third-party-licenses.json.
+
+The applicable permission notices and warranty disclaimers remain available in each dependency's
+source distribution and are identified by hash in the generated inventory. Build-only dependencies
+are also recorded there even when their code is not shipped in the browser artifact.
+
+Asset provenance
+================
+
+The inline Koi favicon in apps/web/index.html is Koi-authored project artwork and is distributed
+under AGPL-3.0-or-later as part of this repository. Koi bundles no raster images, audio, video, or
+webfont files in the Stage 1 application. See docs/evidence/assets.json.
