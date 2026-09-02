@@ -19,6 +19,7 @@ const distributionRoot = path.join(repositoryRoot, "apps", "web", "dist");
 const evidenceRoot = path.join(repositoryRoot, "docs", "evidence");
 const reportRelativePath = "docs/evidence/browser-audit.json";
 const reportPath = path.join(repositoryRoot, reportRelativePath);
+const generatedEvidencePaths = [reportRelativePath, "docs/evidence/webmcp-tools.json"];
 const tracePath = path.join(repositoryRoot, "test-results", "performance", "chrome-trace.json.gz");
 const viewport = { width: 1_440, height: 900 };
 const traceCategories = [
@@ -75,7 +76,7 @@ function sourceCommit() {
 }
 
 function assertAuditableSourceTree() {
-  const statusWithoutOutput = execFileSync(
+  const statusWithoutEvidence = execFileSync(
     "git",
     [
       "status",
@@ -83,23 +84,26 @@ function assertAuditableSourceTree() {
       "--untracked-files=all",
       "--",
       ".",
-      `:(exclude)${reportRelativePath}`,
+      ...generatedEvidencePaths.map((file) => `:(exclude)${file}`),
     ],
     { cwd: repositoryRoot, encoding: "utf8" },
   ).trim();
-  if (statusWithoutOutput) {
+  if (statusWithoutEvidence) {
     throw new Error(
-      `Browser evidence requires clean source inputs; commit or remove these changes:\n${statusWithoutOutput}`,
+      `Browser evidence requires clean source inputs; commit or remove these changes:\n${statusWithoutEvidence}`,
     );
   }
-  const priorOutputStatus = execFileSync(
-    "git",
-    ["status", "--porcelain=v1", "--untracked-files=all", "--", reportRelativePath],
-    { cwd: repositoryRoot, encoding: "utf8" },
-  ).trim();
+  const dirtyGeneratedEvidence = generatedEvidencePaths.filter((file) =>
+    Boolean(
+      execFileSync("git", ["status", "--porcelain=v1", "--untracked-files=all", "--", file], {
+        cwd: repositoryRoot,
+        encoding: "utf8",
+      }).trim(),
+    ),
+  );
   return {
     sourceInputsClean: true,
-    priorGeneratedReportDirty: Boolean(priorOutputStatus),
+    dirtyGeneratedEvidenceBeforeCapture: dirtyGeneratedEvidence,
   };
 }
 

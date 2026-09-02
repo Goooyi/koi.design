@@ -11,7 +11,9 @@ import { serveStaticDirectory } from "./lib/serve-static-directory.mjs";
 
 const repositoryRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const distributionRoot = path.join(repositoryRoot, "apps", "web", "dist");
-const outputPath = path.join(repositoryRoot, "docs", "evidence", "webmcp-tools.json");
+const outputRelativePath = "docs/evidence/webmcp-tools.json";
+const outputPath = path.join(repositoryRoot, outputRelativePath);
+const generatedEvidencePaths = ["docs/evidence/browser-audit.json", outputRelativePath];
 
 function sourceCommit() {
   return execFileSync("git", ["rev-parse", "HEAD"], {
@@ -20,6 +22,37 @@ function sourceCommit() {
   }).trim();
 }
 
+function assertAuditableSourceTree() {
+  const statusWithoutEvidence = execFileSync(
+    "git",
+    [
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all",
+      "--",
+      ".",
+      ...generatedEvidencePaths.map((file) => `:(exclude)${file}`),
+    ],
+    { cwd: repositoryRoot, encoding: "utf8" },
+  ).trim();
+  if (statusWithoutEvidence) {
+    throw new Error(
+      `WebMCP evidence requires clean source inputs; commit or remove these changes:\n${statusWithoutEvidence}`,
+    );
+  }
+  const dirtyGeneratedEvidence = generatedEvidencePaths.filter((file) =>
+    Boolean(
+      execFileSync("git", ["status", "--porcelain=v1", "--untracked-files=all", "--", file], {
+        cwd: repositoryRoot,
+        encoding: "utf8",
+      }).trim(),
+    ),
+  );
+  return { sourceInputsClean: true, dirtyGeneratedEvidenceBeforeCapture: dirtyGeneratedEvidence };
+}
+
+const generatedFromCommit = sourceCommit();
+const sourceTree = assertAuditableSourceTree();
 const server = await serveStaticDirectory(distributionRoot);
 const browser = await chromium.launch({ headless: true });
 try {
@@ -56,7 +89,8 @@ try {
   );
   const manifest = {
     schemaVersion: 1,
-    generatedFromCommit: sourceCommit(),
+    generatedFromCommit,
+    sourceTree,
     tools,
   };
   await fs.mkdir(path.dirname(outputPath), { recursive: true });
