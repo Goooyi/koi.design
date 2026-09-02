@@ -209,11 +209,19 @@ WebMCP calls use the same editor store and command reducer as direct manipulatio
 attributed to an agent, grouped as one undoable command, await local persistence, and return
 structured conflicts instead of silently replacing a newer human edit.
 
+Every write reports one explicit outcome: `applied`, idempotent `duplicate`, precondition or input
+`rejected`, or `ambiguous` when the change is visible but durable persistence could not be
+confirmed. An ambiguous result tells the agent to retry once with the same command ID and inspect
+before creating new intent; internal exception text is never returned.
+
 `inspect_elements` accepts at most 32 stable IDs and returns depth-, node-, key-, array-, string-,
-and total-byte-bounded property previews with a `truncated` marker. Both the bounded inspect
-response and `export_document` are capped at 1,000,000 UTF-8 bytes, so `export_document` refuses a
-larger result and directs the user to the editor download. The human-triggered `.koi.json` download
-still exports the complete validated Document and is not subject to the model-output cap.
+and total-byte-bounded property previews with truncation and continuation metadata. Stage 1 does
+not paginate property previews, so it says that continuation is unavailable instead of silently
+cutting data. Both the bounded inspect response and `export_document` are capped at 1,000,000 UTF-8
+bytes, so `export_document` refuses a larger result and directs the user to the editor download.
+The human-triggered `.koi.json` download still exports the complete validated Document and is not
+subject to the model-output cap. The checked live-registration manifest is in
+[`docs/evidence/webmcp-tools.json`](docs/evidence/webmcp-tools.json).
 
 ## Architecture
 

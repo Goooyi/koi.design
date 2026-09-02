@@ -11,7 +11,8 @@
     "licenses:generate": "node scripts/generate-license-evidence.mjs",
     "ready": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 check && vp run -r --concurrency-limit 2 test && vp exec playwright test --workers=1",
     "test": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 test",
-    "test:e2e": "vp run -r --concurrency-limit 2 build && vp exec playwright test --workers=1"
+    "test:e2e": "vp run -r --concurrency-limit 2 build && vp exec playwright test --workers=1",
+    "webmcp:manifest": "vp run @koi/web#build && node scripts/capture-webmcp-tools.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.62.1",

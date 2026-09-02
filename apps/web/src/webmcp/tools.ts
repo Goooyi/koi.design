@@ -1,9 +1,13 @@
 import { listComponents } from "@koi/astryx";
 import {
   exportDocument,
-  KOI_DOCUMENT_MEDIA_TYPE,
-  getPage,
   elementInputSchema,
+  geometrySchema,
+  getPage,
+  jsonObjectSchema,
+  KOI_DOCUMENT_MEDIA_TYPE,
+  KOI_JSON_LIMITS,
+  ownRecordValue,
   patchChangesSchema,
   stableIdSchema,
   type CommandReceipt,
@@ -20,7 +24,11 @@ import {
 
 const commandId = stableIdSchema.describe("Stable caller-generated id used for safe retries.");
 const pageId = stableIdSchema.describe("Target Page id. Defaults to the active Page when omitted.");
+const expectedVersion = z.number().int().min(1).max(Number.MAX_SAFE_INTEGER);
+const coordinate = geometrySchema.shape.x;
+const dimension = geometrySchema.shape.width;
 const MAX_CONTEXT_SELECTION_IDS = 64;
+const MAX_ERROR_TEXT_LENGTH = 512;
 
 const contextInput = z.strictObject({});
 const inspectInput = z.strictObject({ elementIds: z.array(stableIdSchema).min(1).max(32) });
@@ -36,7 +44,7 @@ const updateInput = z.strictObject({
       z.strictObject({
         pageId,
         elementId: stableIdSchema,
-        expectedVersion: z.number().int().positive(),
+        expectedVersion,
         changes: patchChangesSchema,
       }),
     )
@@ -50,7 +58,7 @@ const deleteInput = z.strictObject({
       z.strictObject({
         pageId,
         elementId: stableIdSchema,
-        expectedVersion: z.number().int().positive(),
+        expectedVersion,
       }),
     )
     .min(1)
@@ -63,11 +71,11 @@ const arrangeInput = z.strictObject({
       z.strictObject({
         pageId,
         elementId: stableIdSchema,
-        expectedVersion: z.number().int().positive(),
-        x: z.number().finite(),
-        y: z.number().finite(),
-        width: z.number().finite().nonnegative().optional(),
-        height: z.number().finite().nonnegative().optional(),
+        expectedVersion,
+        x: coordinate,
+        y: coordinate,
+        width: dimension.optional(),
+        height: dimension.optional(),
       }),
     )
     .min(1)
@@ -89,17 +97,108 @@ interface ToolDefinition<Schema extends ToolSchema> {
   ) => WebMCP.MaybePromise<Record<string, unknown>>;
 }
 
-function invalidInput(error: z.ZodError) {
+type JsonSchema = Record<string, unknown>;
+
+function boundedJsonDefinitions(): Record<string, JsonSchema> {
+  const primitiveSchemas = (): JsonSchema[] => [
+    { type: "null" },
+    { type: "boolean" },
+    { type: "number", minimum: -Number.MAX_VALUE, maximum: Number.MAX_VALUE },
+    { type: "string", maxLength: KOI_JSON_LIMITS.maxStringLength },
+  ];
+  const definitions: Record<string, JsonSchema> = {
+    koiJsonValue0: { anyOf: primitiveSchemas() },
+  };
+
+  for (let depth = 1; depth <= KOI_JSON_LIMITS.maxDepth; depth += 1) {
+    const child = { $ref: `#/$defs/koiJsonValue${depth - 1}` };
+    definitions[`koiJsonValue${depth}`] = {
+      anyOf: [
+        ...primitiveSchemas(),
+        {
+          type: "array",
+          maxItems: KOI_JSON_LIMITS.maxCollectionSize,
+          items: child,
+        },
+        {
+          type: "object",
+          maxProperties: KOI_JSON_LIMITS.maxCollectionSize,
+          propertyNames: {
+            type: "string",
+            minLength: 1,
+            maxLength: KOI_JSON_LIMITS.maxKeyLength,
+          },
+          additionalProperties: child,
+        },
+      ],
+    };
+  }
+  return definitions;
+}
+
+function inputJsonSchema(schema: ToolSchema) {
+  let usesBoundedJson = false;
+  const jsonSchema = z.toJSONSchema(schema, {
+    target: "draft-2020-12",
+    io: "input",
+    reused: "inline",
+    unrepresentable: "any",
+    override: ({ zodSchema, jsonSchema: generated }) => {
+      if (zodSchema !== jsonObjectSchema) return;
+      usesBoundedJson = true;
+      Object.assign(generated, {
+        type: "object",
+        maxProperties: KOI_JSON_LIMITS.maxCollectionSize,
+        propertyNames: {
+          type: "string",
+          minLength: 1,
+          maxLength: KOI_JSON_LIMITS.maxKeyLength,
+        },
+        additionalProperties: {
+          $ref: `#/$defs/koiJsonValue${KOI_JSON_LIMITS.maxDepth - 1}`,
+        },
+      });
+    },
+  });
+  if (usesBoundedJson) {
+    jsonSchema.$defs = { ...jsonSchema.$defs, ...boundedJsonDefinitions() };
+  }
+  return jsonSchema;
+}
+
+function boundedText(value: unknown): string {
+  const text = typeof value === "string" ? value : "Unknown error";
+  return text.length <= MAX_ERROR_TEXT_LENGTH
+    ? text
+    : `${text.slice(0, MAX_ERROR_TEXT_LENGTH - 1)}…`;
+}
+
+function invalidInput(error: z.ZodError, readOnly: boolean) {
   return {
     ok: false,
+    ...(readOnly ? {} : { outcome: "rejected" }),
     error: {
       code: "invalid_input",
       message: "The tool input is invalid.",
       retryable: false,
       details: error.issues.slice(0, 20).map((issue) => ({
-        path: issue.path.map(String).join("."),
-        message: issue.message,
+        path: boundedText(issue.path.map(String).join(".")),
+        message: boundedText(issue.message),
       })),
+    },
+  };
+}
+
+function executionFailure(readOnly: boolean, signal: AbortSignal) {
+  return {
+    ok: false,
+    ...(readOnly ? {} : { outcome: "rejected" }),
+    error: {
+      code: signal.aborted ? "execution_cancelled" : "execution_failed",
+      message: signal.aborted
+        ? "The tool call was cancelled before Koi accepted a change."
+        : "Koi could not complete the tool call.",
+      retryable: !signal.aborted,
     },
   };
 }
@@ -111,23 +210,24 @@ function defineTool<Schema extends ToolSchema>(
     name: definition.name,
     title: definition.title,
     description: definition.description,
-    inputSchema: z.toJSONSchema(definition.schema, {
-      target: "draft-2020-12",
-      unrepresentable: "any",
-    }),
+    inputSchema: inputJsonSchema(definition.schema),
     annotations: {
       readOnlyHint: definition.readOnly,
       untrustedContentHint: definition.untrustedContent,
     },
     execute: async (raw, options?: WebMCP.ToolExecuteCallbackOptions) => {
       const parsed = definition.schema.safeParse(raw);
-      if (!parsed.success) return invalidInput(parsed.error);
+      if (!parsed.success) return invalidInput(parsed.error, definition.readOnly);
       // Chrome's experimental WebMCP executor currently omits callback options even though the
       // draft API marks them as required. Keep cancellation when the host supplies it, while
       // allowing otherwise-valid calls from today's browser implementation.
       const executionOptions = options ?? { signal: new AbortController().signal };
-      executionOptions.signal.throwIfAborted();
-      return definition.execute(parsed.data, executionOptions);
+      try {
+        executionOptions.signal.throwIfAborted();
+        return await definition.execute(parsed.data, executionOptions);
+      } catch {
+        return executionFailure(definition.readOnly, executionOptions.signal);
+      }
     },
   };
 }
@@ -136,6 +236,7 @@ function receiptOutput(result: ReturnType<EditorStore["commit"]>) {
   if (result.ok) {
     return {
       ok: true,
+      outcome: result.replayed ? "duplicate" : "applied",
       commandId: result.receipt.commandId,
       changedIds: result.receipt.changedIds,
       viewRevision: result.receipt.viewRevision,
@@ -153,6 +254,7 @@ function receiptOutput(result: ReturnType<EditorStore["commit"]>) {
       : undefined;
   return {
     ok: false,
+    outcome: "rejected",
     error: {
       code: result.error.code.toLowerCase(),
       message: result.error.message,
@@ -165,6 +267,39 @@ function receiptOutput(result: ReturnType<EditorStore["commit"]>) {
       details,
     },
   };
+}
+
+async function commitTool(
+  store: EditorStore,
+  operations: readonly Operation[],
+  options: { commandId: string; signal: AbortSignal },
+) {
+  try {
+    return receiptOutput(
+      await store.commitDurably(operations, {
+        commandId: options.commandId,
+        origin: "agent",
+        signal: options.signal,
+      }),
+    );
+  } catch {
+    const receipt = ownRecordValue(store.getProjection().receipts, options.commandId);
+    if (!receipt) return executionFailure(false, options.signal);
+    return {
+      ok: false,
+      outcome: "ambiguous",
+      commandId: receipt.commandId,
+      changedIds: receipt.changedIds,
+      viewRevision: receipt.viewRevision,
+      syncStatus: receipt.syncStatus,
+      error: {
+        code: "durability_outcome_unknown",
+        message:
+          "The change is visible in this page, but Koi could not confirm durable persistence. Retry once with the same commandId, then inspect before creating new intent.",
+        retryable: true,
+      },
+    };
+  }
 }
 
 export interface KoiWebMcpDependencies {
@@ -201,6 +336,14 @@ export function createKoiWebMcpTools({
           selection: selection.slice(0, MAX_CONTEXT_SELECTION_IDS),
           selectionCount: selection.length,
           selectionTruncated: selection.length > MAX_CONTEXT_SELECTION_IDS,
+          selectionContinuation:
+            selection.length > MAX_CONTEXT_SELECTION_IDS
+              ? {
+                  available: false,
+                  reason:
+                    "Selection pagination is unavailable in Stage 1. The first 64 stable IDs are returned.",
+                }
+              : null,
           sync: {
             pending: projection.outbox.filter((entry) => entry.status !== "acknowledged").length,
           },
@@ -240,6 +383,12 @@ export function createKoiWebMcpTools({
                 code: "output_too_large",
                 message: `The requested previews exceed ${MAX_WEBMCP_OUTPUT_BYTES} UTF-8 bytes. Inspect fewer Elements.`,
                 retryable: true,
+                truncated: false,
+                continuation: {
+                  available: false,
+                  reason:
+                    "Koi refuses oversized tool output instead of returning a partial response.",
+                },
               },
             }
           : output;
@@ -258,6 +407,7 @@ export function createKoiWebMcpTools({
         if (!getPage(store.getDocument(), target)) {
           return {
             ok: false,
+            outcome: "rejected",
             error: {
               code: "page_not_found",
               message: `Page ${target} does not exist.`,
@@ -265,11 +415,10 @@ export function createKoiWebMcpTools({
             },
           };
         }
-        return receiptOutput(
-          await store.commitDurably(
-            elements.map((element) => ({ type: "create", pageId: target, element })),
-            { commandId: id, origin: "agent", signal },
-          ),
+        return commitTool(
+          store,
+          elements.map((element) => ({ type: "create", pageId: target, element })),
+          { commandId: id, signal },
         );
       },
     }),
@@ -282,11 +431,10 @@ export function createKoiWebMcpTools({
       readOnly: false,
       untrustedContent: true,
       execute: async ({ commandId: id, updates }, { signal }) =>
-        receiptOutput(
-          await store.commitDurably(
-            updates.map((update): Operation => ({ type: "patch", ...update })),
-            { commandId: id, origin: "agent", signal },
-          ),
+        commitTool(
+          store,
+          updates.map((update): Operation => ({ type: "patch", ...update })),
+          { commandId: id, signal },
         ),
     }),
     defineTool({
@@ -298,11 +446,10 @@ export function createKoiWebMcpTools({
       readOnly: false,
       untrustedContent: true,
       execute: async ({ commandId: id, elements }, { signal }) =>
-        receiptOutput(
-          await store.commitDurably(
-            elements.map((element): Operation => ({ type: "delete", ...element })),
-            { commandId: id, origin: "agent", signal },
-          ),
+        commitTool(
+          store,
+          elements.map((element): Operation => ({ type: "delete", ...element })),
+          { commandId: id, signal },
         ),
     }),
     defineTool({
@@ -314,19 +461,18 @@ export function createKoiWebMcpTools({
       readOnly: false,
       untrustedContent: true,
       execute: async ({ commandId: id, placements }, { signal }) =>
-        receiptOutput(
-          await store.commitDurably(
-            placements.map(
-              ({ pageId: targetPageId, elementId, expectedVersion, ...geometry }): Operation => ({
-                type: "patch",
-                pageId: targetPageId,
-                elementId,
-                expectedVersion,
-                changes: { geometry },
-              }),
-            ),
-            { commandId: id, origin: "agent", signal },
+        commitTool(
+          store,
+          placements.map(
+            ({ pageId: targetPageId, elementId, expectedVersion, ...geometry }): Operation => ({
+              type: "patch",
+              pageId: targetPageId,
+              elementId,
+              expectedVersion,
+              changes: { geometry },
+            }),
           ),
+          { commandId: id, signal },
         ),
     }),
     defineTool({
@@ -347,6 +493,11 @@ export function createKoiWebMcpTools({
               code: "output_too_large",
               message: `The portable Document exceeds the ${MAX_WEBMCP_OUTPUT_BYTES} byte WebMCP output limit. Use the editor's download action instead.`,
               retryable: false,
+              truncated: false,
+              continuation: {
+                available: false,
+                reason: "The full Document is available only through the human download action.",
+              },
             },
           };
         }
@@ -355,6 +506,8 @@ export function createKoiWebMcpTools({
           mediaType: KOI_DOCUMENT_MEDIA_TYPE,
           bytes,
           source,
+          truncated: false,
+          continuation: null,
         };
       },
     }),

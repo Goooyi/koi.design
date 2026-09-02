@@ -253,6 +253,13 @@ acknowledged or failed outbox state; remote failure does not erase the local cha
 }
 ```
 
+The WebMCP adapter normalizes every write into one of four outcomes: `applied`, `duplicate`,
+`rejected`, or `ambiguous`. `duplicate` is an idempotent replay of the same command ID. `rejected`
+means no change was accepted. `ambiguous` means the Command is visible in the current Projection,
+but the persistence callback failed before Koi could confirm durability; the caller retries once
+with the same command ID and then reinspects. Tool errors expose bounded public messages rather
+than browser, storage, or server exception details.
+
 Mutations serialize per Document; snapshot queries may run concurrently. Cancellation is honored
 before the in-memory commit. Once a change is accepted and rendered, cancellation cannot
 truthfully pretend it never occurred.
@@ -314,9 +321,11 @@ Tool descriptions are static and precise. Document text and agent-returned label
 
 `inspect_elements` accepts 1–32 stable IDs. It returns semantic property previews bounded by depth,
 node count, key count, array length, string length, and a 1,000,000-byte total model output, marking
-truncated Elements explicitly. The same 1,000,000-byte WebMCP output limit applies to
-`export_document`; a larger Document must use the human editor's full `.koi.json` download, which
-is not constrained by the model-output cap.
+truncated Elements explicitly and reporting whether continuation is available. Stage 1 has no
+property-preview pagination, so a truncated result says that continuation is unavailable. The same
+1,000,000-byte WebMCP output limit applies to `export_document`; a larger Document is refused rather
+than partially returned and must use the human editor's full `.koi.json` download, which is not
+constrained by the model-output cap.
 
 ## MCP App contract
 

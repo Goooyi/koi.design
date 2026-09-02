@@ -1,6 +1,6 @@
 # WebMCP Challenge 2026
 
-Status: product MVP implemented; submission packaging remains, 2026-08-27.
+Status: product MVP implemented; submission packaging remains, 2026-09-02.
 
 ## Submission thesis
 
@@ -44,12 +44,12 @@ history, and portability without a private service dependency.
 - add the stale human-versus-agent browser journey and accessibility scan;
 - capture a representative Chrome performance trace and verify deployment limits;
 - publish a live HTTPS URL and test it in a fresh browser session;
-- choose and add the repository license, then make the source public;
+- make the licensed repository public after the local release gates pass;
 - record a public video shorter than three minutes using Hyperframes or Remotion;
 - complete the current Devpost fields and recheck the official rules at submission time.
 
-Licensing is intentionally undecided. The repository must not be described as open source until a
-license file is present.
+The repository is licensed under `AGPL-3.0-or-later`, uses DCO 1.1 contributor sign-off, reserves
+the Koi trademarks separately, and carries a reproducible dependency and asset provenance report.
 
 ## Stable WebMCP catalog
 
@@ -74,6 +74,8 @@ license file is present.
 - [x] An official client verifies authenticated hosted MCP and restart persistence.
 - [x] The public self-host build has no private runtime dependency.
 - [x] Real-pointer Playwright covers drag persistence, pen, editing, and portable export.
+- [x] Repository licensing, contributor sign-off, trademark terms, and dependency provenance are
+      release-ready.
 - [ ] Native Chrome discovers and executes all Koi WebMCP tools on the built deployment.
 - [ ] A stored journey proves stale-agent conflict and replan after a human move.
 - [ ] Accessibility and representative performance evidence pass.
