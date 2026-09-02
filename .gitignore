@@ -10,6 +10,7 @@ test-results/
 blob-report/
 
 midscene_run/
+.wrangler/
 
 # Local self-host state
 .koi/
