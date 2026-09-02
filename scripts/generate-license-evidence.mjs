@@ -194,7 +194,7 @@ async function sourceHash(manifestPaths) {
     ...manifestPaths,
   ];
   const hash = createHash("sha256");
-  for (const inputPath of inputPaths.sort()) {
+  for (const inputPath of inputPaths.sort((left, right) => left.localeCompare(right))) {
     hash.update(inputPath);
     hash.update("\0");
     hash.update(await fs.readFile(path.join(repositoryRoot, inputPath)));

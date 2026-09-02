@@ -1,0 +1,29 @@
+/*
+  Content-Security-Policy: default-src 'self'; base-uri 'none'; connect-src 'self' https: http://127.0.0.1:* http://localhost:*; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src 'none'; img-src 'self' data: blob: https:; manifest-src 'self'; media-src 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=(), usb=()
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+
+/
+  Cache-Control: no-store
+
+/index.html
+  Cache-Control: no-store
+
+/health.json
+  Cache-Control: no-store
+
+/assets/*
+  Cache-Control: public, max-age=31556952, immutable
+
+/NOTICE.txt
+  Cache-Control: public, max-age=3600
+
+/llms.txt
+  Cache-Control: public, max-age=3600
+
+/robots.txt
+  Cache-Control: public, max-age=3600

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceInputsSha256": "260be1c895ca0fdc037dc4e66b18c099a775919459a2014dc1e55ecf0cfb4c82",
+  "sourceInputsSha256": "0cef29a3bac047fb3591fc2da919003ac9629168c758f7f0225711cf98b454b0",
   "environment": {
     "node": "v24.20.0",
     "platform": "darwin",
@@ -8,23 +8,31 @@
     "packageManager": "pnpm@11.21.0"
   },
   "summary": {
-    "packageVersions": 309,
-    "directPackageNames": 24,
+    "packageVersions": 340,
+    "directPackageNames": 25,
     "licenseCounts": {
       "0BSD": 1,
-      "Apache-2.0": 9,
+      "Apache-2.0": 13,
       "BSD": 1,
       "BSD-2-Clause": 2,
       "BSD-3-Clause": 5,
       "CC-BY-4.0": 1,
-      "ISC": 19,
-      "MIT": 265,
+      "CC0-1.0": 1,
+      "ISC": 20,
+      "LGPL-3.0-or-later": 1,
+      "MIT": 286,
+      "MIT OR Apache-2.0": 3,
       "MPL-2.0": 4,
       "NOASSERTION": 2
     },
     "unresolved": [],
     "declaredWithoutLocalLicenseFile": [
+      "@cloudflare/kv-asset-handler@0.5.0",
+      "@cloudflare/unenv-preset@2.16.1",
+      "@cloudflare/workerd-darwin-arm64@1.20260831.1",
       "@esbuild/darwin-arm64@0.27.7",
+      "@esbuild/darwin-arm64@0.28.1",
+      "@img/sharp-libvips-darwin-arm64@1.3.1",
       "@oxfmt/binding-darwin-arm64@0.64.0",
       "@oxlint/binding-darwin-arm64@1.79.0",
       "@polka/url@1.0.0-next.29",
@@ -34,8 +42,11 @@
       "flow-parser@0.329.0",
       "imurmurhash@0.1.4",
       "jsesc@3.1.0",
+      "miniflare@5.20260831.0-alpha",
       "sirv@3.0.2",
-      "stackback@0.0.2"
+      "stackback@0.0.2",
+      "workerd@1.20260831.1",
+      "wrangler@4.128.0"
     ]
   },
   "packages": [
@@ -788,8 +799,73 @@
       "reviewStatus": "reviewed-from-installed-package"
     },
     {
+      "name": "@cloudflare/kv-asset-handler",
+      "version": "0.5.0",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "verifiedLicense": "MIT OR Apache-2.0",
+      "directUses": [],
+      "homepage": "https://github.com/cloudflare/workers-sdk#readme",
+      "repository": "git+https://github.com/cloudflare/workers-sdk.git",
+      "localLicenseFiles": [],
+      "upstreamEvidence": null,
+      "reviewStatus": "declared-license-without-local-license-file"
+    },
+    {
+      "name": "@cloudflare/unenv-preset",
+      "version": "2.16.1",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "verifiedLicense": "MIT OR Apache-2.0",
+      "directUses": [],
+      "homepage": "https://github.com/cloudflare/workers-sdk#readme",
+      "repository": "https://github.com/cloudflare/workers-sdk.git",
+      "localLicenseFiles": [],
+      "upstreamEvidence": null,
+      "reviewStatus": "declared-license-without-local-license-file"
+    },
+    {
+      "name": "@cloudflare/workerd-darwin-arm64",
+      "version": "1.20260831.1",
+      "declaredLicense": "Apache-2.0",
+      "verifiedLicense": "Apache-2.0",
+      "directUses": [],
+      "homepage": null,
+      "repository": "https://github.com/cloudflare/workerd",
+      "localLicenseFiles": [],
+      "upstreamEvidence": null,
+      "reviewStatus": "declared-license-without-local-license-file"
+    },
+    {
+      "name": "@cspotcode/source-map-support",
+      "version": "0.8.1",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": null,
+      "repository": "https://github.com/cspotcode/node-source-map-support",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE.md",
+          "sha256": "3a7d3bb198e909ed642bd68bd29a7d7c09a636d27a51ec663d35f00c4760ec42"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
       "name": "@esbuild/darwin-arm64",
       "version": "0.27.7",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": null,
+      "repository": "git+https://github.com/evanw/esbuild.git",
+      "localLicenseFiles": [],
+      "upstreamEvidence": null,
+      "reviewStatus": "declared-license-without-local-license-file"
+    },
+    {
+      "name": "@esbuild/darwin-arm64",
+      "version": "0.28.1",
       "declaredLicense": "MIT",
       "verifiedLicense": "MIT",
       "directUses": [],
@@ -873,6 +949,52 @@
       "reviewStatus": "reviewed-from-installed-package"
     },
     {
+      "name": "@img/colour",
+      "version": "1.1.0",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": null,
+      "repository": "git+https://github.com/lovell/colour.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE.md",
+          "sha256": "e2eaa4603c14cb26f301e88648c12a853fa3f0f5da6d4b0972958c666e7f2ab8"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "@img/sharp-darwin-arm64",
+      "version": "0.35.2",
+      "declaredLicense": "Apache-2.0",
+      "verifiedLicense": "Apache-2.0",
+      "directUses": [],
+      "homepage": "https://sharp.pixelplumbing.com",
+      "repository": "git+https://github.com/lovell/sharp.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "@img/sharp-libvips-darwin-arm64",
+      "version": "1.3.1",
+      "declaredLicense": "LGPL-3.0-or-later",
+      "verifiedLicense": "LGPL-3.0-or-later",
+      "directUses": [],
+      "homepage": "https://sharp.pixelplumbing.com",
+      "repository": "git+https://github.com/lovell/sharp-libvips.git",
+      "localLicenseFiles": [],
+      "upstreamEvidence": null,
+      "reviewStatus": "declared-license-without-local-license-file"
+    },
+    {
       "name": "@jridgewell/gen-mapping",
       "version": "0.3.13",
       "declaredLicense": "MIT",
@@ -952,6 +1074,23 @@
         {
           "file": "LICENSE",
           "sha256": "769d154fbde32a915af110b1123650bc79f4cbe675acc66e005265bf069c6c6c"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "@jridgewell/trace-mapping",
+      "version": "0.3.9",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": null,
+      "repository": "git+https://github.com/jridgewell/trace-mapping.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "0daa3c2445c4bfaaa7e8c69ec2742a8841bc920b75818ef2c7a510242de2b04a"
         }
       ],
       "upstreamEvidence": null,
@@ -1148,6 +1287,57 @@
       "reviewStatus": "declared-license-without-local-license-file"
     },
     {
+      "name": "@poppinss/colors",
+      "version": "4.1.6",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": "https://github.com/poppinss/colors#readme",
+      "repository": "git+https://github.com/poppinss/colors.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE.md",
+          "sha256": "c21feb678df81fa8336bfb4d7e8e3f928273992cc6743af6178f8979cb8c8d9d"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "@poppinss/dumper",
+      "version": "0.6.5",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": "https://github.com/poppinss/dumper#readme",
+      "repository": "git+https://github.com/poppinss/dumper.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE.md",
+          "sha256": "bba2399e2c617b0577fc3f4e22299367625824959945318b17b39ac3c910ce5f"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "@poppinss/exception",
+      "version": "1.2.3",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": "https://github.com/poppinss/exception#readme",
+      "repository": "git+https://github.com/poppinss/exception.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE.md",
+          "sha256": "bba2399e2c617b0577fc3f4e22299367625824959945318b17b39ac3c910ce5f"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
       "name": "@rolldown/pluginutils",
       "version": "1.0.1",
       "declaredLicense": "MIT",
@@ -1159,6 +1349,40 @@
         {
           "file": "LICENSE",
           "sha256": "e1919b3b98b8bf6c1b99fcc60a0ed46027c97ac947432e1278446c9606f50161"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "@sindresorhus/is",
+      "version": "7.2.0",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": null,
+      "repository": "sindresorhus/is",
+      "localLicenseFiles": [
+        {
+          "file": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "@speed-highlight/core",
+      "version": "1.2.24",
+      "declaredLicense": "CC0-1.0",
+      "verifiedLicense": "CC0-1.0",
+      "directUses": [],
+      "homepage": "https://github.com/speed-highlight/core#readme",
+      "repository": "git://github.com/speed-highlight/core.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499"
         }
       ],
       "upstreamEvidence": null,
@@ -1847,6 +2071,23 @@
       "reviewStatus": "reviewed-from-installed-package"
     },
     {
+      "name": "blake3-wasm",
+      "version": "2.1.5",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": "https://github.com/connor4312/blake3#readme",
+      "repository": "git+https://github.com/connor4312/blake3.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "6ae51be712bd278ca37cd2204a6e836d71aacea5b7b8210d5a95c0e02a15dc35"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
       "name": "body-parser",
       "version": "2.3.0",
       "declaredLicense": "MIT",
@@ -2153,6 +2394,23 @@
       "reviewStatus": "reviewed-from-installed-package"
     },
     {
+      "name": "cookie",
+      "version": "1.1.1",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": null,
+      "repository": "jshttp/cookie",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "c02110eedc16c7114f1a9bdc026c65626ce1d9c7e27fd51a8e0feee8a48a6858"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
       "name": "cors",
       "version": "2.8.6",
       "declaredLicense": "MIT",
@@ -2374,6 +2632,23 @@
       "reviewStatus": "reviewed-from-installed-package"
     },
     {
+      "name": "error-stack-parser-es",
+      "version": "1.0.5",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": "https://github.com/antfu/error-stack-parser-es#readme",
+      "repository": "git+https://github.com/antfu/error-stack-parser-es.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "fe99ed9e409014494a8147a5276cd079eae73f6998179af39ba596e7de75e8a9"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
       "name": "es-define-property",
       "version": "1.0.1",
       "declaredLicense": "MIT",
@@ -2444,6 +2719,23 @@
     {
       "name": "esbuild",
       "version": "0.27.7",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": null,
+      "repository": "git+https://github.com/evanw/esbuild.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE.md",
+          "sha256": "b40ec5baec7bb34fa5b1c09521fa3cd52d5fad7adafed74932a2010d3612a681"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "esbuild",
+      "version": "0.28.1",
       "declaredLicense": "MIT",
       "verifiedLicense": "MIT",
       "directUses": [],
@@ -3418,6 +3710,23 @@
       "reviewStatus": "reviewed-from-installed-package"
     },
     {
+      "name": "kleur",
+      "version": "4.1.5",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": null,
+      "repository": "lukeed/kleur",
+      "localLicenseFiles": [
+        {
+          "file": "license",
+          "sha256": "306fa513e39b23a6e8747520de761809d206b99800ef41907b530226574c59ae"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
       "name": "lightningcss-darwin-arm64",
       "version": "1.33.0",
       "declaredLicense": "MPL-2.0",
@@ -3671,6 +3980,18 @@
       ],
       "upstreamEvidence": null,
       "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "miniflare",
+      "version": "5.20260831.0-alpha",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": "https://github.com/cloudflare/workers-sdk/tree/main/packages/miniflare#readme",
+      "repository": "https://github.com/cloudflare/workers-sdk.git",
+      "localLicenseFiles": [],
+      "upstreamEvidence": null,
+      "reviewStatus": "declared-license-without-local-license-file"
     },
     {
       "name": "mrmime",
@@ -4007,6 +4328,23 @@
         {
           "file": "license",
           "sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "path-to-regexp",
+      "version": "6.3.0",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": null,
+      "repository": "https://github.com/pillarjs/path-to-regexp.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "4eeb3271453a891df609e5a9f4ee79a68307f730c13417a3bfeffa604ac8cf25"
         }
       ],
       "upstreamEvidence": null,
@@ -4548,6 +4886,23 @@
       "reviewStatus": "reviewed-from-installed-package"
     },
     {
+      "name": "semver",
+      "version": "7.8.5",
+      "declaredLicense": "ISC",
+      "verifiedLicense": "ISC",
+      "directUses": [],
+      "homepage": null,
+      "repository": "git+https://github.com/npm/node-semver.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
       "name": "send",
       "version": "1.2.1",
       "declaredLicense": "MIT",
@@ -4610,6 +4965,23 @@
         {
           "file": "LICENSE",
           "sha256": "e7d1fee7347ffddccc5fd03327ffdb50f8c112be0d5016d62388a92c4ae6e7a9"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "sharp",
+      "version": "0.35.2",
+      "declaredLicense": "Apache-2.0",
+      "verifiedLicense": "Apache-2.0",
+      "directUses": [],
+      "homepage": "https://sharp.pixelplumbing.com",
+      "repository": "git+https://github.com/lovell/sharp.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68"
         }
       ],
       "upstreamEvidence": null,
@@ -4872,6 +5244,23 @@
         {
           "file": "LICENSE",
           "sha256": "b00770e3c5d6a029cb104f7ac0d328c88ec684d31e8188c61ca91fcc17743cdc"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "supports-color",
+      "version": "10.2.2",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": null,
+      "repository": "chalk/supports-color",
+      "localLicenseFiles": [
+        {
+          "file": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
         }
       ],
       "upstreamEvidence": null,
@@ -5159,6 +5548,40 @@
       "reviewStatus": "reviewed-from-installed-package"
     },
     {
+      "name": "undici",
+      "version": "7.29.0",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": "https://undici.nodejs.org",
+      "repository": "git+https://github.com/nodejs/undici.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "a6db8096b2707bc0102d256917d4d33f298ba36d8c3f25de067a2b5bb379db27"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "unenv",
+      "version": "2.0.0-rc.24",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": null,
+      "repository": "unjs/unenv",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "46231df5a7733c3f52f11b71f3df61813007745b62b09031acfb45fb42d75082"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
       "name": "unpipe",
       "version": "1.0.0",
       "declaredLicense": "MIT",
@@ -5347,6 +5770,35 @@
       "reviewStatus": "reviewed-from-installed-package"
     },
     {
+      "name": "workerd",
+      "version": "1.20260831.1",
+      "declaredLicense": "Apache-2.0",
+      "verifiedLicense": "Apache-2.0",
+      "directUses": [],
+      "homepage": null,
+      "repository": "https://github.com/cloudflare/workerd",
+      "localLicenseFiles": [],
+      "upstreamEvidence": null,
+      "reviewStatus": "declared-license-without-local-license-file"
+    },
+    {
+      "name": "wrangler",
+      "version": "4.128.0",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "verifiedLicense": "MIT OR Apache-2.0",
+      "directUses": [
+        {
+          "section": "devDependencies",
+          "workspace": "koi-design"
+        }
+      ],
+      "homepage": "https://github.com/cloudflare/workers-sdk#readme",
+      "repository": "https://github.com/cloudflare/workers-sdk.git",
+      "localLicenseFiles": [],
+      "upstreamEvidence": null,
+      "reviewStatus": "declared-license-without-local-license-file"
+    },
+    {
       "name": "wrappy",
       "version": "1.0.2",
       "declaredLicense": "ISC",
@@ -5382,6 +5834,23 @@
     },
     {
       "name": "ws",
+      "version": "8.21.0",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": "https://github.com/websockets/ws",
+      "repository": "git+https://github.com/websockets/ws.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "2b29dcfe0d6471f7e8c92c5fb38c9f93edee10330937055440192f1832b1ecef"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "ws",
       "version": "8.21.3",
       "declaredLicense": "MIT",
       "verifiedLicense": "MIT",
@@ -5409,6 +5878,40 @@
         {
           "file": "LICENSE",
           "sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "youch-core",
+      "version": "0.3.3",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": "https://github.com/poppinss/youch-core#readme",
+      "repository": "git+https://github.com/poppinss/youch-core.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE.md",
+          "sha256": "26e09f87efc06dfbe7a0ea183dd0fcc1bd2811c889d183d23df92af15625dfa1"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "youch",
+      "version": "4.1.0-beta.10",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": "https://github.com/poppinss/youch#readme",
+      "repository": "git+https://github.com/poppinss/youch.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE.md",
+          "sha256": "bba2399e2c617b0577fc3f4e22299367625824959945318b17b39ac3c910ce5f"
         }
       ],
       "upstreamEvidence": null,

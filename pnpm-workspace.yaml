@@ -5,15 +5,15 @@ packages:
 catalogMode: prefer
 
 catalog:
-  '@astryxdesign/cli': 0.5.0
-  '@astryxdesign/core': 0.5.0
-  '@astryxdesign/theme-neutral': 0.5.0
-  '@axe-core/playwright': 4.13.0
-  '@stylexjs/stylex': 0.19.0
+  "@astryxdesign/cli": 0.5.0
+  "@astryxdesign/core": 0.5.0
+  "@astryxdesign/theme-neutral": 0.5.0
+  "@axe-core/playwright": 4.13.0
+  "@stylexjs/stylex": 0.19.0
   "@types/node": 24.13.3
-  '@types/react': 19.2.18
-  '@types/react-dom': 19.2.5
-  '@vitejs/plugin-react': 6.1.0
+  "@types/react": 19.2.18
+  "@types/react-dom": 19.2.5
+  "@vitejs/plugin-react": 6.1.0
   idb: 8.0.3
   react: 19.2.8
   react-dom: 19.2.8
@@ -22,6 +22,7 @@ catalog:
   vite-plus: 0.3.0
   vitest: 4.1.11
   webmcp-types: 0.1.5
+  wrangler: 4.128.0
   zod: 4.4.3
 
 overrides:
@@ -38,3 +39,8 @@ allowBuilds:
   "@astryxdesign/cli": true
   "@astryxdesign/core": true
   esbuild: true
+  workerd: true
+
+minimumReleaseAgeExclude:
+  - miniflare@5.20260831.0-alpha
+  - wrangler@4.128.0

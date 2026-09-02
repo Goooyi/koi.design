@@ -51,10 +51,13 @@ On Debian or Ubuntu machines that do not already have the browser system librari
 Useful repository gates:
 
 ```sh
+pnpm doctor
 pnpm build
 pnpm check
 pnpm test
 pnpm test:e2e
+pnpm challenge:verify
+pnpm audit:browser
 pnpm ready
 ```
 
@@ -64,6 +67,39 @@ check, unit/protocol test, and browser test gate. Workspace tasks run at most tw
 Playwright uses one Chromium worker and retains traces and screenshots only on failure to keep
 development bounded on small machines.
 GitHub Actions runs the same gate with a frozen lockfile on Node 24.
+
+## Challenge deployment
+
+The judge-facing build is a static, anonymous, browser-local WebMCP application. It keeps the
+seeded canvas, import/export, IndexedDB durability, and all eight WebMCP tools, but hides the
+self-host connection flow so a judge never encounters a dead API URL. The ordinary `pnpm build`
+continues to produce the full self-hostable web client.
+
+```sh
+pnpm challenge:verify
+pnpm challenge:dev       # Cloudflare Pages emulator on http://127.0.0.1:4174
+pnpm challenge:deploy    # Requires an authenticated Wrangler account
+```
+
+`challenge:verify` rejects dirty release trees, missing security/cache metadata, source maps,
+unhashed assets, stale build identity, and Cloudflare Pages file-limit violations. The generated
+`/health.json` reports only the version, exact commit, deployment mode, and an `ok` status. The
+visible header shows the same version and shortened commit. Hashed assets are immutable; HTML and
+health metadata revalidate or use `no-store`; the Content Security Policy is exercised by the
+browser audit. Cloudflare Pages provides its documented SPA fallback when a top-level `404.html`
+is absent.
+
+The configuration names a dedicated Direct Upload project so the submitted deployment can remain
+pinned while Stage 2 moves on. Direct Upload projects cannot later be converted to Git-integrated
+Pages projects; use a different Pages project if continuous Git deployment is wanted later. After
+deployment, rerun the same clean-profile audit against HTTPS:
+
+```sh
+KOI_AUDIT_URL=https://<deployment>.pages.dev pnpm audit:browser
+```
+
+Do not publish the local Chrome trace. It is ignored by Git; the sanitized checked-in report stores
+its SHA-256 and aggregate measurements.
 
 ## Self-host
 

@@ -16,6 +16,8 @@ not legal advice.
   both acknowledgements are retained.
 - Lightning CSS, axe-core, and the Playwright axe adapter (`MPL-2.0`) plus caniuse-lite
   (`CC-BY-4.0`) are build/test-time inputs and are not shipped in the static browser artifact.
+- Wrangler and workerd are pinned deployment-development inputs. Their code is not shipped in the
+  static browser artifact, and their installed packages remain part of the generated inventory.
 - Two Yuku platform-binding packages omit both a license field and license file. Their npm
   provenance resolves to the MIT-licensed Yuku `v0.5.48` source repository, but the exact native
   binaries remain `NOASSERTION`. They are build-only and are not redistributed in the browser

@@ -5,22 +5,28 @@
   "license": "AGPL-3.0-or-later",
   "type": "module",
   "scripts": {
-    "audit:browser": "vp run @koi/web#build && node scripts/capture-browser-audit.mjs",
+    "audit:browser": "pnpm challenge:build && node scripts/capture-browser-audit.mjs",
     "build": "vp run -r --concurrency-limit 2 build",
+    "challenge:build": "pnpm --filter @koi/web build:challenge",
+    "challenge:deploy": "pnpm challenge:verify && WRANGLER_WRITE_LOGS=false wrangler pages deploy --cwd apps/web --branch main --commit-dirty=false",
+    "challenge:dev": "pnpm challenge:build && WRANGLER_WRITE_LOGS=false wrangler pages dev --cwd apps/web --ip 127.0.0.1 --port 4174 --log-level warn",
+    "challenge:verify": "pnpm challenge:build && node scripts/verify-challenge-build.mjs",
     "check": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 check",
     "dev": "vp run -r --concurrency-limit 2 build && vp run @koi/web#dev",
+    "doctor": "node scripts/doctor.mjs",
     "licenses:generate": "node scripts/generate-license-evidence.mjs",
     "ready": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 check && vp run -r --concurrency-limit 2 test && vp exec playwright test --workers=1",
     "test": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 test",
     "test:e2e": "vp run -r --concurrency-limit 2 build && vp exec playwright test --workers=1",
-    "webmcp:manifest": "vp run @koi/web#build && node scripts/capture-webmcp-tools.mjs"
+    "webmcp:manifest": "pnpm challenge:build && node scripts/capture-webmcp-tools.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "catalog:",
     "@playwright/test": "1.62.1",
     "@types/node": "catalog:",
     "vite": "npm:@voidzero-dev/vite-plus-core@0.3.0",
-    "vite-plus": "0.3.0"
+    "vite-plus": "0.3.0",
+    "wrangler": "catalog:"
   },
   "devEngines": {
     "packageManager": {

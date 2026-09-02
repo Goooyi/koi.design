@@ -34,6 +34,7 @@ const fixedBudgets = {
   failedRequests: 0,
   httpErrors: 0,
   crossOriginResources: 0,
+  hostConfigurationFailures: 0,
   instrumentationFailures: 0,
   peakDomNodes: 300,
   peakDomElements: 24,
@@ -113,6 +114,80 @@ function resolveAuditTarget() {
     throw new Error("KOI_AUDIT_URL must use HTTPS unless it is a loopback URL");
   }
   return url.href;
+}
+
+function selectedHeaders(headers) {
+  return {
+    cacheControl: headers["cache-control"] ?? null,
+    contentSecurityPolicy: headers["content-security-policy"] ?? null,
+    contentType: headers["content-type"] ?? null,
+    crossOriginOpenerPolicy: headers["cross-origin-opener-policy"] ?? null,
+    referrerPolicy: headers["referrer-policy"] ?? null,
+    xContentTypeOptions: headers["x-content-type-options"] ?? null,
+    xFrameOptions: headers["x-frame-options"] ?? null,
+  };
+}
+
+async function inspectConfiguredHost(page, mainResponse, targetUrl) {
+  if (!mainResponse) throw new Error("The challenge navigation returned no HTTP response");
+  const assetPath =
+    (await page.locator('script[src^="/assets/"]').first().getAttribute("src")) ??
+    (await page.locator('link[href^="/assets/"]').first().getAttribute("href"));
+  if (!assetPath) throw new Error("The challenge page does not reference a deployable asset");
+  const [healthResponse, assetResponse, fallbackResponse] = await Promise.all([
+    page.request.get(new URL("/health.json", targetUrl).href),
+    page.request.get(new URL(assetPath, targetUrl).href),
+    page.request.get(new URL("/__koi_spa_fallback_smoke", targetUrl).href),
+  ]);
+  const health = await healthResponse.json();
+  const fallbackBody = await fallbackResponse.text();
+  const observations = {
+    root: {
+      status: mainResponse.status(),
+      headers: selectedHeaders(await mainResponse.allHeaders()),
+    },
+    health: {
+      status: healthResponse.status(),
+      headers: selectedHeaders(healthResponse.headers()),
+      body: health,
+    },
+    asset: { status: assetResponse.status(), headers: selectedHeaders(assetResponse.headers()) },
+    spaFallback: {
+      status: fallbackResponse.status(),
+      headers: selectedHeaders(fallbackResponse.headers()),
+      servedApplicationShell: fallbackBody.includes('<div id="root"></div>'),
+    },
+  };
+  const failures = [];
+  if (observations.root.status !== 200) failures.push("root response is not 200");
+  if (!observations.root.headers.contentSecurityPolicy?.includes("script-src 'self'")) {
+    failures.push("root response is missing the deployed Content Security Policy");
+  }
+  if (observations.root.headers.xContentTypeOptions !== "nosniff") {
+    failures.push("root response is missing X-Content-Type-Options: nosniff");
+  }
+  if (observations.root.headers.xFrameOptions !== "DENY") {
+    failures.push("root response is missing X-Frame-Options: DENY");
+  }
+  if (!observations.root.headers.cacheControl?.includes("no-store")) {
+    failures.push("root HTML is not served with Cache-Control: no-store");
+  }
+  if (observations.health.status !== 200 || observations.health.body.status !== "ok") {
+    failures.push("health endpoint did not return the expected ok document");
+  }
+  if (observations.health.body.buildId !== sourceCommit()) {
+    failures.push("health endpoint build ID differs from the audited commit");
+  }
+  if (!observations.health.headers.cacheControl?.includes("no-store")) {
+    failures.push("health endpoint is not served with Cache-Control: no-store");
+  }
+  if (!observations.asset.headers.cacheControl?.includes("immutable")) {
+    failures.push("content-hashed asset is not served as immutable");
+  }
+  if (observations.spaFallback.status !== 200 || !observations.spaFallback.servedApplicationShell) {
+    failures.push("Cloudflare Pages SPA fallback did not serve the application shell");
+  }
+  return { failures, observations };
 }
 
 async function readTrace(client, handle) {
@@ -265,6 +340,11 @@ function makeBudgetResults(actual, maximums) {
 const configuredTarget = resolveAuditTarget();
 const staticServer = configuredTarget ? null : await serveStaticDirectory(distributionRoot);
 const targetUrl = configuredTarget ?? staticServer.url;
+const targetScope = !configuredTarget
+  ? "loopback-production-build"
+  : new URL(targetUrl).protocol === "https:"
+    ? "deployed-https"
+    : "pages-emulator";
 const browser = await chromium.launch({ channel: "chrome", headless: true });
 
 try {
@@ -352,8 +432,16 @@ try {
     client.send("LayerTree.enable"),
     client.send("Performance.enable"),
   ]);
-  await page.goto(targetUrl, { waitUntil: "networkidle" });
+  const mainResponse = await page.goto(targetUrl, { waitUntil: "networkidle" });
   await page.getByRole("region", { name: /Explorations infinite canvas/ }).waitFor();
+  await page.getByText("Challenge demo · browser-local", { exact: true }).waitFor();
+  await page.getByLabel("Koi build identifier").waitFor();
+  if ((await page.getByRole("button", { name: "Connect hosting" }).count()) !== 0) {
+    throw new Error("The challenge deployment unexpectedly exposes the self-host connection flow");
+  }
+  const hostInspection = configuredTarget
+    ? await inspectConfiguredHost(page, mainResponse, targetUrl)
+    : { failures: [], observations: null };
   await page.getByRole("button", { name: /^Hand/ }).click();
   const canvas = page.getByRole("region", { name: /infinite canvas/ });
   const box = await canvas.boundingBox();
@@ -492,6 +580,7 @@ try {
     failedRequests: failedRequests.length,
     httpErrors: httpErrors.length,
     crossOriginResources: resourceSummary.crossOrigin.length,
+    hostConfigurationFailures: hostInspection.failures.length,
     instrumentationFailures: instrumentationFailures.length,
     peakDomNodes: Math.max(...canvasSamples.map((sample) => sample.domNodes)),
     peakDomElements: Math.max(...canvasSamples.map((sample) => sample.domElements)),
@@ -543,7 +632,7 @@ try {
     },
     environment: {
       url: publicUrl(targetUrl),
-      scope: configuredTarget ? "deployed-https" : "loopback-production-build",
+      scope: targetScope,
       browser: browser.version(),
       node: process.version,
       playwright: "1.62.1",
@@ -578,6 +667,7 @@ try {
       ),
     },
     reliability: { consoleAndPageErrors, failedRequests, httpErrors },
+    hostConfiguration: hostInspection,
     instrumentation: {
       failures: instrumentationFailures,
       initialReactCommits: instrumentationBefore.initialReactCommits,

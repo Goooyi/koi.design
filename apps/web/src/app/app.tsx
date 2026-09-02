@@ -48,6 +48,8 @@ type ConnectMode = "open" | "publish";
 
 const LOCAL_RETURN_KEY = "koi.host.localReturnDocumentId";
 const HOST_BASE_URL_KEY = "koi.host.baseUrl";
+const IS_CHALLENGE_DEPLOYMENT = __KOI_DEPLOYMENT_MODE__ === "challenge";
+const BUILD_LABEL = `Koi v${__KOI_VERSION__} · ${__KOI_BUILD_ID__.slice(0, 12)}`;
 
 function readLocalReturnId(): string | null {
   try {
@@ -717,7 +719,14 @@ export function App() {
         }}
       />
       <div className="koi-host-actions">
-        {localReturnId && localReturnId !== store.getDocument().id ? (
+        <span
+          className="koi-build-meta"
+          aria-label="Koi build identifier"
+          title={`${BUILD_LABEL} · ${__KOI_DEPLOYMENT_MODE__}`}
+        >
+          {BUILD_LABEL}
+        </span>
+        {!IS_CHALLENGE_DEPLOYMENT && localReturnId && localReturnId !== store.getDocument().id ? (
           <button
             className="koi-host-button koi-local-return"
             type="button"
@@ -727,14 +736,18 @@ export function App() {
             Return to local
           </button>
         ) : null}
-        <button
-          className="koi-host-button"
-          type="button"
-          onClick={() => setShowLogin(true)}
-          disabled={transitionBusy || syncState === "Connecting" || syncState === "Syncing"}
-        >
-          {syncState === "Synced" ? "Hosted workspace" : "Connect hosting"}
-        </button>
+        {IS_CHALLENGE_DEPLOYMENT ? (
+          <span className="koi-challenge-mode">Challenge demo · browser-local</span>
+        ) : (
+          <button
+            className="koi-host-button"
+            type="button"
+            onClick={() => setShowLogin(true)}
+            disabled={transitionBusy || syncState === "Connecting" || syncState === "Syncing"}
+          >
+            {syncState === "Synced" ? "Hosted workspace" : "Connect hosting"}
+          </button>
+        )}
       </div>
       {message && (
         <div className="koi-toast" role="status">
@@ -744,7 +757,7 @@ export function App() {
           </button>
         </div>
       )}
-      {showLogin && (
+      {showLogin && !IS_CHALLENGE_DEPLOYMENT ? (
         <ConnectPanel
           busy={transitionBusy}
           error={loginError}
@@ -756,7 +769,7 @@ export function App() {
           onCancel={() => setShowLogin(false)}
           onConnect={connect}
         />
-      )}
+      ) : null}
     </div>
   );
 }
