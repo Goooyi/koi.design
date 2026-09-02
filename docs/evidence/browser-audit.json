@@ -1,7 +1,14 @@
 {
   "schemaVersion": 1,
-  "capturedAt": "2026-09-02T15:05:35.684Z",
-  "generatedFromCommit": "b0d32a34e38e4e71ef67f5b8759a777b61d59e81",
+  "capturedAt": "2026-09-02T15:34:43.411Z",
+  "generatedFromCommit": "9a1910e2860c30c1371850f17ee80f99618acb51",
+  "sourceTree": {
+    "sourceInputsClean": true,
+    "dirtyGeneratedEvidenceBeforeCapture": [
+      "docs/evidence/browser-audit.json",
+      "docs/evidence/webmcp-tools.json"
+    ]
+  },
   "fixture": {
     "id": "stage1-welcome-document",
     "documentId": "welcome-document",
@@ -15,8 +22,8 @@
     "claimScope": "Stage 1 demo regression sentinel; not a general canvas-capacity claim"
   },
   "environment": {
-    "url": "http://127.0.0.1:50523/",
-    "scope": "loopback-production-build",
+    "url": "http://127.0.0.1:4174/",
+    "scope": "pages-emulator",
     "browser": "151.0.7922.174",
     "node": "v24.20.0",
     "playwright": "1.62.1",
@@ -46,6 +53,66 @@
     "failedRequests": [],
     "httpErrors": []
   },
+  "hostConfiguration": {
+    "failures": [],
+    "observations": {
+      "root": {
+        "status": 200,
+        "headers": {
+          "cacheControl": "no-store",
+          "contentSecurityPolicy": "default-src 'self'; base-uri 'none'; connect-src 'self' https: http://127.0.0.1:* http://localhost:*; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src 'none'; img-src 'self' data: blob: https:; manifest-src 'self'; media-src 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:",
+          "contentType": "text/html; charset=utf-8",
+          "crossOriginOpenerPolicy": "same-origin",
+          "referrerPolicy": "no-referrer",
+          "xContentTypeOptions": "nosniff",
+          "xFrameOptions": "DENY"
+        }
+      },
+      "health": {
+        "status": 200,
+        "headers": {
+          "cacheControl": "no-store",
+          "contentSecurityPolicy": "default-src 'self'; base-uri 'none'; connect-src 'self' https: http://127.0.0.1:* http://localhost:*; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src 'none'; img-src 'self' data: blob: https:; manifest-src 'self'; media-src 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:",
+          "contentType": "application/json",
+          "crossOriginOpenerPolicy": "same-origin",
+          "referrerPolicy": "no-referrer",
+          "xContentTypeOptions": "nosniff",
+          "xFrameOptions": "DENY"
+        },
+        "body": {
+          "status": "ok",
+          "version": "0.1.0",
+          "buildId": "9a1910e2860c30c1371850f17ee80f99618acb51",
+          "deploymentMode": "challenge"
+        }
+      },
+      "asset": {
+        "status": 200,
+        "headers": {
+          "cacheControl": "public, max-age=31556952, immutable",
+          "contentSecurityPolicy": "default-src 'self'; base-uri 'none'; connect-src 'self' https: http://127.0.0.1:* http://localhost:*; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src 'none'; img-src 'self' data: blob: https:; manifest-src 'self'; media-src 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:",
+          "contentType": "application/javascript",
+          "crossOriginOpenerPolicy": "same-origin",
+          "referrerPolicy": "no-referrer",
+          "xContentTypeOptions": "nosniff",
+          "xFrameOptions": "DENY"
+        }
+      },
+      "spaFallback": {
+        "status": 200,
+        "headers": {
+          "cacheControl": "public, max-age=0, must-revalidate",
+          "contentSecurityPolicy": "default-src 'self'; base-uri 'none'; connect-src 'self' https: http://127.0.0.1:* http://localhost:*; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src 'none'; img-src 'self' data: blob: https:; manifest-src 'self'; media-src 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:",
+          "contentType": "text/html; charset=utf-8",
+          "crossOriginOpenerPolicy": "same-origin",
+          "referrerPolicy": "no-referrer",
+          "xContentTypeOptions": "nosniff",
+          "xFrameOptions": "DENY"
+        },
+        "servedApplicationShell": true
+      }
+    }
+  },
   "instrumentation": {
     "failures": [],
     "initialReactCommits": 13,
@@ -58,48 +125,48 @@
     "canvasSamples": [
       {
         "label": "initial-after-warmup",
-        "domNodes": 178,
+        "domNodes": 179,
         "domElements": 15,
         "mountedFrames": 3,
         "mountedFrameIds": ["frame-brief", "frame-components", "frame-flow"]
       },
       {
         "label": "pan-1",
-        "domNodes": 193,
+        "domNodes": 194,
         "domElements": 19,
         "mountedFrames": 4,
         "mountedFrameIds": ["frame-brief", "frame-components", "frame-flow", "frame-gpu"]
       },
       {
         "label": "pan-2",
-        "domNodes": 142,
+        "domNodes": 143,
         "domElements": 8,
         "mountedFrames": 2,
         "mountedFrameIds": ["frame-flow", "frame-gpu"]
       },
       {
         "label": "pan-3",
-        "domNodes": 122,
+        "domNodes": 123,
         "domElements": 4,
         "mountedFrames": 1,
         "mountedFrameIds": ["frame-gpu"]
       },
       {
         "label": "reset",
-        "domNodes": 178,
+        "domNodes": 179,
         "domElements": 15,
         "mountedFrames": 3,
         "mountedFrameIds": ["frame-brief", "frame-components", "frame-flow"]
       }
     ],
-    "markerWindowMs": 913.895,
+    "markerWindowMs": 923.701,
     "frameIntervalsMs": {
       "count": 54,
       "min": 14.7,
       "p50": 16.7,
-      "p95": 18.2,
-      "max": 18.6,
-      "total": 899.9
+      "p95": 17.3,
+      "max": 18.7,
+      "total": 898.8
     },
     "frameIntervalsOver50MsPercent": 0,
     "longTasksMs": {
@@ -116,36 +183,36 @@
     },
     "rendererMainTraceEvents": {
       "RunTask": {
-        "count": 369,
+        "count": 367,
         "min": 0.001,
-        "p50": 0.028,
-        "p95": 1.215,
-        "max": 3.762,
-        "total": 85.213
+        "p50": 0.03,
+        "p95": 1.341,
+        "max": 3.544,
+        "total": 91.155
       },
       "Layout": {
         "count": 18,
-        "min": 0.046,
-        "p50": 0.104,
-        "p95": 0.919,
-        "max": 0.919,
-        "total": 3.097
+        "min": 0.053,
+        "p50": 0.1,
+        "p95": 0.877,
+        "max": 0.877,
+        "total": 2.86
       },
       "UpdateLayoutTree": {
         "count": 35,
-        "min": 0.015,
-        "p50": 0.041,
-        "p95": 0.772,
-        "max": 0.881,
-        "total": 5.759
+        "min": 0.02,
+        "p50": 0.045,
+        "p95": 0.623,
+        "max": 1.08,
+        "total": 5.766
       },
       "Paint": {
         "count": 33,
-        "min": 0.013,
+        "min": 0.014,
         "p50": 0.158,
-        "p95": 0.543,
-        "max": 0.733,
-        "total": 5.979
+        "p95": 0.746,
+        "max": 0.774,
+        "total": 6.189
       }
     },
     "ccActiveTreeLayerRecords": {
@@ -154,34 +221,34 @@
       "p50": 12,
       "p95": 13,
       "max": 13,
-      "total": 223
+      "total": 222
     }
   },
   "memory": {
     "before": {
       "dom": {
         "documents": 1,
-        "nodes": 288,
-        "jsEventListeners": 204
+        "nodes": 297,
+        "jsEventListeners": 203
       },
       "heap": {
-        "usedSize": 6343312,
-        "totalSize": 6946816,
-        "embedderHeapUsedSize": 2065192,
-        "backingStorageSize": 598225
+        "usedSize": 6160164,
+        "totalSize": 7208960,
+        "embedderHeapUsedSize": 2357296,
+        "backingStorageSize": 586781
       }
     },
     "after": {
       "dom": {
         "documents": 1,
-        "nodes": 288,
-        "jsEventListeners": 204
+        "nodes": 297,
+        "jsEventListeners": 203
       },
       "heap": {
-        "usedSize": 6596024,
-        "totalSize": 7471104,
-        "embedderHeapUsedSize": 2096728,
-        "backingStorageSize": 598240
+        "usedSize": 6411464,
+        "totalSize": 7208960,
+        "embedderHeapUsedSize": 2107584,
+        "backingStorageSize": 586796
       }
     },
     "retained": {
@@ -189,21 +256,21 @@
       "frames": 0,
       "nodes": 0,
       "eventListeners": 0,
-      "jsHeapBytes": 252712
+      "jsHeapBytes": 251300
     }
   },
   "performanceMetricDeltas": {
     "LayoutCount": 18,
     "RecalcStyleCount": 35,
-    "LayoutDurationMs": 3.258,
-    "RecalcStyleDurationMs": 5.769,
-    "ScriptDurationMs": 22.817,
-    "TaskDurationMs": 90.312
+    "LayoutDurationMs": 3.017,
+    "RecalcStyleDurationMs": 5.76,
+    "ScriptDurationMs": 23.233,
+    "TaskDurationMs": 98.989
   },
   "resources": {
     "count": 3,
-    "encodedBodyBytes": 774712,
-    "transferBytes": 775612,
+    "encodedBodyBytes": 202596,
+    "transferBytes": 203496,
     "crossOrigin": []
   },
   "trace": {
@@ -216,9 +283,9 @@
     ],
     "localPath": "test-results/performance/chrome-trace.json.gz",
     "rawTracePublished": false,
-    "rawBytes": 2106336,
-    "compressedBytes": 188209,
-    "sha256": "63638b2cd85ada29fd5307813b100f06b39e1ed38bd71e61b6f4832f2ed90cf1"
+    "rawBytes": 2111793,
+    "compressedBytes": 189256,
+    "sha256": "d8fc12db7709e5b52922518c3a2b414a4b0f650ea2ce58b3bb0c890bbc744451"
   },
   "budgets": [
     {
@@ -252,6 +319,12 @@
       "pass": true
     },
     {
+      "name": "hostConfigurationFailures",
+      "actual": 0,
+      "maximum": 0,
+      "pass": true
+    },
+    {
       "name": "instrumentationFailures",
       "actual": 0,
       "maximum": 0,
@@ -259,7 +332,7 @@
     },
     {
       "name": "peakDomNodes",
-      "actual": 193,
+      "actual": 194,
       "maximum": 300,
       "pass": true
     },
@@ -289,7 +362,7 @@
     },
     {
       "name": "p95FrameIntervalMs",
-      "actual": 18.2,
+      "actual": 17.3,
       "maximum": 34,
       "pass": true
     },
@@ -319,43 +392,43 @@
     },
     {
       "name": "runTaskMaximumMs",
-      "actual": 3.762,
+      "actual": 3.544,
       "maximum": 75,
       "pass": true
     },
     {
       "name": "layoutTotalMs",
-      "actual": 3.097,
+      "actual": 2.86,
       "maximum": 75,
       "pass": true
     },
     {
       "name": "layoutMaximumMs",
-      "actual": 0.919,
+      "actual": 0.877,
       "maximum": 8,
       "pass": true
     },
     {
       "name": "updateLayoutTreeTotalMs",
-      "actual": 5.759,
+      "actual": 5.766,
       "maximum": 75,
       "pass": true
     },
     {
       "name": "updateLayoutTreeMaximumMs",
-      "actual": 0.881,
+      "actual": 1.08,
       "maximum": 8,
       "pass": true
     },
     {
       "name": "paintTotalMs",
-      "actual": 5.979,
+      "actual": 6.189,
       "maximum": 100,
       "pass": true
     },
     {
       "name": "paintMaximumMs",
-      "actual": 0.733,
+      "actual": 0.774,
       "maximum": 8,
       "pass": true
     },
@@ -397,31 +470,31 @@
     },
     {
       "name": "retainedJsHeapBytes",
-      "actual": 252712,
+      "actual": 251300,
       "maximum": 4194304,
       "pass": true
     },
     {
       "name": "encodedResourceBytes",
-      "actual": 774712,
+      "actual": 202596,
       "maximum": 2097152,
       "pass": true
     },
     {
       "name": "finalJsHeapUsedBytes",
-      "actual": 6596024,
+      "actual": 6411464,
       "maximum": 134217728,
       "pass": true
     },
     {
       "name": "rawTraceBytes",
-      "actual": 2106336,
+      "actual": 2111793,
       "maximum": 33554432,
       "pass": true
     },
     {
       "name": "harnessRuntimeMs",
-      "actual": 3789,
+      "actual": 4118,
       "maximum": 30000,
       "pass": true
     },

@@ -1,6 +1,13 @@
 {
   "schemaVersion": 1,
-  "generatedFromCommit": "2c642992a45f2685c7f06f56a580377538b82237",
+  "generatedFromCommit": "9a1910e2860c30c1371850f17ee80f99618acb51",
+  "sourceTree": {
+    "sourceInputsClean": true,
+    "dirtyGeneratedEvidenceBeforeCapture": [
+      "docs/evidence/browser-audit.json",
+      "docs/evidence/webmcp-tools.json"
+    ]
+  },
   "tools": [
     {
       "name": "arrange_elements",
