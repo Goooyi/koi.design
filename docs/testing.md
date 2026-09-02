@@ -1,6 +1,6 @@
 # Koi testing strategy
 
-Status: implemented baseline and release backlog, 2026-08-28.
+Status: implemented Stage 1 release candidate and remaining live-host backlog, 2026-09-02.
 
 ## Current evidence
 
@@ -35,13 +35,20 @@ Koi's deterministic baseline is implemented and runs within bounded resources:
   verifies hosted MCP authentication, one-message JSON-RPC admission, structured mutation
   pressure/storage failures, request bounds, post-rename durability and revision wake-up recovery,
   one request per HTTP socket, bounded connections, and stalled-socket destruction.
-- Eight Playwright journeys use real pointer and keyboard input to verify bounded virtualized DOM,
+- Ten Playwright journeys use real pointer and keyboard input to verify bounded virtualized DOM,
   camera-driven visibility, drag persistence through IndexedDB, coherent Frame drag previews
   across DOM/SVG/connectors, focused shortcuts, Frame creation, pen input, text editing, preserving
   a human text draft across an agent update, durable authority-transition ordering, denied browser
-  storage, and the full `.koi.json` download path.
+  storage, the full `.koi.json` download path, zero automated WCAG A/AA violations, and a complete
+  stale-agent conflict/reinspect/replan/reload sequence after a human Frame move.
 - Playwright is fixed to one Chromium worker, 30-second test timeouts, video disabled, and traces
   and screenshots retained only on failure.
+- `pnpm audit:browser` builds the production web artifact and uses one clean headless Chrome process
+  to capture axe results, console/network failures, DOM and mounted-Frame samples, animation-frame
+  and long-task distributions, React commit cadence, CDP/trace rendering metrics, compositor-layer
+  records, and post-GC retention. The checked-in Stage 1 fixture passes all 35 declared budgets; see
+  [`browser-audit.json`](evidence/browser-audit.json). The raw trace stays ignored because browser
+  traces can contain sensitive implementation details; the report records its hash and sizes.
 - An isolated native Chrome smoke discovered all eight WebMCP tools and executed bounded context
   and element-inspection calls without console or browser-issue errors. The full native mutation
   collaboration journey remains a release-backlog test.
@@ -61,9 +68,9 @@ pnpm ready
 respective checks, so no separate build is required on a clean checkout. `pnpm ready` builds once,
 then runs format, lint, type, workspace test, and one-worker Chromium gates.
 
-The current browser suite is a meaningful MVP regression gate, not complete release evidence.
-Automated native WebMCP mutation journeys, accessibility automation, performance/memory budgets,
-interactive third-party MCP host smoke tests, and cross-browser coverage remain outstanding.
+The current browser suite is a meaningful Stage 1 regression gate, not complete release evidence.
+Deployed native WebMCP mutation journeys, manual accessibility checks, interactive third-party MCP
+host smoke tests, and cross-browser coverage remain outstanding.
 
 ## Testing layers
 
@@ -87,7 +94,8 @@ interactive third-party MCP host smoke tests, and cross-browser coverage remain 
 | Playwright Test 1.62.1    | Stored Chromium journeys                                    | Active; Chromium only                                            |
 | Playwright CLI skill      | Agent exploration and reproduction                          | Operator-local; verify in each agent environment                 |
 | Chrome DevTools MCP 1.8.0 | Console, network, Lighthouse, traces, memory, native WebMCP | Pinned in project config; verify runtime access per environment  |
-| axe Playwright            | Automated accessibility checks                              | Planned; not installed                                           |
+| axe Playwright 4.13.0     | Automated WCAG A/AA checks                                  | Active in E2E and browser audit                                  |
+| Chrome trace + CDP        | Bounded production-build rendering/resource evidence        | Active through `pnpm audit:browser`                              |
 | Lighthouse CI             | Repeatable load budgets                                     | Planned; DevTools Lighthouse is available for manual diagnostics |
 | Midscene                  | Model-assisted web/native-host visual smoke                 | Deferred until deterministic gaps are known                      |
 | chrome-agent              | Raw multi-agent CDP subscriptions                           | Not adopted                                                      |
@@ -102,13 +110,12 @@ Add stored regression coverage only for observable behavior or non-trivial bound
 
 1. A native Chrome WebMCP agent inspects a human drag, creates an alternative, and leaves Camera
    and Selection unchanged.
-2. A stale agent geometry update conflicts with a newer human move, reinspects, and replans.
-3. A complete `.koi.json` round-trip reopens in a fresh browser profile.
-4. The browser connects to a real self-hosted server, persists a command, receives an authenticated
+2. A complete `.koi.json` round-trip reopens in a fresh browser profile.
+3. The browser connects to a real self-hosted server, persists a command, receives an authenticated
    SSE wake-up, and survives server restart.
-5. An external MCP Apps host opens the iframe View, calls tools, handles theme/context changes,
+4. An external MCP Apps host opens the iframe View, calls tools, handles theme/context changes,
    reconnects, and shows structured failures.
-6. Keyboard-only navigation covers tools, canvas, Elements, editing, inspector, import/export, and
+5. Keyboard-only navigation covers tools, canvas, Elements, editing, inspector, import/export, and
    undo.
 
 Use the official MCP Apps basic host for View lifecycle coverage and repeat claimed host support in
@@ -131,9 +138,10 @@ Measure:
 The implemented camera coalesces the world-transform hot path to at most one write per animation
 frame. Camera listeners also trigger a throttled React visibility commit at most once every 64 ms
 and one refresh when a pointer pan ends; tests and traces must distinguish that intended
-virtualization work from per-pointer React reconciliation. Product budgets for live DOM, ink,
-shader pixels, and memory must come from measured fixture curves rather than generic Lighthouse DOM
-warnings.
+virtualization work from per-pointer React reconciliation. The Stage 1 welcome fixture now has a
+bounded production-build baseline; it is a regression sentinel for that four-Frame fixture, not a
+general canvas-capacity claim. Product budgets for live DOM, ink, shader pixels, and memory must
+continue to come from measured fixture curves rather than generic Lighthouse DOM warnings.
 
 ## Failure evidence
 

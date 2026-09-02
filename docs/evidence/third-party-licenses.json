@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceInputsSha256": "42556242dc7c2126ec5f5cbaab23d861b92a47062eb7f3c6e5fc48f0df492a18",
+  "sourceInputsSha256": "260be1c895ca0fdc037dc4e66b18c099a775919459a2014dc1e55ecf0cfb4c82",
   "environment": {
     "node": "v24.20.0",
     "platform": "darwin",
@@ -8,8 +8,8 @@
     "packageManager": "pnpm@11.21.0"
   },
   "summary": {
-    "packageVersions": 307,
-    "directPackageNames": 23,
+    "packageVersions": 309,
+    "directPackageNames": 24,
     "licenseCounts": {
       "0BSD": 1,
       "Apache-2.0": 9,
@@ -19,7 +19,7 @@
       "CC-BY-4.0": 1,
       "ISC": 19,
       "MIT": 265,
-      "MPL-2.0": 2,
+      "MPL-2.0": 4,
       "NOASSERTION": 2
     },
     "unresolved": [],
@@ -114,6 +114,28 @@
         {
           "file": "LICENSE",
           "sha256": "a6855be541fc8f446acd1bc4f2f8efce1ace6dce71dba32fcd8da553ee54b473"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "@axe-core/playwright",
+      "version": "4.13.0",
+      "declaredLicense": "MPL-2.0",
+      "verifiedLicense": "MPL-2.0",
+      "directUses": [
+        {
+          "section": "devDependencies",
+          "workspace": "koi-design"
+        }
+      ],
+      "homepage": null,
+      "repository": "https://github.com/dequelabs/axe-core-npm.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "812e9d96e900a093ae4d1d3f22c5f82f568a0a0461c3007a99d00573d41c5461"
         }
       ],
       "upstreamEvidence": null,
@@ -1785,6 +1807,23 @@
         {
           "file": "LICENSE",
           "sha256": "a374b737c41b30b1ec04c5fcc17d1b853f008f217cc43a9dbea441abd9afde70"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "axe-core",
+      "version": "4.13.0",
+      "declaredLicense": "MPL-2.0",
+      "verifiedLicense": "MPL-2.0",
+      "directUses": [],
+      "homepage": "https://www.deque.com/axe/",
+      "repository": "https://github.com/dequelabs/axe-core.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "af175b9d96ee93c21a036152e1b905b0b95304d4ae8c2c921c7609100ba8df7e"
         }
       ],
       "upstreamEvidence": null,

@@ -269,8 +269,8 @@ decisions live in [docs/adr](docs/adr); remaining product choices are tracked in
   connector path shares one affine-transform model.
 - Native HTML export is available only as trusted component-level helpers, not yet as a complete
   Page export workflow.
-- WebGPU shaders, comments, image upload, accessibility audits, cross-browser E2E, and managed
-  hosting remain incomplete.
+- WebGPU shaders, comments, image upload, manual accessibility audits, cross-browser E2E, and
+  managed hosting remain incomplete.
 
 ## License
 

@@ -41,8 +41,6 @@ history, and portability without a private service dependency.
 ## Submission work remaining
 
 - run and record the golden story through native Chrome WebMCP, not only the unit adapter;
-- add the stale human-versus-agent browser journey and accessibility scan;
-- capture a representative Chrome performance trace and verify deployment limits;
 - publish a live HTTPS URL and test it in a fresh browser session;
 - make the licensed repository public after the local release gates pass;
 - record a public video shorter than three minutes using Hyperframes or Remotion;
@@ -77,8 +75,9 @@ the Koi trademarks separately, and carries a reproducible dependency and asset p
 - [x] Repository licensing, contributor sign-off, trademark terms, and dependency provenance are
       release-ready.
 - [ ] Native Chrome discovers and executes all Koi WebMCP tools on the built deployment.
-- [ ] A stored journey proves stale-agent conflict and replan after a human move.
-- [ ] Accessibility and representative performance evidence pass.
+- [x] A stored journey proves stale-agent conflict and replan after a human move.
+- [x] Automated accessibility and representative performance evidence pass; manual accessibility
+      review remains before submission.
 - [ ] Live HTTPS URL works in a fresh session.
 - [ ] Repository is public with an approved visible license and setup instructions.
 - [ ] Public demonstration video is under three minutes.

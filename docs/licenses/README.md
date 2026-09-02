@@ -14,8 +14,8 @@ not legal advice.
   license evidence.
 - Lucide React `1.34.0` ships a combined ISC license and the MIT notice for Feather-derived icons;
   both acknowledgements are retained.
-- Lightning CSS (`MPL-2.0`) and caniuse-lite (`CC-BY-4.0`) are build-time inputs and are not shipped
-  in the static browser artifact.
+- Lightning CSS, axe-core, and the Playwright axe adapter (`MPL-2.0`) plus caniuse-lite
+  (`CC-BY-4.0`) are build/test-time inputs and are not shipped in the static browser artifact.
 - Two Yuku platform-binding packages omit both a license field and license file. Their npm
   provenance resolves to the MIT-licensed Yuku `v0.5.48` source repository, but the exact native
   binaries remain `NOASSERTION`. They are build-only and are not redistributed in the browser
