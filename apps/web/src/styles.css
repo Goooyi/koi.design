@@ -31,8 +31,8 @@ select:focus-visible {
   display: flex;
   gap: 8px;
   position: fixed;
-  right: 260px;
-  top: 11px;
+  right: 272px;
+  top: 68px;
   z-index: 50;
 }
 
@@ -283,7 +283,7 @@ select:focus-visible {
 
 @media (max-width: 920px) {
   .koi-host-actions {
-    right: 16px;
+    right: 12px;
   }
 }
 
