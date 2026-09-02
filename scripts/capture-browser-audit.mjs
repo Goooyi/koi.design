@@ -435,7 +435,7 @@ try {
   const mainResponse = await page.goto(targetUrl, { waitUntil: "networkidle" });
   await page.getByRole("region", { name: /Explorations infinite canvas/ }).waitFor();
   await page.getByText("Challenge demo · browser-local", { exact: true }).waitFor();
-  await page.getByLabel("Koi build identifier").waitFor();
+  await page.getByTestId("koi-build-identifier").waitFor();
   if ((await page.getByRole("button", { name: "Connect hosting" }).count()) !== 0) {
     throw new Error("The challenge deployment unexpectedly exposes the self-host connection flow");
   }

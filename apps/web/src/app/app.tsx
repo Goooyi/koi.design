@@ -721,7 +721,7 @@ export function App() {
       <div className="koi-host-actions">
         <span
           className="koi-build-meta"
-          aria-label="Koi build identifier"
+          data-testid="koi-build-identifier"
           title={`${BUILD_LABEL} · ${__KOI_DEPLOYMENT_MODE__}`}
         >
           {BUILD_LABEL}

@@ -56,7 +56,7 @@ test.describe("Koi browser editor", () => {
 
     await page.goto("/");
     await expect(page).toHaveTitle(/Koi/);
-    await expect(page.getByLabel("Koi build identifier")).toContainText("Koi v0.1.0");
+    await expect(page.getByTestId("koi-build-identifier")).toContainText("Koi v0.1.0");
     await expect(page.getByRole("region", { name: /Explorations infinite canvas/ })).toBeVisible();
     await expect(page.getByText("Design together, without the lock-in.")).toBeVisible();
     await expect(page.locator('[data-element-id="frame-brief"]')).toBeVisible();
