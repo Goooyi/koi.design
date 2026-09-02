@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-09-02T15:38:16Z",
+  "generatedFromCommit": "f0e563a99645d78f3324dbc6e7916090412f38ea",
+  "command": "pnpm ready",
+  "exitCode": 0,
+  "resourceBounds": {
+    "workspaceConcurrency": 2,
+    "playwrightWorkers": 1
+  },
+  "results": {
+    "unitProtocolAndIntegrationTests": 173,
+    "playwrightJourneys": 10
+  },
+  "transcript": {
+    "path": "docs/evidence/challenge-ready.txt",
+    "bytes": 25137,
+    "sha256": "a5daffbe670c6944a96709dfd619e63f73c7618c69588fb93d64814706335cfb"
+  }
+}
