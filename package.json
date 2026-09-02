@@ -5,6 +5,7 @@
   "license": "AGPL-3.0-or-later",
   "type": "module",
   "scripts": {
+    "audit:browser": "vp run @koi/web#build && node scripts/capture-browser-audit.mjs",
     "build": "vp run -r --concurrency-limit 2 build",
     "check": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 check",
     "dev": "vp run -r --concurrency-limit 2 build && vp run @koi/web#dev",
@@ -15,6 +16,7 @@
     "webmcp:manifest": "vp run @koi/web#build && node scripts/capture-webmcp-tools.mjs"
   },
   "devDependencies": {
+    "@axe-core/playwright": "catalog:",
     "@playwright/test": "1.62.1",
     "@types/node": "catalog:",
     "vite": "npm:@voidzero-dev/vite-plus-core@0.3.0",

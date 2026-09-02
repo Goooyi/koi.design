@@ -1,4 +1,50 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+type BrowserTool = {
+  name: string;
+  execute: (input: Record<string, unknown>, options: { signal: AbortSignal }) => Promise<unknown>;
+};
+
+async function installWebMcpHarness(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    type RegisteredTool = {
+      name: string;
+      execute: (
+        input: Record<string, unknown>,
+        options: { signal: AbortSignal },
+      ) => Promise<unknown>;
+    };
+    const tools = new Map<string, RegisteredTool>();
+    Object.defineProperty(window, "__koiTestTools", { value: tools });
+    Object.defineProperty(document, "modelContext", {
+      configurable: true,
+      value: {
+        registerTool: async (tool: RegisteredTool, options?: { signal?: AbortSignal }) => {
+          tools.set(tool.name, tool);
+          options?.signal?.addEventListener("abort", () => tools.delete(tool.name), { once: true });
+        },
+        getTools: async () => [...tools.values()],
+      },
+    });
+  });
+}
+
+async function executeWebMcpTool(
+  page: Page,
+  name: string,
+  input: Record<string, unknown>,
+): Promise<unknown> {
+  return page.evaluate(
+    async ({ toolName, toolInput }) => {
+      const tools = (window as typeof window & { __koiTestTools: Map<string, BrowserTool> })
+        .__koiTestTools;
+      const tool = tools.get(toolName);
+      if (!tool) throw new Error(`WebMCP tool is not registered: ${toolName}`);
+      return tool.execute(toolInput, { signal: new AbortController().signal });
+    },
+    { toolName: name, toolInput: input },
+  );
+}
 
 test.describe("Koi browser editor", () => {
   test("renders a bounded, virtualized HTML-native starter canvas", async ({ page }) => {
@@ -134,7 +180,8 @@ test.describe("Koi browser editor", () => {
     await expect(page.locator(".koi-status")).toContainText("Local");
 
     await page.evaluate(() => {
-      const original = Storage.prototype.getItem;
+      const original = Object.getOwnPropertyDescriptor(Storage.prototype, "getItem")!
+        .value as Storage["getItem"];
       Object.defineProperty(Storage.prototype, "getItem", {
         configurable: true,
         value(this: Storage, key: string) {
@@ -220,25 +267,7 @@ test.describe("Koi browser editor", () => {
   });
 
   test("preserves a human text draft when an agent changes the same Element", async ({ page }) => {
-    await page.addInitScript(() => {
-      type BrowserTool = {
-        name: string;
-        execute: (
-          input: Record<string, unknown>,
-          options: { signal: AbortSignal },
-        ) => Promise<unknown>;
-      };
-      const tools = new Map<string, BrowserTool>();
-      Object.defineProperty(window, "__koiTestTools", { value: tools });
-      Object.defineProperty(document, "modelContext", {
-        configurable: true,
-        value: {
-          registerTool: async (tool: BrowserTool) => {
-            tools.set(tool.name, tool);
-          },
-        },
-      });
-    });
+    await installWebMcpHarness(page);
     await page.goto("/");
     await expect(page.getByText(/WebMCP ready/)).toBeVisible();
 
@@ -247,37 +276,21 @@ test.describe("Koi browser editor", () => {
     const editor = page.getByRole("textbox", { name: "Edit note" });
     await editor.fill("Human draft in progress");
 
-    const agentResult = await page.evaluate(async () => {
-      type BrowserTool = {
-        execute: (
-          input: Record<string, unknown>,
-          options: { signal: AbortSignal },
-        ) => Promise<unknown>;
-      };
-      const tools = (window as typeof window & { __koiTestTools: Map<string, BrowserTool> })
-        .__koiTestTools;
-      const options = { signal: new AbortController().signal };
-      const inspected = (await tools
-        .get("inspect_elements")!
-        .execute({ elementIds: ["brief-note"] }, options)) as {
-        elements: Array<{ version: number }>;
-      };
-      return tools.get("update_elements")!.execute(
+    const inspected = (await executeWebMcpTool(page, "inspect_elements", {
+      elementIds: ["brief-note"],
+    })) as { elements: Array<{ version: number }> };
+    const agentResult = await executeWebMcpTool(page, "update_elements", {
+      commandId: "agent-concurrent-text-edit",
+      updates: [
         {
-          commandId: "agent-concurrent-text-edit",
-          updates: [
-            {
-              pageId: "page-explorations",
-              elementId: "brief-note",
-              expectedVersion: inspected.elements[0]!.version,
-              changes: {
-                properties: { content: "Agent edit committed", color: "#ffe694" },
-              },
-            },
-          ],
+          pageId: "page-explorations",
+          elementId: "brief-note",
+          expectedVersion: inspected.elements[0]!.version,
+          changes: {
+            properties: { content: "Agent edit committed", color: "#ffe694" },
+          },
         },
-        options,
-      );
+      ],
     });
     expect(agentResult).toMatchObject({ ok: true });
     await expect(editor).toHaveValue("Human draft in progress");
@@ -293,37 +306,21 @@ test.describe("Koi browser editor", () => {
     const contentField = inspector.locator("textarea");
     await contentField.fill("Inspector human draft");
 
-    const secondAgentResult = await page.evaluate(async () => {
-      type BrowserTool = {
-        execute: (
-          input: Record<string, unknown>,
-          options: { signal: AbortSignal },
-        ) => Promise<unknown>;
-      };
-      const tools = (window as typeof window & { __koiTestTools: Map<string, BrowserTool> })
-        .__koiTestTools;
-      const options = { signal: new AbortController().signal };
-      const inspected = (await tools
-        .get("inspect_elements")!
-        .execute({ elementIds: ["brief-note"] }, options)) as {
-        elements: Array<{ version: number }>;
-      };
-      return tools.get("update_elements")!.execute(
+    const secondInspection = (await executeWebMcpTool(page, "inspect_elements", {
+      elementIds: ["brief-note"],
+    })) as { elements: Array<{ version: number }> };
+    const secondAgentResult = await executeWebMcpTool(page, "update_elements", {
+      commandId: "agent-concurrent-inspector-edit",
+      updates: [
         {
-          commandId: "agent-concurrent-inspector-edit",
-          updates: [
-            {
-              pageId: "page-explorations",
-              elementId: "brief-note",
-              expectedVersion: inspected.elements[0]!.version,
-              changes: {
-                properties: { content: "Second agent edit committed", color: "#ffe694" },
-              },
-            },
-          ],
+          pageId: "page-explorations",
+          elementId: "brief-note",
+          expectedVersion: secondInspection.elements[0]!.version,
+          changes: {
+            properties: { content: "Second agent edit committed", color: "#ffe694" },
+          },
         },
-        options,
-      );
+      ],
     });
     expect(secondAgentResult).toMatchObject({ ok: true });
     await expect(contentField).toHaveValue("Inspector human draft");
@@ -349,5 +346,117 @@ test.describe("Koi browser editor", () => {
         Number(await body.evaluate((element) => parseFloat((element as HTMLElement).style.left))),
       )
       .toBe(bodyLeft);
+  });
+
+  test("makes a stale agent re-inspect and replan after a human moves a Frame", async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on("console", (message) => {
+      if (message.type() === "error") errors.push(message.text());
+    });
+    page.on("pageerror", (error) => errors.push(error.message));
+    await installWebMcpHarness(page);
+    await page.goto("/");
+    await expect(page.getByText(/WebMCP ready/)).toBeVisible();
+
+    const initialContext = (await executeWebMcpTool(page, "get_canvas_context", {})) as {
+      camera: { x: number; y: number; zoom: number };
+    };
+    const initialInspection = (await executeWebMcpTool(page, "inspect_elements", {
+      elementIds: ["frame-brief"],
+    })) as {
+      elements: Array<{
+        version: number;
+        geometry: { x: number; y: number; width: number; height: number };
+      }>;
+    };
+    const observed = initialInspection.elements[0]!;
+
+    const frame = page.locator('[data-element-id="frame-brief"]');
+    const frameBox = await frame.boundingBox();
+    expect(frameBox).not.toBeNull();
+    await page.mouse.move(frameBox!.x + 8, frameBox!.y + 8);
+    await page.mouse.down();
+    await page.mouse.move(frameBox!.x + 108, frameBox!.y + 48, { steps: 5 });
+    await page.mouse.up();
+    await expect
+      .poll(async () =>
+        Number(await frame.evaluate((element) => parseFloat((element as HTMLElement).style.left))),
+      )
+      .toBeGreaterThan(observed.geometry.x + 90);
+    const humanLeft = Number(
+      await frame.evaluate((element) => parseFloat((element as HTMLElement).style.left)),
+    );
+
+    const staleResult = await executeWebMcpTool(page, "arrange_elements", {
+      commandId: "agent-stale-arrangement",
+      placements: [
+        {
+          pageId: "page-explorations",
+          elementId: "frame-brief",
+          expectedVersion: observed.version,
+          x: observed.geometry.x + 400,
+          y: observed.geometry.y,
+        },
+      ],
+    });
+    expect(staleResult).toMatchObject({
+      ok: false,
+      outcome: "rejected",
+      error: { code: "version_conflict", retryable: true },
+    });
+    await expect
+      .poll(async () =>
+        Number(await frame.evaluate((element) => parseFloat((element as HTMLElement).style.left))),
+      )
+      .toBeCloseTo(humanLeft, 3);
+
+    const freshInspection = (await executeWebMcpTool(page, "inspect_elements", {
+      elementIds: ["frame-brief"],
+    })) as {
+      elements: Array<{ version: number; geometry: { x: number; y: number } }>;
+    };
+    const fresh = freshInspection.elements[0]!;
+    expect(fresh.version).toBe(observed.version + 1);
+    expect(fresh.geometry.x).toBeCloseTo(humanLeft, 3);
+
+    const replannedX = fresh.geometry.x + 80;
+    const replannedResult = await executeWebMcpTool(page, "arrange_elements", {
+      commandId: "agent-replanned-arrangement",
+      placements: [
+        {
+          pageId: "page-explorations",
+          elementId: "frame-brief",
+          expectedVersion: fresh.version,
+          x: replannedX,
+          y: fresh.geometry.y,
+        },
+      ],
+    });
+    expect(replannedResult).toMatchObject({ ok: true, outcome: "applied" });
+    await expect
+      .poll(async () =>
+        Number(await frame.evaluate((element) => parseFloat((element as HTMLElement).style.left))),
+      )
+      .toBeCloseTo(replannedX, 3);
+
+    const finalContext = (await executeWebMcpTool(page, "get_canvas_context", {})) as {
+      camera: { x: number; y: number; zoom: number };
+      selection: string[];
+    };
+    expect(finalContext.camera).toEqual(initialContext.camera);
+    expect(finalContext.selection).toContain("frame-brief");
+
+    await page.reload();
+    await expect(page.getByText(/WebMCP ready/)).toBeVisible();
+    const reloadedInspection = (await executeWebMcpTool(page, "inspect_elements", {
+      elementIds: ["frame-brief"],
+    })) as { elements: Array<{ version: number; geometry: { x: number } }> };
+    expect(reloadedInspection.elements[0]).toMatchObject({
+      version: fresh.version + 1,
+      geometry: { x: replannedX },
+    });
+    expect(errors).toEqual([]);
   });
 });
