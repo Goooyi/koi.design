@@ -51,12 +51,13 @@ On Debian or Ubuntu machines that do not already have the browser system librari
 The release-grade `pnpm audit:browser` command separately requires the current stable Google
 Chrome. On macOS, install it in `/Applications`; on Linux, make `google-chrome` or
 `google-chrome-stable` available on `PATH`. The audit deliberately measures the judge-facing
-browser rather than Playwright's pinned test browser. Run `pnpm doctor` to verify both browsers.
+browser rather than Playwright's pinned test browser. Run `pnpm run doctor` to verify both
+browsers; the explicit `run` avoids pnpm's unrelated built-in `doctor` command.
 
 Useful repository gates:
 
 ```sh
-pnpm doctor
+pnpm run doctor
 pnpm build
 pnpm check
 pnpm test

@@ -56,7 +56,7 @@ Koi's deterministic baseline is implemented and runs within bounded resources:
 Run the gates from the root:
 
 ```sh
-pnpm doctor
+pnpm run doctor
 pnpm build
 pnpm check
 pnpm test
