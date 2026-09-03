@@ -203,14 +203,59 @@ describe("Koi WebMCP", () => {
     expect(runtime.store.getActivePage()?.elements).toHaveLength(1);
   });
 
-  it("accepts hosts that omit the draft callback-options object", async () => {
-    const tool = createKoiWebMcpTools(dependencies()).find(
-      (candidate) => candidate.name === "get_canvas_context",
-    )!;
+  it("accepts hosts that omit the draft callback options or signal", async () => {
+    type HostCallbackOptions = { signal?: AbortSignal | undefined };
+    const runtime = dependencies();
+    const tools = createKoiWebMcpTools(runtime);
+    const tool = tools.find((candidate) => candidate.name === "get_canvas_context")!;
+    const execute = tool.execute as (
+      input: Record<string, unknown>,
+      options?: HostCallbackOptions,
+    ) => Promise<unknown>;
 
-    const result = await (tool.execute as (input: Record<string, unknown>) => Promise<unknown>)({});
+    await expect(execute({})).resolves.toMatchObject({
+      ok: true,
+      document: { id: "document-1" },
+    });
+    await expect(execute({}, {})).resolves.toMatchObject({
+      ok: true,
+      document: { id: "document-1" },
+    });
+    await expect(execute({}, { signal: undefined })).resolves.toMatchObject({
+      ok: true,
+      document: { id: "document-1" },
+    });
 
-    expect(result).toMatchObject({ ok: true, document: { id: "document-1" } });
+    const create = tools.find((candidate) => candidate.name === "create_elements")!;
+    const createResult = await (
+      create.execute as (
+        input: Record<string, unknown>,
+        options?: HostCallbackOptions,
+      ) => Promise<unknown>
+    )(
+      {
+        commandId: "missing-host-signal",
+        pageId: "page-1",
+        elements: [
+          {
+            schemaVersion: 1,
+            id: "host-compatible-note",
+            kind: "note",
+            parentId: null,
+            geometry: { x: 10, y: 10, width: 200, height: 100, rotation: 0 },
+            properties: { content: "Created without a host cancellation signal" },
+          },
+        ],
+      },
+      {},
+    );
+
+    expect(createResult).toMatchObject({
+      ok: true,
+      outcome: "applied",
+      changedIds: ["host-compatible-note"],
+    });
+    expect(runtime.store.getActivePage()?.elements).toHaveLength(1);
   });
 
   it("bounds canvas-context selection output and marks transient locks retryable", async () => {

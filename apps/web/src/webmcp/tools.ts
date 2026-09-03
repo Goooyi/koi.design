@@ -246,10 +246,11 @@ function defineTool<Schema extends ToolSchema>(
     execute: async (raw, options?: WebMCP.ToolExecuteCallbackOptions) => {
       const parsed = definition.schema.safeParse(raw);
       if (!parsed.success) return invalidInput(parsed.error, definition.readOnly);
-      // Chrome's experimental WebMCP executor currently omits callback options even though the
-      // draft API marks them as required. Keep cancellation when the host supplies it, while
-      // allowing otherwise-valid calls from today's browser implementation.
-      const executionOptions = options ?? { signal: new AbortController().signal };
+      // Experimental hosts can omit either the callback-options object or its draft-required
+      // signal. Preserve cancellation when supplied and isolate older hosts with a per-call
+      // fallback instead of borrowing the registration lifetime.
+      const signal = options?.signal ?? new AbortController().signal;
+      const executionOptions = { signal };
       try {
         executionOptions.signal.throwIfAborted();
         return await definition.execute(parsed.data, executionOptions);
