@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "capturedAt": "2026-09-03T02:20:19Z",
-  "generatedFromCommit": "a758f45b9b1b36951bd4ff5a249bb56b4bf485c2",
+  "capturedAt": "2026-09-03T03:54:53Z",
+  "generatedFromCommit": "4bd077799db13e0c0474c0165e333916d424d9d5",
   "command": "pnpm ready",
   "exitCode": 0,
   "resourceBounds": {
@@ -15,7 +15,7 @@
   },
   "transcript": {
     "path": "docs/evidence/challenge-ready.txt",
-    "bytes": 26050,
-    "sha256": "364c657aecb1c71c14d29f5797b62735e6944b48084253131465d08cc2aaab66"
+    "bytes": 27236,
+    "sha256": "30f9921b8fe48a5428e1ff9e948ebd72f61cba3b14cc1283a2a743e5429df62d"
   }
 }
