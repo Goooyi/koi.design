@@ -1,54 +1,54 @@
-$ vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 check && vp run -r --concurrency-limit 2 test && vp exec playwright test --workers=1
-warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
+$ vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 check && pnpm test:doctor && vp run -r --concurrency-limit 2 test && vp exec playwright test --workers=1
 ~/packages/core$ vp pack ◉ cache hit, replaying
 ℹ entry: src/index.ts
 ℹ tsconfig: tsconfig.json
 ℹ Build start
 ℹ Cleaning 2 files
+warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ Emit types with typescript@7.0.2
 ℹ dist/index.mjs     48.14 kB │ gzip: 10.78 kB
 ℹ dist/index.d.mts  136.35 kB │ gzip:  7.93 kB
 ℹ 2 files, total: 184.49 kB
-✔ Build complete in 228ms
+✔ Build complete in 302ms
 
 ~/packages/mcp$ vp pack ◉ cache hit, replaying
 ℹ entry: src/index.ts, src/protocol.ts
 ℹ tsconfig: tsconfig.json
 ℹ Build start
 ℹ Cleaning 4 files
+warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ Emit types with typescript@7.0.2
 ℹ dist/index.mjs       33.46 kB │ gzip: 7.98 kB
-warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ dist/protocol.mjs     1.00 kB │ gzip: 0.41 kB
 ℹ dist/index.d.mts      6.42 kB │ gzip: 1.75 kB
 ℹ dist/protocol.d.mts   3.97 kB │ gzip: 1.18 kB
 ℹ 4 files, total: 44.86 kB
-✔ Build complete in 312ms
+✔ Build complete in 284ms
 
-warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ~/packages/astryx$ vp pack ◉ cache hit, replaying
 ℹ entry: src/index.ts
 ℹ tsconfig: tsconfig.json
 ℹ Build start
 ℹ Cleaning 2 files
+warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ Emit types with typescript@7.0.2
 ℹ dist/index.mjs    8.87 kB │ gzip: 2.27 kB
 ℹ dist/index.d.mts  1.44 kB │ gzip: 0.57 kB
 ℹ 2 files, total: 10.31 kB
-✔ Build complete in 117ms
+✔ Build complete in 209ms
 
 ~/packages/editor$ vp pack ◉ cache hit, replaying
 ℹ entry: src/index.ts
 ℹ tsconfig: tsconfig.json
 ℹ Build start
 ℹ Cleaning 3 files
+warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ Emit types with typescript@7.0.2
 ℹ dist/index.mjs    70.49 kB │ gzip: 15.72 kB
 ℹ dist/style.css     9.89 kB │ gzip:  2.47 kB
 ℹ dist/index.d.mts  14.27 kB │ gzip:  2.31 kB
 ℹ 3 files, total: 94.66 kB
-✔ Build complete in 161ms
-warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
+✔ Build complete in 291ms
 
 ~/apps/mcp-view$ vp build ◉ cache hit, replaying
 transforming...
@@ -61,7 +61,7 @@ rendering chunks...
 computing gzip size...
 dist/mcp-app.html  1,018.02 kB │ gzip: 261.09 kB
 
-✓ built in 259ms
+✓ built in 422ms
 
 ~/apps/web$ vp build ◉ cache hit, replaying
 transforming...
@@ -71,9 +71,9 @@ computing gzip size...
 dist/health.json                  0.13 kB │ gzip:   0.13 kB
 dist/index.html                   0.84 kB │ gzip:   0.51 kB
 dist/assets/index-49qwj1vE.css  184.71 kB │ gzip:  32.53 kB
-dist/assets/index-IeezLwHh.js   589.65 kB │ gzip: 173.13 kB
+dist/assets/index-DllJWjup.js   590.08 kB │ gzip: 173.33 kB
 
-✓ built in 287ms
+✓ built in 382ms
 [plugin builtin:vite-reporter] 
 (!) Some chunks are larger than 500 kB after minification. Consider:
 - Using dynamic import() to code-split the application
@@ -85,6 +85,7 @@ dist/assets/index-IeezLwHh.js   589.65 kB │ gzip: 173.13 kB
 ℹ tsconfig: tsconfig.json
 ℹ Build start
 ℹ Cleaning 5 files
+warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ Emit types with typescript@7.0.2
 ℹ Granting execute permission to dist/cli.mjs
 ℹ dist/index.mjs            0.69 kB │ gzip: 0.31 kB
@@ -93,8 +94,7 @@ dist/assets/index-IeezLwHh.js   589.65 kB │ gzip: 173.13 kB
 ℹ dist/index.d.mts          2.77 kB │ gzip: 1.01 kB
 ℹ dist/cli.d.mts            0.01 kB │ gzip: 0.03 kB
 ℹ 5 files, total: 19.54 kB
-✔ Build complete in 108ms
-warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
+✔ Build complete in 130ms
 
 ~/apps/server$ vp build ◉ cache hit, replaying
 transforming...
@@ -103,60 +103,60 @@ rendering chunks...
 computing gzip size...
 dist/main.js  1,981.25 kB │ gzip: 466.12 kB
 
-✓ built in 139ms
+✓ built in 143ms
 
 ---
-vp run: 8/8 cache hit (100%), 3.14s saved. (Run `vp run --last-details` for full details)
-warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
+vp run: 8/8 cache hit (100%), 3.72s saved. (Run `vp run --last-details` for full details)
 ~/packages/core$ vp pack ◉ cache hit, replaying
 ℹ entry: src/index.ts
 ℹ tsconfig: tsconfig.json
 ℹ Build start
 ℹ Cleaning 2 files
+warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ Emit types with typescript@7.0.2
 ℹ dist/index.mjs     48.14 kB │ gzip: 10.78 kB
 ℹ dist/index.d.mts  136.35 kB │ gzip:  7.93 kB
 ℹ 2 files, total: 184.49 kB
-✔ Build complete in 228ms
+✔ Build complete in 302ms
 
-warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ~/packages/mcp$ vp pack ◉ cache hit, replaying
 ℹ entry: src/index.ts, src/protocol.ts
 ℹ tsconfig: tsconfig.json
 ℹ Build start
 ℹ Cleaning 4 files
+warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ Emit types with typescript@7.0.2
 ℹ dist/index.mjs       33.46 kB │ gzip: 7.98 kB
 ℹ dist/protocol.mjs     1.00 kB │ gzip: 0.41 kB
 ℹ dist/index.d.mts      6.42 kB │ gzip: 1.75 kB
 ℹ dist/protocol.d.mts   3.97 kB │ gzip: 1.18 kB
 ℹ 4 files, total: 44.86 kB
-✔ Build complete in 312ms
+✔ Build complete in 284ms
 
 ~/packages/astryx$ vp pack ◉ cache hit, replaying
 ℹ entry: src/index.ts
 ℹ tsconfig: tsconfig.json
 ℹ Build start
 ℹ Cleaning 2 files
+warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ Emit types with typescript@7.0.2
 ℹ dist/index.mjs    8.87 kB │ gzip: 2.27 kB
 ℹ dist/index.d.mts  1.44 kB │ gzip: 0.57 kB
 ℹ 2 files, total: 10.31 kB
-warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
-✔ Build complete in 117ms
+✔ Build complete in 209ms
 
-warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ~/packages/editor$ vp pack ◉ cache hit, replaying
 ℹ entry: src/index.ts
 ℹ tsconfig: tsconfig.json
 ℹ Build start
 ℹ Cleaning 3 files
+warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ Emit types with typescript@7.0.2
 ℹ dist/index.mjs    70.49 kB │ gzip: 15.72 kB
 ℹ dist/style.css     9.89 kB │ gzip:  2.47 kB
 ℹ dist/index.d.mts  14.27 kB │ gzip:  2.31 kB
 ℹ 3 files, total: 94.66 kB
-✔ Build complete in 161ms
+✔ Build complete in 291ms
 
 ~/apps/mcp-view$ vp build ◉ cache hit, replaying
 transforming...
@@ -169,7 +169,7 @@ rendering chunks...
 computing gzip size...
 dist/mcp-app.html  1,018.02 kB │ gzip: 261.09 kB
 
-✓ built in 259ms
+✓ built in 422ms
 
 ~/apps/web$ vp build ◉ cache hit, replaying
 transforming...
@@ -179,9 +179,9 @@ computing gzip size...
 dist/health.json                  0.13 kB │ gzip:   0.13 kB
 dist/index.html                   0.84 kB │ gzip:   0.51 kB
 dist/assets/index-49qwj1vE.css  184.71 kB │ gzip:  32.53 kB
-dist/assets/index-IeezLwHh.js   589.65 kB │ gzip: 173.13 kB
+dist/assets/index-DllJWjup.js   590.08 kB │ gzip: 173.33 kB
 
-✓ built in 287ms
+✓ built in 382ms
 [plugin builtin:vite-reporter] 
 (!) Some chunks are larger than 500 kB after minification. Consider:
 - Using dynamic import() to code-split the application
@@ -193,16 +193,16 @@ dist/assets/index-IeezLwHh.js   589.65 kB │ gzip: 173.13 kB
 ℹ tsconfig: tsconfig.json
 ℹ Build start
 ℹ Cleaning 5 files
+warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ Emit types with typescript@7.0.2
 ℹ Granting execute permission to dist/cli.mjs
 ℹ dist/index.mjs            0.69 kB │ gzip: 0.31 kB
 ℹ dist/cli.mjs              0.25 kB │ gzip: 0.20 kB
-warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ dist/stdio-LO10qY0q.mjs  15.83 kB │ gzip: 4.53 kB
 ℹ dist/index.d.mts          2.77 kB │ gzip: 1.01 kB
 ℹ dist/cli.d.mts            0.01 kB │ gzip: 0.03 kB
 ℹ 5 files, total: 19.54 kB
-✔ Build complete in 108ms
+✔ Build complete in 130ms
 
 ~/apps/server$ vp build ◉ cache hit, replaying
 transforming...
@@ -211,92 +211,104 @@ rendering chunks...
 computing gzip size...
 dist/main.js  1,981.25 kB │ gzip: 466.12 kB
 
-✓ built in 139ms
+✓ built in 143ms
 
 ~/packages/core$ vp check ◉ cache hit, replaying
-pass: All 17 files are correctly formatted (100ms, 8 threads)
-pass: Found no warnings, lint errors, or type errors in 15 files (334ms, 8 threads)
+pass: All 17 files are correctly formatted (108ms, 8 threads)
+pass: Found no warnings, lint errors, or type errors in 15 files (378ms, 8 threads)
 
 ~/packages/mcp$ vp check ◉ cache hit, replaying
-pass: All 16 files are correctly formatted (105ms, 8 threads)
-pass: Found no warnings, lint errors, or type errors in 14 files (701ms, 8 threads)
+pass: All 16 files are correctly formatted (130ms, 8 threads)
+pass: Found no warnings, lint errors, or type errors in 14 files (1.1s, 8 threads)
 
 ~/packages/astryx$ vp check ◉ cache hit, replaying
-pass: All 7 files are correctly formatted (106ms, 8 threads)
-pass: Found no warnings, lint errors, or type errors in 5 files (398ms, 8 threads)
+pass: All 7 files are correctly formatted (131ms, 8 threads)
+pass: Found no warnings, lint errors, or type errors in 5 files (619ms, 8 threads)
 
 ~/packages/editor$ vp check ◉ cache hit, replaying
-pass: All 23 files are correctly formatted (98ms, 8 threads)
-pass: Found no warnings, lint errors, or type errors in 20 files (437ms, 8 threads)
+pass: All 23 files are correctly formatted (123ms, 8 threads)
+pass: Found no warnings, lint errors, or type errors in 20 files (615ms, 8 threads)
 
 ~/apps/mcp-view$ vp check ◉ cache hit, replaying
-pass: All 19 files are correctly formatted (294ms, 8 threads)
-pass: Found no warnings, lint errors, or type errors in 15 files (561ms, 8 threads)
+pass: All 19 files are correctly formatted (351ms, 8 threads)
+pass: Found no warnings, lint errors, or type errors in 15 files (639ms, 8 threads)
 
 ~/apps/web$ vp check ◉ cache hit, replaying
-pass: All 26 files are correctly formatted (274ms, 8 threads)
-pass: Found no warnings, lint errors, or type errors in 21 files (561ms, 8 threads)
+pass: All 26 files are correctly formatted (354ms, 8 threads)
+pass: Found no warnings, lint errors, or type errors in 21 files (619ms, 8 threads)
 
 ~/apps/mcp-server$ vp check ◉ cache hit, replaying
-pass: All 11 files are correctly formatted (280ms, 8 threads)
-pass: Found no warnings, lint errors, or type errors in 8 files (472ms, 8 threads)
+pass: All 11 files are correctly formatted (281ms, 8 threads)
+pass: Found no warnings, lint errors, or type errors in 8 files (643ms, 8 threads)
 
 ~/apps/server$ vp check ◉ cache hit, replaying
-pass: All 18 files are correctly formatted (290ms, 8 threads)
-pass: Found no warnings, lint errors, or type errors in 15 files (454ms, 8 threads)
+pass: All 18 files are correctly formatted (299ms, 8 threads)
+pass: Found no warnings, lint errors, or type errors in 15 files (660ms, 8 threads)
 
 ---
-vp run: 16/16 cache hit (100%), 11.59s saved. (Run `vp run --last-details` for full details)
+vp run: 16/16 cache hit (100%), 14.04s saved. (Run `vp run --last-details` for full details)
+$ node --test scripts/lib/doctor-contract.test.mjs
+✔ derives required tool versions from package manifest fields (1.116125ms)
+✔ reports challenge release prerequisites without failing the development preflight (0.097709ms)
+✔ fails the development preflight when a required tool check fails (0.063125ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 51.369458
 ~/packages/core$ vp pack ◉ cache hit, replaying
 ℹ entry: src/index.ts
 ℹ tsconfig: tsconfig.json
 ℹ Build start
 ℹ Cleaning 2 files
+warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ Emit types with typescript@7.0.2
 ℹ dist/index.mjs     48.14 kB │ gzip: 10.78 kB
 ℹ dist/index.d.mts  136.35 kB │ gzip:  7.93 kB
 ℹ 2 files, total: 184.49 kB
-✔ Build complete in 228ms
-warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
+✔ Build complete in 302ms
 
-warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ~/packages/mcp$ vp pack ◉ cache hit, replaying
 ℹ entry: src/index.ts, src/protocol.ts
 ℹ tsconfig: tsconfig.json
 ℹ Build start
 ℹ Cleaning 4 files
+warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ Emit types with typescript@7.0.2
 ℹ dist/index.mjs       33.46 kB │ gzip: 7.98 kB
 ℹ dist/protocol.mjs     1.00 kB │ gzip: 0.41 kB
 ℹ dist/index.d.mts      6.42 kB │ gzip: 1.75 kB
 ℹ dist/protocol.d.mts   3.97 kB │ gzip: 1.18 kB
 ℹ 4 files, total: 44.86 kB
-✔ Build complete in 312ms
+✔ Build complete in 284ms
 
 ~/packages/astryx$ vp pack ◉ cache hit, replaying
 ℹ entry: src/index.ts
 ℹ tsconfig: tsconfig.json
 ℹ Build start
 ℹ Cleaning 2 files
+warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ Emit types with typescript@7.0.2
 ℹ dist/index.mjs    8.87 kB │ gzip: 2.27 kB
-warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ dist/index.d.mts  1.44 kB │ gzip: 0.57 kB
 ℹ 2 files, total: 10.31 kB
-✔ Build complete in 117ms
+✔ Build complete in 209ms
 
 ~/packages/editor$ vp pack ◉ cache hit, replaying
 ℹ entry: src/index.ts
 ℹ tsconfig: tsconfig.json
 ℹ Build start
 ℹ Cleaning 3 files
+warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ Emit types with typescript@7.0.2
 ℹ dist/index.mjs    70.49 kB │ gzip: 15.72 kB
 ℹ dist/style.css     9.89 kB │ gzip:  2.47 kB
 ℹ dist/index.d.mts  14.27 kB │ gzip:  2.31 kB
 ℹ 3 files, total: 94.66 kB
-✔ Build complete in 161ms
-warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
+✔ Build complete in 291ms
 
 ~/apps/mcp-view$ vp build ◉ cache hit, replaying
 transforming...
@@ -309,7 +321,7 @@ rendering chunks...
 computing gzip size...
 dist/mcp-app.html  1,018.02 kB │ gzip: 261.09 kB
 
-✓ built in 259ms
+✓ built in 422ms
 
 ~/apps/web$ vp build ◉ cache hit, replaying
 transforming...
@@ -318,22 +330,22 @@ rendering chunks...
 computing gzip size...
 dist/health.json                  0.13 kB │ gzip:   0.13 kB
 dist/index.html                   0.84 kB │ gzip:   0.51 kB
+dist/assets/index-49qwj1vE.css  184.71 kB │ gzip:  32.53 kB
+dist/assets/index-DllJWjup.js   590.08 kB │ gzip: 173.33 kB
+
+✓ built in 382ms
 [plugin builtin:vite-reporter] 
 (!) Some chunks are larger than 500 kB after minification. Consider:
 - Using dynamic import() to code-split the application
 - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
-dist/assets/index-49qwj1vE.css  184.71 kB │ gzip:  32.53 kB
-dist/assets/index-IeezLwHh.js   589.65 kB │ gzip: 173.13 kB
 
-✓ built in 287ms
-
-warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ~/apps/mcp-server$ vp pack ◉ cache hit, replaying
 ℹ entry: src/index.ts, src/cli.ts
 ℹ tsconfig: tsconfig.json
 ℹ Build start
 ℹ Cleaning 5 files
+warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
 ℹ Emit types with typescript@7.0.2
 ℹ Granting execute permission to dist/cli.mjs
 ℹ dist/index.mjs            0.69 kB │ gzip: 0.31 kB
@@ -342,7 +354,7 @@ warn: TypeScript 7.0 does not yet have a stable API and is experimental. Some op
 ℹ dist/index.d.mts          2.77 kB │ gzip: 1.01 kB
 ℹ dist/cli.d.mts            0.01 kB │ gzip: 0.03 kB
 ℹ 5 files, total: 19.54 kB
-✔ Build complete in 108ms
+✔ Build complete in 130ms
 
 ~/apps/server$ vp build ◉ cache hit, replaying
 transforming...
@@ -351,121 +363,127 @@ rendering chunks...
 computing gzip size...
 dist/main.js  1,981.25 kB │ gzip: 466.12 kB
 
-✓ built in 139ms
+✓ built in 143ms
+
+$ pnpm test:doctor ◉ cache hit, replaying
+$ node --test scripts/lib/doctor-contract.test.mjs
+✔ derives required tool versions from package manifest fields (0.863583ms)
+✔ reports challenge release prerequisites without failing the development preflight (0.1005ms)
+✔ fails the development preflight when a required tool check fails (0.065583ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 65.400208
 
 ~/packages/core$ vp test --run ◉ cache hit, replaying
 
  RUN  v4.1.11 /private/tmp/koi-stage1/packages/core
 
- ✓ tests/serialization.test.ts (2 tests) 7ms
+ ✓ tests/serialization.test.ts (2 tests) 10ms
  ✓ tests/queries.test.ts (1 test) 2ms
- ✓ tests/elements.test.ts (5 tests) 8ms
- ✓ tests/commands.test.ts (14 tests) 26ms
+ ✓ tests/elements.test.ts (5 tests) 11ms
+ ✓ tests/commands.test.ts (14 tests) 29ms
 
  Test Files  4 passed (4)
       Tests  22 passed (22)
-   Start at  23:36:28
-   Duration  246ms (transform 252ms, setup 0ms, import 450ms, tests 43ms, environment 0ms)
+   Start at  10:14:54
+   Duration  338ms (transform 320ms, setup 0ms, import 582ms, tests 53ms, environment 0ms)
 
 
 ~/packages/mcp$ vp test --run ◉ cache hit, replaying
 
  RUN  v4.1.11 /private/tmp/koi-stage1/packages/mcp
 
- ✓ tests/repository.test.ts (4 tests) 17ms
- ✓ tests/register.test.ts (1 test) 7ms
- ✓ tests/tools.test.ts (6 tests) 124ms
+ ✓ tests/repository.test.ts (4 tests) 20ms
+ ✓ tests/register.test.ts (1 test) 8ms
+ ✓ tests/tools.test.ts (6 tests) 141ms
 
  Test Files  3 passed (3)
       Tests  11 passed (11)
-   Start at  23:36:29
-   Duration  376ms (transform 180ms, setup 0ms, import 412ms, tests 149ms, environment 0ms)
+   Start at  10:14:55
+   Duration  412ms (transform 207ms, setup 0ms, import 449ms, tests 168ms, environment 0ms)
 
 
 ~/packages/astryx$ vp test --run ◉ cache hit, replaying
 
  RUN  v4.1.11 /private/tmp/koi-stage1/packages/astryx
 
- ✓ tests/registry.test.ts (4 tests) 3ms
+ ✓ tests/registry.test.ts (4 tests) 4ms
 
  Test Files  1 passed (1)
       Tests  4 passed (4)
-   Start at  23:36:29
-   Duration  330ms (transform 45ms, setup 0ms, import 227ms, tests 3ms, environment 0ms)
+   Start at  10:14:55
+   Duration  383ms (transform 65ms, setup 0ms, import 268ms, tests 4ms, environment 0ms)
 
 
 ~/packages/editor$ vp test --run ◉ cache hit, replaying
 
  RUN  v4.1.11 /private/tmp/koi-stage1/packages/editor
 
- ✓ tests/canvas-math.test.ts (5 tests) 33ms
- ✓ tests/editor-store.test.ts (12 tests) 28ms
+ ✓ tests/canvas-math.test.ts (5 tests) 38ms
+ ✓ tests/editor-store.test.ts (12 tests) 30ms
 
  Test Files  2 passed (2)
       Tests  17 passed (17)
-   Start at  23:36:30
-   Duration  216ms (transform 95ms, setup 0ms, import 152ms, tests 61ms, environment 0ms)
+   Start at  10:14:55
+   Duration  223ms (transform 88ms, setup 0ms, import 157ms, tests 68ms, environment 0ms)
 
 
 ~/apps/mcp-view$ vp test --run ◉ cache hit, replaying
 
  RUN  v4.1.11 /private/tmp/koi-stage1/apps/mcp-view
 
- ✓ tests/serial-task-queue.test.ts (2 tests) 9ms
- ✓ tests/conflict-recovery.test.ts (1 test) 9ms
- ✓ tests/projection-order.test.ts (2 tests) 11ms
- ✓ tests/bridge.test.ts (5 tests) 16ms
- ✓ tests/commit-sync.test.ts (8 tests) 16ms
- ✓ tests/initial-load.test.ts (10 tests) 73ms
+ ✓ tests/serial-task-queue.test.ts (2 tests) 16ms
+ ✓ tests/conflict-recovery.test.ts (1 test) 19ms
+ ✓ tests/projection-order.test.ts (2 tests) 17ms
+ ✓ tests/bridge.test.ts (5 tests) 34ms
+ ✓ tests/commit-sync.test.ts (8 tests) 22ms
+ ✓ tests/initial-load.test.ts (10 tests) 93ms
 
  Test Files  6 passed (6)
       Tests  28 passed (28)
-   Start at  23:36:30
-   Duration  766ms (transform 479ms, setup 0ms, import 2.11s, tests 134ms, environment 0ms)
+   Start at  10:14:56
+   Duration  1.05s (transform 1.03s, setup 0ms, import 2.97s, tests 200ms, environment 1ms)
 
 
 ~/apps/web$ vp test --run ◉ cache hit, replaying
 
  RUN  v4.1.11 /private/tmp/koi-stage1/apps/web
 
- ✓ tests/revision-tracker.test.ts (2 tests) 15ms
- ✓ tests/hosting-client.test.ts (12 tests) 48ms
- ✓ tests/recover-outbox.test.ts (2 tests) 43ms
- ✓ tests/resolve-transition.test.ts (8 tests) 19ms
- ✓ tests/publish-intent.test.ts (11 tests) 10ms
- ✓ tests/transition-coordinator.test.ts (6 tests) 10ms
- ✓ tests/webmcp.test.ts (10 tests) 73ms
+ ✓ tests/revision-tracker.test.ts (2 tests) 2ms
+ ✓ tests/recover-outbox.test.ts (2 tests) 85ms
+ ✓ tests/resolve-transition.test.ts (8 tests) 34ms
+ ✓ tests/hosting-client.test.ts (12 tests) 177ms
+ ✓ tests/publish-intent.test.ts (11 tests) 15ms
+ ✓ tests/transition-coordinator.test.ts (6 tests) 14ms
+ ✓ tests/webmcp.test.ts (12 tests) 72ms
 
  Test Files  7 passed (7)
-      Tests  51 passed (51)
-   Start at  23:36:30
-   Duration  914ms (transform 979ms, setup 0ms, import 2.70s, tests 218ms, environment 1ms)
+      Tests  53 passed (53)
+   Start at  10:14:56
+   Duration  1.23s (transform 1.33s, setup 0ms, import 3.34s, tests 399ms, environment 0ms)
 
 
 ~/apps/mcp-server$ vp test --run ◉ cache hit, replaying
 
  RUN  v4.1.11 /private/tmp/koi-stage1/apps/mcp-server
 
- ✓ tests/protocol.test.ts (3 tests) 173ms
- ✓ tests/file-repository.test.ts (14 tests) 295ms
+ ✓ tests/protocol.test.ts (3 tests) 190ms
+ ✓ tests/file-repository.test.ts (14 tests) 298ms
 
  Test Files  2 passed (2)
       Tests  17 passed (17)
-   Start at  23:36:31
-   Duration  579ms (transform 114ms, setup 0ms, import 346ms, tests 468ms, environment 0ms)
+   Start at  10:14:57
+   Duration  582ms (transform 117ms, setup 0ms, import 344ms, tests 488ms, environment 0ms)
 
 
 ~/apps/server$ vp test --run ◉ cache hit, replaying
 
  RUN  v4.1.11 /private/tmp/koi-stage1/apps/server
-
- ✓ tests/read-admission.test.ts (2 tests) 3ms
- ✓ tests/server.test.ts (21 tests) 1101ms
-
- Test Files  2 passed (2)
-      Tests  23 passed (23)
-   Start at  23:36:31
-   Duration  2.14s (transform 1.26s, setup 0ms, import 1.70s, tests 1.10s, environment 0ms)
 
 Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/client/index.js" points to missing source files
 Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/protocol.js" points to missing source files
@@ -481,38 +499,46 @@ Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+
 Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/client/streamableHttp.js" points to missing source files
 Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/mediaType.js" points to missing source files
 Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/transport.js" points to missing source files
-Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/client/auth.js" points to missing source files
 Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/server.js" points to missing source files
+Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/client/auth.js" points to missing source files
 Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/server/completable.js" points to missing source files
 Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/uriTemplate.js" points to missing source files
-Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/auth.js" points to missing source files
 Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/toolNameValidation.js" points to missing source files
+Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/auth.js" points to missing source files
 Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/mcp-server.js" points to missing source files
 Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/auth-utils.js" points to missing source files
 Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/server/auth/errors.js" points to missing source files
+ ✓ tests/read-admission.test.ts (2 tests) 4ms
 Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/server/webStandardStreamableHttp.js" points to missing source files
 Sourcemap for "/private/tmp/koi-stage1/node_modules/.pnpm/@modelcontextprotocol+sdk@1.30.0_supports-color@10.2.2_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/esm/server/sseKeepAlive.js" points to missing source files
+ ✓ tests/server.test.ts (21 tests) 1158ms
+
+ Test Files  2 passed (2)
+      Tests  23 passed (23)
+   Start at  10:15:10
+   Duration  2.14s (transform 1.12s, setup 0ms, import 1.59s, tests 1.16s, environment 0ms)
+
 
 ---
-vp run: 16/16 cache hit (100%), 10.61s saved. (Run `vp run --last-details` for full details)
-[WebServer] (node:31026) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+vp run: 17/17 cache hit (100%), 12.69s saved. (Run `vp run --last-details` for full details)
+[WebServer] (node:52539) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:31032) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:52545) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
 
 Running 10 tests using 1 worker
 
-(node:31041) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:52553) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
   ✓   1 [chromium] › tests/e2e/accessibility.spec.ts:4:1 › the seeded Stage 1 editor has no detectable WCAG A/AA violations (1.1s)
-  ✓   2 [chromium] › tests/e2e/editor.spec.ts:50:3 › Koi browser editor › renders a bounded, virtualized HTML-native starter canvas (466ms)
-  ✓   3 [chromium] › tests/e2e/editor.spec.ts:71:3 › Koi browser editor › commits direct manipulation once and restores it from IndexedDB (1.1s)
-  ✓   4 [chromium] › tests/e2e/editor.spec.ts:111:3 › Koi browser editor › refreshes virtualized Frames after a programmatic camera reset (846ms)
-  ✓   5 [chromium] › tests/e2e/editor.spec.ts:132:3 › Koi browser editor › keeps canvas shortcuts focused after selecting an element (529ms)
-  ✓   6 [chromium] › tests/e2e/editor.spec.ts:143:3 › Koi browser editor › publishes authority transitions only after their IndexedDB checkpoint (526ms)
-  ✓   7 [chromium] › tests/e2e/editor.spec.ts:198:3 › Koi browser editor › previews a Frame drag coherently across DOM, SVG, and connector layers (811ms)
-  ✓   8 [chromium] › tests/e2e/editor.spec.ts:240:3 › Koi browser editor › supports real pen and text-editing interactions plus portable export (813ms)
-  ✓   9 [chromium] › tests/e2e/editor.spec.ts:270:3 › Koi browser editor › preserves a human text draft when an agent changes the same Element (844ms)
-  ✓  10 [chromium] › tests/e2e/editor.spec.ts:352:3 › Koi browser editor › makes a stale agent re-inspect and replan after a human moves a Frame (878ms)
+  ✓   2 [chromium] › tests/e2e/editor.spec.ts:50:3 › Koi browser editor › renders a bounded, virtualized HTML-native starter canvas (484ms)
+  ✓   3 [chromium] › tests/e2e/editor.spec.ts:71:3 › Koi browser editor › commits direct manipulation once and restores it from IndexedDB (1.2s)
+  ✓   4 [chromium] › tests/e2e/editor.spec.ts:111:3 › Koi browser editor › refreshes virtualized Frames after a programmatic camera reset (830ms)
+  ✓   5 [chromium] › tests/e2e/editor.spec.ts:132:3 › Koi browser editor › keeps canvas shortcuts focused after selecting an element (543ms)
+  ✓   6 [chromium] › tests/e2e/editor.spec.ts:143:3 › Koi browser editor › publishes authority transitions only after their IndexedDB checkpoint (548ms)
+  ✓   7 [chromium] › tests/e2e/editor.spec.ts:198:3 › Koi browser editor › previews a Frame drag coherently across DOM, SVG, and connector layers (855ms)
+  ✓   8 [chromium] › tests/e2e/editor.spec.ts:240:3 › Koi browser editor › supports real pen and text-editing interactions plus portable export (880ms)
+  ✓   9 [chromium] › tests/e2e/editor.spec.ts:270:3 › Koi browser editor › preserves a human text draft when an agent changes the same Element (892ms)
+  ✓  10 [chromium] › tests/e2e/editor.spec.ts:352:3 › Koi browser editor › makes a stale agent re-inspect and replan after a human moves a Frame (910ms)
 
-  10 passed (9.1s)
+  10 passed (9.4s)
