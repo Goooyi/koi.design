@@ -140,6 +140,67 @@ test.describe("Koi browser editor", () => {
     await expect(page.locator('[data-element-id="frame-brief"]')).toBeVisible();
   });
 
+  test("keeps modifier-wheel zoom inside the canvas camera", async ({ page }) => {
+    await page.goto("/");
+    const canvas = page.getByRole("region", { name: /infinite canvas/ });
+    const tools = page.getByRole("complementary", { name: "Editor tools" });
+    const inspector = page.getByRole("complementary").nth(1);
+    const zoomLabel = canvas.locator(".koi-canvas-meta span").first();
+    const canvasBox = await canvas.boundingBox();
+    const shellBoxes = await Promise.all([tools.boundingBox(), inspector.boundingBox()]);
+    expect(canvasBox).not.toBeNull();
+
+    await page.evaluate(() => {
+      type WheelObservation = {
+        cancelable: boolean;
+        ctrlKey: boolean;
+        defaultPrevented: boolean;
+        metaKey: boolean;
+      };
+      const browserWindow = window as typeof window & {
+        __koiWheelObservations: WheelObservation[];
+      };
+      browserWindow.__koiWheelObservations = [];
+      window.addEventListener("wheel", (event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        if (!target?.closest(".koi-canvas")) return;
+        browserWindow.__koiWheelObservations.push({
+          cancelable: event.cancelable,
+          ctrlKey: event.ctrlKey,
+          defaultPrevented: event.defaultPrevented,
+          metaKey: event.metaKey,
+        });
+      });
+    });
+
+    for (const modifier of ["Control", "Meta"] as const) {
+      await page.getByRole("button", { name: "Reset view" }).click();
+      await expect(zoomLabel).toHaveText("85%");
+      await page.mouse.move(
+        canvasBox!.x + canvasBox!.width / 2,
+        canvasBox!.y + canvasBox!.height / 2,
+      );
+      await page.keyboard.down(modifier);
+      await page.mouse.wheel(0, -40);
+      await page.keyboard.up(modifier);
+      await expect(zoomLabel).toHaveText("108%");
+    }
+
+    const observations = await page.evaluate(
+      () =>
+        (
+          window as typeof window & {
+            __koiWheelObservations: Array<Record<string, boolean>>;
+          }
+        ).__koiWheelObservations,
+    );
+    expect(observations).toEqual([
+      { cancelable: true, ctrlKey: true, defaultPrevented: true, metaKey: false },
+      { cancelable: true, ctrlKey: false, defaultPrevented: true, metaKey: true },
+    ]);
+    expect(await Promise.all([tools.boundingBox(), inspector.boundingBox()])).toEqual(shellBoxes);
+  });
+
   test("publishes authority transitions only after their IndexedDB checkpoint", async ({
     page,
   }) => {

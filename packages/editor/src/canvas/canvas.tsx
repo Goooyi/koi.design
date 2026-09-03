@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useRef, useState, type PointerEvent, type WheelEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 
 import type { ElementInput, Geometry, KoiElement, Point } from "@koi/core";
 
@@ -148,6 +154,27 @@ export function Canvas() {
     };
   }, [camera]);
 
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    // React delegates wheel events passively, but the Canvas must suppress browser page zoom and
+    // scrolling while it consumes the gesture for its own Camera.
+    const onWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      const rect = viewport.getBoundingClientRect();
+      if (event.ctrlKey || event.metaKey) {
+        camera.zoomAt(
+          { x: event.clientX - rect.left, y: event.clientY - rect.top },
+          Math.exp(-event.deltaY * 0.006),
+        );
+      } else {
+        camera.panBy(-event.deltaX, -event.deltaY);
+      }
+    };
+    viewport.addEventListener("wheel", onWheel, { passive: false });
+    return () => viewport.removeEventListener("wheel", onWheel);
+  }, [camera, page?.id]);
+
   const pageIndex = useMemo(() => {
     const elementsById = new Map<string, KoiElement>();
     const childrenByParent = new Map<string, KoiElement[]>();
@@ -218,12 +245,12 @@ export function Canvas() {
 
   if (!page) return <div className="koi-empty-canvas">No Page</div>;
 
-  const localPoint = (event: PointerEvent | WheelEvent): Point => {
+  const localPoint = (event: ReactPointerEvent): Point => {
     const rect = viewportRef.current!.getBoundingClientRect();
     return { x: event.clientX - rect.left, y: event.clientY - rect.top };
   };
 
-  const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.button !== 0 && event.button !== 1) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     const point = localPoint(event);
@@ -239,7 +266,7 @@ export function Canvas() {
     store.select([]);
   };
 
-  const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+  const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     const active = session.current;
     if (!active) return;
     const point = localPoint(event);
@@ -276,15 +303,6 @@ export function Canvas() {
     }
   };
 
-  const onWheel = (event: WheelEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    if (event.ctrlKey || event.metaKey) {
-      camera.zoomAt(localPoint(event), Math.exp(-event.deltaY * 0.006));
-    } else {
-      camera.panBy(-event.deltaX, -event.deltaY);
-    }
-  };
-
   return (
     <div
       ref={viewportRef}
@@ -301,7 +319,6 @@ export function Canvas() {
       onPointerMove={onPointerMove}
       onPointerUp={() => finishPointer(true)}
       onPointerCancel={() => finishPointer(false)}
-      onWheel={onWheel}
       onKeyDown={(event) => {
         if (event.key === "Backspace" || event.key === "Delete") {
           event.preventDefault();
