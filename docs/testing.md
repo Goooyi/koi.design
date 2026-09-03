@@ -1,6 +1,7 @@
 # Koi testing strategy
 
-Status: implemented Stage 1 release candidate and remaining live-host backlog, 2026-09-02.
+Status: Stage 1 application and final demonstration media certified; account-bound publication
+and submission remain, 2026-09-03.
 
 ## Current evidence
 
@@ -35,12 +36,13 @@ Koi's deterministic baseline is implemented and runs within bounded resources:
   verifies hosted MCP authentication, one-message JSON-RPC admission, structured mutation
   pressure/storage failures, request bounds, post-rename durability and revision wake-up recovery,
   one request per HTTP socket, bounded connections, and stalled-socket destruction.
-- Ten Playwright journeys use real pointer and keyboard input to verify bounded virtualized DOM,
+- Twelve Playwright journeys use real pointer and keyboard input to verify bounded virtualized DOM,
   camera-driven visibility, drag persistence through IndexedDB, coherent Frame drag previews
   across DOM/SVG/connectors, focused shortcuts, Frame creation, pen input, text editing, preserving
   a human text draft across an agent update, durable authority-transition ordering, denied browser
-  storage, the full `.koi.json` download path, zero automated WCAG A/AA violations, and a complete
-  stale-agent conflict/reinspect/replan/reload sequence after a human Frame move.
+  storage, the full `.koi.json` download path, modifier-wheel containment, zero automated WCAG
+  A/AA violations, a complete stale-agent conflict/reinspect/replan/reload sequence after a human
+  Frame move, and all eight native WebMCP tools under the production CSP.
 - Playwright is fixed to one Chromium worker, 30-second test timeouts, video disabled, and traces
   and screenshots retained only on failure.
 - `pnpm audit:browser` builds the production web artifact and uses one clean headless Chrome process
@@ -49,9 +51,11 @@ Koi's deterministic baseline is implemented and runs within bounded resources:
   records, and post-GC retention. The checked-in Stage 1 fixture passes all declared budgets; see
   [`browser-audit.json`](evidence/browser-audit.json). The raw trace stays ignored because browser
   traces can contain sensitive implementation details; the report records its hash and sizes.
-- An isolated native Chrome smoke discovered all eight WebMCP tools and executed bounded context
-  and element-inspection calls without console or browser-issue errors. The full native mutation
-  collaboration journey remains a release-backlog test.
+- An isolated stable-Chrome release capture against the deployed HTTPS build discovered all eight
+  WebMCP tools and executed context, component discovery, inspect, create, update, and arrange
+  calls. It verified persistence after reload, preserved Camera and Selection, and reported no
+  console, page, network, or CSP errors. The deterministic local production-CSP journey executes
+  all eight tools, including delete and export.
 
 Run the gates from the root:
 
@@ -71,9 +75,11 @@ pnpm ready
 respective checks, so no separate build is required on a clean checkout. `pnpm ready` builds once,
 then runs format, lint, type, workspace test, and one-worker Chromium gates.
 
-The current browser suite is a meaningful Stage 1 regression gate, not complete release evidence.
-Deployed native WebMCP mutation journeys, manual accessibility checks, interactive third-party MCP
-host smoke tests, and cross-browser coverage remain outstanding.
+The current browser suite, deployed native smoke, and bounded manual accessibility review are
+meaningful Stage 1 release evidence. Manual screen-reader and color-contrast checks, interactive
+third-party MCP host smoke tests, and cross-browser coverage remain outstanding. See
+[`manual-accessibility.md`](evidence/manual-accessibility.md) for the tested scope and known
+keyboard and zoom limitations.
 
 ## Testing layers
 
@@ -111,14 +117,12 @@ state, heap snapshots, MCP results, and network logs are sensitive artifacts.
 
 Add stored regression coverage only for observable behavior or non-trivial boundaries:
 
-1. A native Chrome WebMCP agent inspects a human drag, creates an alternative, and leaves Camera
-   and Selection unchanged.
-2. A complete `.koi.json` round-trip reopens in a fresh browser profile.
-3. The browser connects to a real self-hosted server, persists a command, receives an authenticated
+1. A complete `.koi.json` round-trip reopens in a fresh browser profile.
+2. The browser connects to a real self-hosted server, persists a command, receives an authenticated
    SSE wake-up, and survives server restart.
-4. An external MCP Apps host opens the iframe View, calls tools, handles theme/context changes,
+3. An external MCP Apps host opens the iframe View, calls tools, handles theme/context changes,
    reconnects, and shows structured failures.
-5. Keyboard-only navigation covers tools, canvas, Elements, editing, inspector, import/export, and
+4. Keyboard-only navigation covers tools, canvas, Elements, editing, inspector, import/export, and
    undo.
 
 Use the official MCP Apps basic host for View lifecycle coverage and repeat claimed host support in

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "capturedAt": "2026-09-03T03:54:53Z",
-  "generatedFromCommit": "4bd077799db13e0c0474c0165e333916d424d9d5",
+  "capturedAt": "2026-09-03T12:41:28Z",
+  "generatedFromCommit": "c31366f3ae3a7a58af56b9e7f7933bda4491b694",
   "command": "pnpm ready",
   "exitCode": 0,
   "resourceBounds": {
@@ -11,11 +11,11 @@
   "results": {
     "unitProtocolAndIntegrationTests": 175,
     "doctorContractTests": 3,
-    "playwrightJourneys": 10
+    "playwrightJourneys": 12
   },
   "transcript": {
     "path": "docs/evidence/challenge-ready.txt",
-    "bytes": 27236,
-    "sha256": "30f9921b8fe48a5428e1ff9e948ebd72f61cba3b14cc1283a2a743e5429df62d"
+    "bytes": 25606,
+    "sha256": "b493821f1fbbe574ff550f2f955b070972c99a22b088c6a281d40a10602a0cd2"
   }
 }

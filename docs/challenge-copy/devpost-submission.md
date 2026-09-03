@@ -62,10 +62,17 @@ directly editable.
 ## User experience
 
 The live application opens directly into a seeded four-Frame exploration; no account or private
-API is required. In the demonstration, the browser agent discovers Koi's tools, reads the current
-canvas and Astryx registry, and adds a launch-review card and button. Reload proves IndexedDB
-durability. The human then edits a note and moves the button. A second agent read observes those
-new semantic values and versions before refining the layout.
+API is required. In the demonstration, a deterministic release harness discovers Koi's tools,
+reads the current canvas and Astryx registry through the browser's native `document.modelContext`
+surface, and adds a launch-review card and button. Reload proves IndexedDB durability. The harness
+then sends ordinary pointer and keyboard events to exercise the human interaction path by editing
+a note and moving the button. A fresh semantic read observes those new values and versions before
+refining the layout.
+
+The harness makes real production WebMCP calls and sends real pointer and keyboard events, but the
+recording is release evidence rather than a capture of live human input, model deliberation, or
+ChatGPT's Site Tools chrome. The owner separately verified the human-agent-human loop in ChatGPT's
+in-app browser.
 
 This loop keeps the design—not the chat transcript—as the durable collaboration artifact.
 
@@ -100,7 +107,7 @@ identifier, strict security headers, immutable hashed assets, and a small `/heal
 
 ## Open source and self-hosting
 
-The complete submitted source is available at `[PUBLIC_REPOSITORY_URL]` under
+The complete application source is available at `https://github.com/Goooyi/koi.design` under
 `AGPL-3.0-or-later`. Contributions use DCO 1.1 sign-off, and the Koi name and visual identity are
 covered by a separate trademark policy. The repository includes the anonymous static challenge
 build, a durable stdio MCP App, and a bounded single-owner self-host topology with authenticated
@@ -112,18 +119,20 @@ Stage 1 is a working MVP, not a hosted multiplayer product. The challenge deploy
 browser's local workspace. It has no accounts, organizations, permissions, billing, multiplayer
 presence, CRDT merge, or managed hosting. Self-hosting is deliberately bounded to one deployment
 owner, one process, and one writer per data directory. Complete Page-to-HTML export, comments,
-image upload, manual accessibility review, cross-browser E2E, and programmable WebGPU shader
-rendering are not complete. Shader records currently show an explicit fallback; Koi ships no
-WebGL runtime.
+image upload, cross-browser E2E, and programmable WebGPU shader rendering are not complete.
+Arbitrary canvas records do not yet have keyboard selection/editing, the clipped import file input
+creates an invisible tab stop, and the property inspector is unavailable at a
+200%-zoom-equivalent desktop viewport. Manual screen-reader and color-contrast validation remain
+incomplete. Shader records currently show an explicit fallback; Koi ships no WebGL runtime.
 
 ## Links and release identity
 
-- Live application: `[LIVE_PAGES_URL]`
-- Health check: `[LIVE_PAGES_URL]/health.json`
-- Public source: `[PUBLIC_REPOSITORY_URL]`
+- Live application: `https://koi-design-webmcp-challenge.pages.dev/`
+- Health check: `https://koi-design-webmcp-challenge.pages.dev/health.json`
+- Public source: `https://github.com/Goooyi/koi.design`
 - Public demo video: `[PUBLIC_YOUTUBE_URL]`
-- Submitted commit: `[FINAL_COMMIT_SHA]`
-- Cloudflare deployment identifier: `[DEPLOYMENT_ID]`
+- Deployed application commit: `c31366f3ae3a7a58af56b9e7f7933bda4491b694`
+- Cloudflare deployment identifier: `78efad47-5d7f-4b20-9b15-a9048dfdb2cb`
 - Devpost submission identifier: `[DEVPOST_SUBMISSION_ID]`
 
 ## Rubric evidence map
@@ -143,7 +152,6 @@ The project owner must supply these after checking the current Devpost form and 
 
 - `[OWNER ACTION]` final challenge category and any team-member metadata;
 - `[OWNER ACTION]` any required OpenAI/Google account or challenge registration identifiers;
-- `[OWNER ACTION]` public repository URL after visibility is changed;
 - `[OWNER ACTION]` public YouTube URL after upload;
 - `[OWNER ACTION]` Devpost submission ID and confirmation artifact;
 - `[OWNER ACTION]` credentials only if the final live experience unexpectedly requires them. The

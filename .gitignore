@@ -9,6 +9,9 @@ playwright-report/
 test-results/
 blob-report/
 
+# Local release media and machine receipts (hashes belong in docs/evidence)
+release-artifacts/
+
 midscene_run/
 .wrangler/
 

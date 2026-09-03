@@ -1,6 +1,7 @@
 # WebMCP Challenge 2026
 
-Status: product MVP implemented; submission packaging remains, 2026-09-02.
+Status: final application build and 2:48 demonstration media certified; public video publication
+and Devpost submission remain, 2026-09-03.
 
 ## Submission thesis
 
@@ -15,17 +16,21 @@ interaction.
 
 ## Golden story
 
-1. Open a prepared Page containing several HTML-native Astryx Frames.
-2. Ask the browser agent to inspect context and selected Elements through native WebMCP.
-3. The agent creates a branded alternative Frame beside the originals.
-4. The human drags a component, edits a note, and draws an ink stroke.
-5. The agent reinspects exact IDs and versions, then continues without stealing Camera or
-   Selection.
-6. A stale agent edit receives a structured conflict instead of overwriting the human move.
-7. Export the portable `.koi.json` Document and open the same product through the MCP App View.
+1. Open the seeded Page containing several HTML-native Astryx Frames.
+2. A deterministic release harness discovers the eight native WebMCP tools, reads bounded canvas
+   context, lists trusted components, and inspects exact Element IDs and versions.
+3. One semantic command creates a launch-review card and button inside an existing Frame.
+4. Reload the page and verify that IndexedDB restores both Elements.
+5. The recorded harness exercises the human interaction path by editing a note and moving the
+   button with ordinary keyboard and pointer events.
+6. The harness reinspects the newer values and versions, then refines the card and aligns the
+   button without stealing Camera or Selection.
+7. Show how Human UI, native WebMCP, and the MCP App converge on the shared command/query core.
 
-This story exercises agent leverage, human takeover, semantic collaboration, real HTML/CSS,
-history, and portability without a private service dependency.
+This story exercises agent leverage, the human interaction path, semantic collaboration, real HTML/CSS,
+version-safe writes, and browser-local durability without a private service dependency. Separate
+tests cover stale-write rejection, delete, export, ink, and the MCP App lifecycle; the video does
+not present those paths as executed in its main take.
 
 ## Implemented challenge surface
 
@@ -40,10 +45,7 @@ history, and portability without a private service dependency.
 
 ## Submission work remaining
 
-- run and record the golden story through native Chrome WebMCP, not only the unit adapter;
-- publish a live HTTPS URL and test it in a fresh browser session;
-- make the licensed repository public after the local release gates pass;
-- record a public video shorter than three minutes using Hyperframes or Remotion;
+- publish the certified 2:48 video with audio to a public YouTube URL;
 - complete the current Devpost fields and recheck the official rules at submission time.
 
 The repository is licensed under `AGPL-3.0-or-later`, uses DCO 1.1 contributor sign-off, reserves
@@ -74,12 +76,14 @@ the Koi trademarks separately, and carries a reproducible dependency and asset p
 - [x] Real-pointer Playwright covers drag persistence, pen, editing, and portable export.
 - [x] Repository licensing, contributor sign-off, trademark terms, and dependency provenance are
       release-ready.
-- [ ] Native Chrome discovers and executes all Koi WebMCP tools on the built deployment.
+- [x] Native Chrome discovers all eight Koi WebMCP tools on the deployed build; the production
+      release capture executes the six used by the golden story, while the local production-CSP
+      journey executes all eight.
 - [x] A stored journey proves stale-agent conflict and replan after a human move.
-- [x] Automated accessibility and representative performance evidence pass; manual accessibility
-      review remains before submission.
-- [ ] Live HTTPS URL works in a fresh session.
-- [ ] Repository is public with an approved visible license and setup instructions.
+- [x] Automated accessibility and representative performance evidence pass; the bounded manual
+      review records known keyboard and 200%-zoom limitations.
+- [x] Live HTTPS URL works in a fresh session.
+- [x] Repository is public with an approved visible license and setup instructions.
 - [ ] Public demonstration video is under three minutes.
 
 ## Official references

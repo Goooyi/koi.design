@@ -1,13 +1,10 @@
 {
   "schemaVersion": 1,
-  "capturedAt": "2026-09-03T02:18:52.879Z",
-  "generatedFromCommit": "eb7f38b388ddfd5393e74dfdc2bcd3362838d795",
+  "capturedAt": "2026-09-03T11:25:05.807Z",
+  "generatedFromCommit": "c31366f3ae3a7a58af56b9e7f7933bda4491b694",
   "sourceTree": {
     "sourceInputsClean": true,
-    "dirtyGeneratedEvidenceBeforeCapture": [
-      "docs/evidence/browser-audit.json",
-      "docs/evidence/webmcp-tools.json"
-    ]
+    "dirtyGeneratedEvidenceBeforeCapture": []
   },
   "fixture": {
     "id": "stage1-welcome-document",
@@ -22,10 +19,10 @@
     "claimScope": "Stage 1 demo regression sentinel; not a general canvas-capacity claim"
   },
   "environment": {
-    "url": "http://127.0.0.1:4174/",
-    "scope": "pages-emulator",
+    "url": "https://koi-design-webmcp-challenge.pages.dev/",
+    "scope": "deployed-https",
     "browser": "151.0.7922.174",
-    "node": "v24.20.0",
+    "node": "v26.8.1",
     "playwright": "1.62.1",
     "platform": "darwin",
     "architecture": "arm64",
@@ -82,7 +79,7 @@
         "body": {
           "status": "ok",
           "version": "0.1.0",
-          "buildId": "eb7f38b388ddfd5393e74dfdc2bcd3362838d795",
+          "buildId": "c31366f3ae3a7a58af56b9e7f7933bda4491b694",
           "deploymentMode": "challenge"
         }
       },
@@ -159,14 +156,14 @@
         "mountedFrameIds": ["frame-brief", "frame-components", "frame-flow"]
       }
     ],
-    "markerWindowMs": 895.595,
+    "markerWindowMs": 897.581,
     "frameIntervalsMs": {
       "count": 53,
       "min": 14.7,
       "p50": 16.7,
-      "p95": 18.1,
-      "max": 18.6,
-      "total": 881.4
+      "p95": 18.2,
+      "max": 18.7,
+      "total": 883.4
     },
     "frameIntervalsOver50MsPercent": 0,
     "longTasksMs": {
@@ -183,36 +180,36 @@
     },
     "rendererMainTraceEvents": {
       "RunTask": {
-        "count": 366,
-        "min": 0.001,
-        "p50": 0.026,
-        "p95": 1.192,
-        "max": 3.587,
-        "total": 81.757
+        "count": 363,
+        "min": 0.002,
+        "p50": 0.032,
+        "p95": 1.542,
+        "max": 5.66,
+        "total": 102.671
       },
       "Layout": {
         "count": 18,
-        "min": 0.054,
-        "p50": 0.098,
-        "p95": 1.104,
-        "max": 1.104,
-        "total": 2.983
+        "min": 0.047,
+        "p50": 0.124,
+        "p95": 0.856,
+        "max": 0.856,
+        "total": 3.154
       },
       "UpdateLayoutTree": {
         "count": 35,
-        "min": 0.016,
+        "min": 0.014,
         "p50": 0.043,
-        "p95": 0.667,
-        "max": 0.927,
-        "total": 5.113
+        "p95": 0.742,
+        "max": 0.904,
+        "total": 6.148
       },
       "Paint": {
         "count": 33,
-        "min": 0.01,
-        "p50": 0.139,
-        "p95": 0.597,
-        "max": 0.756,
-        "total": 5.363
+        "min": 0.014,
+        "p50": 0.186,
+        "p95": 0.674,
+        "max": 0.811,
+        "total": 6.897
       }
     },
     "ccActiveTreeLayerRecords": {
@@ -229,26 +226,26 @@
       "dom": {
         "documents": 1,
         "nodes": 297,
-        "jsEventListeners": 203
+        "jsEventListeners": 204
       },
       "heap": {
-        "usedSize": 6167092,
-        "totalSize": 7208960,
-        "embedderHeapUsedSize": 2368800,
-        "backingStorageSize": 587208
+        "usedSize": 6146016,
+        "totalSize": 6946816,
+        "embedderHeapUsedSize": 2356320,
+        "backingStorageSize": 587439
       }
     },
     "after": {
       "dom": {
         "documents": 1,
         "nodes": 297,
-        "jsEventListeners": 203
+        "jsEventListeners": 204
       },
       "heap": {
-        "usedSize": 6418372,
-        "totalSize": 6946816,
-        "embedderHeapUsedSize": 2112032,
-        "backingStorageSize": 587223
+        "usedSize": 6397684,
+        "totalSize": 7208960,
+        "embedderHeapUsedSize": 2110848,
+        "backingStorageSize": 587454
       }
     },
     "retained": {
@@ -256,21 +253,21 @@
       "frames": 0,
       "nodes": 0,
       "eventListeners": 0,
-      "jsHeapBytes": 251280
+      "jsHeapBytes": 251668
     }
   },
   "performanceMetricDeltas": {
     "LayoutCount": 18,
     "RecalcStyleCount": 35,
-    "LayoutDurationMs": 3.132,
-    "RecalcStyleDurationMs": 5.106,
-    "ScriptDurationMs": 23.215,
-    "TaskDurationMs": 89.263
+    "LayoutDurationMs": 3.331,
+    "RecalcStyleDurationMs": 6.149,
+    "ScriptDurationMs": 27.77,
+    "TaskDurationMs": 110.601
   },
   "resources": {
     "count": 3,
-    "encodedBodyBytes": 202778,
-    "transferBytes": 203678,
+    "encodedBodyBytes": 200325,
+    "transferBytes": 201225,
     "crossOrigin": []
   },
   "trace": {
@@ -283,9 +280,9 @@
     ],
     "localPath": "test-results/performance/chrome-trace.json.gz",
     "rawTracePublished": false,
-    "rawBytes": 2092753,
-    "compressedBytes": 186856,
-    "sha256": "ee159112f9ce7749abbf0befd68be7622ac08998e239dc1491fa5cac22b0bea8"
+    "rawBytes": 2071786,
+    "compressedBytes": 187169,
+    "sha256": "a80759bb74e980b094a7a57b141992b4fefe8bf6264482466c50f8b4a1db618b"
   },
   "budgets": [
     {
@@ -362,7 +359,7 @@
     },
     {
       "name": "p95FrameIntervalMs",
-      "actual": 18.1,
+      "actual": 18.2,
       "maximum": 34,
       "pass": true
     },
@@ -392,43 +389,43 @@
     },
     {
       "name": "runTaskMaximumMs",
-      "actual": 3.587,
+      "actual": 5.66,
       "maximum": 75,
       "pass": true
     },
     {
       "name": "layoutTotalMs",
-      "actual": 2.983,
+      "actual": 3.154,
       "maximum": 75,
       "pass": true
     },
     {
       "name": "layoutMaximumMs",
-      "actual": 1.104,
+      "actual": 0.856,
       "maximum": 8,
       "pass": true
     },
     {
       "name": "updateLayoutTreeTotalMs",
-      "actual": 5.113,
+      "actual": 6.148,
       "maximum": 75,
       "pass": true
     },
     {
       "name": "updateLayoutTreeMaximumMs",
-      "actual": 0.927,
+      "actual": 0.904,
       "maximum": 8,
       "pass": true
     },
     {
       "name": "paintTotalMs",
-      "actual": 5.363,
+      "actual": 6.897,
       "maximum": 100,
       "pass": true
     },
     {
       "name": "paintMaximumMs",
-      "actual": 0.756,
+      "actual": 0.811,
       "maximum": 8,
       "pass": true
     },
@@ -470,38 +467,38 @@
     },
     {
       "name": "retainedJsHeapBytes",
-      "actual": 251280,
+      "actual": 251668,
       "maximum": 4194304,
       "pass": true
     },
     {
       "name": "encodedResourceBytes",
-      "actual": 202778,
+      "actual": 200325,
       "maximum": 2097152,
       "pass": true
     },
     {
       "name": "finalJsHeapUsedBytes",
-      "actual": 6418372,
+      "actual": 6397684,
       "maximum": 134217728,
       "pass": true
     },
     {
       "name": "rawTraceBytes",
-      "actual": 2092753,
+      "actual": 2071786,
       "maximum": 33554432,
       "pass": true
     },
     {
       "name": "harnessRuntimeMs",
-      "actual": 4643,
+      "actual": 8137,
       "maximum": 30000,
       "pass": true
     },
     {
       "name": "reactCommits",
       "actual": 12,
-      "maximum": 22,
+      "maximum": 23,
       "pass": true
     }
   ],

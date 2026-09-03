@@ -8,6 +8,19 @@ hosted service the source of truth.
 This repository contains a working MVP. It is suitable for local exploration and a bounded
 single-owner self-hosted deployment; it is not yet a multi-user cloud service.
 
+## Try the WebMCP challenge build
+
+- Live application: <https://koi-design-webmcp-challenge.pages.dev/>
+- Health and build identity: <https://koi-design-webmcp-challenge.pages.dev/health.json>
+- Public source: <https://github.com/Goooyi/koi.design>
+- Release certification: [`docs/evidence/stage1-live-certification.md`](docs/evidence/stage1-live-certification.md)
+
+The anonymous challenge build opens directly into a seeded browser-local Document and requires no
+account. ChatGPT's in-app browser exposes the eight semantic tools documented below through its
+address-bar Site Tools menu. Chrome with WebMCP testing enabled exposes the same registrations
+through the native API. The certified deployment serves
+`c31366f3ae3a7a58af56b9e7f7933bda4491b694`.
+
 ## What works
 
 - One infinite Page with virtualized top-level Frames and real Astryx HTML/CSS components.
@@ -324,8 +337,11 @@ decisions live in [docs/adr](docs/adr); remaining product choices are tracked in
   connector path shares one affine-transform model.
 - Native HTML export is available only as trusted component-level helpers, not yet as a complete
   Page export workflow.
-- WebGPU shaders, comments, image upload, manual accessibility audits, cross-browser E2E, and
-  managed hosting remain incomplete.
+- WebGPU shaders, comments, image upload, cross-browser E2E, screen-reader testing, and managed
+  hosting remain incomplete. The Stage 1 manual accessibility review also records missing keyboard
+  interaction for arbitrary canvas records, one invisible import-input tab stop, unavailable
+  inspector controls at a 200%-zoom-equivalent desktop viewport, and incomplete manual contrast
+  validation.
 
 ## License
 

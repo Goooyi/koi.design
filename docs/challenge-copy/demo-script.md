@@ -4,15 +4,15 @@ Target runtime: **2:48**. Hard stop: **2:50**. The challenge limit is three minu
 
 This script demonstrates only the anonymous, browser-local Stage 1 challenge build. Replace every
 bracketed value before recording. Do not show a custom `koi.design` domain unless it is actually
-owned and serving the submitted build.
+owned and serving the demonstrated build.
 
 ## Release inputs
 
-- Live application: `[LIVE_PAGES_URL]`
-- Public repository: `[PUBLIC_REPOSITORY_URL]`
-- Exact release commit: `[FINAL_COMMIT_SHA]`
-- Browser and WebMCP host: `[BROWSER_VERSION_AND_HOST]`
-- Visible build label expected in Koi: `Koi v0.1.0 · [SHORT_COMMIT_SHA]`
+- Live application: `https://koi-design-webmcp-challenge.pages.dev/`
+- Public repository: `https://github.com/Goooyi/koi.design`
+- Deployed application commit: `c31366f3ae3a7a58af56b9e7f7933bda4491b694`
+- Browser and WebMCP host: Google Chrome `151.0.7922.174` with native WebMCP testing
+- Visible build label expected in Koi: `Koi v0.1.0 · c31366f3ae3a`
 
 ## Recording setup
 
@@ -20,19 +20,21 @@ Complete these before the capture starts:
 
 1. Use a clean browser profile with native WebMCP enabled and no personal bookmarks, tabs, or
    notifications visible.
-2. Clear storage for `[LIVE_PAGES_URL]`, load the page once, and confirm the seeded **Welcome to
+2. Clear storage for the live application origin, load the page once, and confirm the seeded **Welcome to
    Koi** Document appears.
 3. Confirm the Koi header says **Local · WebMCP ready**, the challenge pill says **Challenge demo ·
-   browser-local**, and the visible build label matches `[FINAL_COMMIT_SHA]`.
-4. Put the browser agent beside the canvas. Keep the canvas larger than the agent transcript.
-5. Put the two prompts below in a private presenter note or clipboard manager. Do not show that
-   window in the recording.
+   browser-local**, and the visible build label matches the release commit above.
+4. Use the deterministic release harness to invoke the browser's native `document.modelContext`
+   tools. Keep its bounded call feed beside a canvas-dominant viewport and label the harness in the
+   final edit.
+5. Keep the two fixed prompt contracts below with the capture harness; do not expose unrelated
+   terminal history or browser state.
 
 ## Timed shot list and narration
 
 ### 0:00–0:15 — Open on the shared canvas
 
-**On screen:** Open `[LIVE_PAGES_URL]` from a blank tab. Let the seeded Frames settle, then make one
+**On screen:** Open the live application from a blank tab. Let the seeded Frames settle, then make one
 small pan so the spatial canvas is unmistakable. Keep the Koi status and build label visible.
 
 **Narration:**
@@ -42,8 +44,8 @@ small pan so the spatial canvas is unmistakable. Keep the Koi status and build l
 
 ### 0:15–0:30 — Discover the native surface
 
-**On screen:** Open the browser agent's discovered-tools view. Show all eight names long enough to
-read, using a tight crop or callout if the host truncates the list:
+**On screen:** Show the native tool catalog returned to the release harness. Display all eight
+names long enough to read:
 
 `get_canvas_context`, `list_components`, `inspect_elements`, `create_elements`,
 `update_elements`, `delete_elements`, `arrange_elements`, and `export_document`.
@@ -55,15 +57,15 @@ read, using a tight crop or callout if the host truncates the list:
 
 ### 0:30–0:58 — Ask, read, and create
 
-**On screen:** Send **Prompt 1** below. Briefly show the agent invoking `get_canvas_context`,
+**On screen:** Run **Prompt contract 1** below. Briefly show the harness invoking `get_canvas_context`,
 `list_components`, and `inspect_elements`; then return focus to the canvas while
 `create_elements` runs. Do not linger on raw JSON.
 
 **Narration:**
 
-> I ask for a launch-review alternative. The agent reads the active Page, inspects stable Element
-> IDs and versions, and checks Koi's trusted Astryx registry. One semantic create command adds a
-> real card and button inside the existing Frame.
+> The release harness asks for a launch-review alternative. It reads the active Page, inspects
+> stable Element IDs and versions, and checks Koi's trusted Astryx registry. One semantic create
+> command adds a real card and button inside the existing Frame.
 
 ### 0:58–1:14 — Show the visible result
 
@@ -86,9 +88,9 @@ to the restored card and button when the page returns.
 > Reloading is the important part: the alternative returns from this browser's IndexedDB. No
 > challenge account or private backend is hiding behind the demo.
 
-### 1:27–1:52 — Human takeover
+### 1:27–1:52 — Exercise the human input path
 
-**On screen:**
+**On screen:** The deterministic harness now sends the same ordinary events a person would:
 
 1. Double-click the yellow `brief-note`.
 2. Replace its text with **Human direction: keep this calm, green, and ready for review.**
@@ -98,21 +100,23 @@ to the restored card and button when the page returns.
 
 **Narration:**
 
-> Now I take over with ordinary pointer and keyboard input. I sharpen the direction in a note and
-> move the call to action. These are first-class human commands, not invisible prompt state.
+> Now the harness exercises the human interaction path with ordinary pointer and keyboard events.
+> It edits the direction note and moves the call to action. Koi records both as first-class
+> interface commands, not invisible prompt state.
 
 ### 1:52–2:22 — Agent re-reads and refines
 
-**On screen:** Send **Prompt 2**. Show `inspect_elements` returning the newer note and button
+**On screen:** Run **Prompt contract 2**. Show `inspect_elements` returning the newer note and button
 versions. Keep the canvas dominant while `update_elements` revises the card and
-`arrange_elements` aligns the button at its human-chosen vertical position. End with the refined
+`arrange_elements` aligns the button at its direct-input vertical position. End with the refined
 card and aligned button selected.
 
 **Narration:**
 
-> The agent does not assume its earlier snapshot is current. It re-inspects the exact Elements,
-> sees my new text and versions, then updates the card and aligns the button from fresh geometry.
-> Expected-version checks stop a stale agent write from silently replacing newer human work.
+> The release harness does not assume its earlier snapshot is current. It re-inspects the exact
+> Elements, sees the newer text and versions, then updates the card and aligns the button from fresh
+> geometry. Expected-version checks stop a stale agent write from silently replacing newer human
+> work.
 
 ### 2:22–2:40 — Explain the architecture
 
@@ -145,7 +149,7 @@ lower third.
 
 Cut immediately. Do not add a long logo tail.
 
-## Agent prompts
+## Harness prompt contracts
 
 ### Prompt 1 — inspect and create
 
