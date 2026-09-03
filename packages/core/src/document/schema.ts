@@ -10,6 +10,14 @@ const MAX_JSON_NODES = 10_000;
 const MAX_JSON_COLLECTION_SIZE = 256;
 const MAX_NESTING_DEPTH = 64;
 
+export const KOI_JSON_LIMITS = Object.freeze({
+  maxDepth: MAX_JSON_DEPTH,
+  maxNodes: MAX_JSON_NODES,
+  maxCollectionSize: MAX_JSON_COLLECTION_SIZE,
+  maxStringLength: MAX_TEXT_LENGTH,
+  maxKeyLength: MAX_NAME_LENGTH,
+});
+
 export type JsonPrimitive = string | number | boolean | null;
 export type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
 export type JsonObject = { [key: string]: JsonValue };
@@ -189,7 +197,7 @@ const shaderPropertiesSchema = z.strictObject({
   shaderId: stableIdSchema,
   parameters: jsonObjectSchema.default({}),
   playbackSpeed: z.number().finite().min(-100).max(100).default(1),
-  deterministicFrame: z.number().int().nonnegative().default(0),
+  deterministicFrame: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER).default(0),
   quality: z.number().finite().min(0.1).max(2).default(1),
   fallbackAssetId: stableIdSchema.optional(),
 });

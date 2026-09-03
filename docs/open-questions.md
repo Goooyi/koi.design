@@ -3,14 +3,14 @@
 The MVP architecture and build order are settled. These decisions remain deliberately open; none
 should block local development of the implemented product.
 
-## 1. License and contributor rights
+## 1. Long-term licensing and contributor rights
 
-Status: owner decision deferred.
+Status: Stage 1 decision complete; company-launch policy remains open.
 
-Koi currently has no `LICENSE`, so it must not yet be described as open source and outside
-contributions should not be accepted. Before making the repository public, choose the product
-license, document third-party notices, and decide whether contributions require a DCO, CLA, or
-neither.
+The complete Stage 1 monorepo is licensed under `AGPL-3.0-or-later`, third-party notices are
+documented, and contributions require DCO 1.1 sign-off. Before company launch, obtain legal review
+and decide whether portable specifications or client SDKs should also be offered under Apache-2.0,
+and whether future dual licensing requires a CLA.
 
 The decision must preserve the agreed product boundary: the complete self-hostable product can be
 public, while a future managed-service control plane may remain private. A private service must

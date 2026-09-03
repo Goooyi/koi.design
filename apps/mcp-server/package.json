@@ -2,6 +2,7 @@
   "name": "@koi/mcp-server",
   "version": "0.1.0",
   "private": true,
+  "license": "AGPL-3.0-or-later",
   "bin": {
     "koi-mcp": "./dist/cli.mjs"
   },

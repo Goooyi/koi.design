@@ -27,12 +27,35 @@ select:focus-visible {
 }
 
 .koi-host-actions {
+  align-items: center;
   display: flex;
   gap: 8px;
   position: fixed;
-  right: 260px;
-  top: 11px;
+  right: 272px;
+  top: 68px;
   z-index: 50;
+}
+
+.koi-build-meta,
+.koi-challenge-mode {
+  border: 1px solid #d7dce7;
+  border-radius: 999px;
+  color: #46536d;
+  font:
+    600 11px/1 system-ui,
+    sans-serif;
+  padding: 7px 9px;
+  white-space: nowrap;
+}
+
+.koi-build-meta {
+  background: #fff;
+}
+
+.koi-challenge-mode {
+  background: #edf1ff;
+  border-color: #cbd5ff;
+  color: #2949a3;
 }
 
 .koi-host-button {
@@ -260,6 +283,12 @@ select:focus-visible {
 
 @media (max-width: 920px) {
   .koi-host-actions {
-    right: 16px;
+    right: 12px;
+  }
+}
+
+@media (max-width: 720px) {
+  .koi-challenge-mode {
+    display: none;
   }
 }

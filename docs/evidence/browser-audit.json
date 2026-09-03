@@ -1,0 +1,509 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-09-03T02:18:52.879Z",
+  "generatedFromCommit": "eb7f38b388ddfd5393e74dfdc2bcd3362838d795",
+  "sourceTree": {
+    "sourceInputsClean": true,
+    "dirtyGeneratedEvidenceBeforeCapture": [
+      "docs/evidence/browser-audit.json",
+      "docs/evidence/webmcp-tools.json"
+    ]
+  },
+  "fixture": {
+    "id": "stage1-welcome-document",
+    "documentId": "welcome-document",
+    "frameCount": 4,
+    "elementCount": 22,
+    "interaction": "warm up, then pan three times to the far-right Frame and reset the camera",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "claimScope": "Stage 1 demo regression sentinel; not a general canvas-capacity claim"
+  },
+  "environment": {
+    "url": "http://127.0.0.1:4174/",
+    "scope": "pages-emulator",
+    "browser": "151.0.7922.174",
+    "node": "v24.20.0",
+    "playwright": "1.62.1",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "cpuModel": "Apple M1",
+    "logicalCpuCount": 8,
+    "memoryBytes": 8589934592
+  },
+  "accessibility": {
+    "standard": ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
+    "violations": [],
+    "passes": 23,
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=playwright",
+        "nodeCount": 16
+      }
+    ]
+  },
+  "reliability": {
+    "consoleAndPageErrors": [],
+    "failedRequests": [],
+    "httpErrors": []
+  },
+  "hostConfiguration": {
+    "failures": [],
+    "observations": {
+      "root": {
+        "status": 200,
+        "headers": {
+          "cacheControl": "no-store",
+          "contentSecurityPolicy": "default-src 'self'; base-uri 'none'; connect-src 'self' https: http://127.0.0.1:* http://localhost:*; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src 'none'; img-src 'self' data: blob: https:; manifest-src 'self'; media-src 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:",
+          "contentType": "text/html; charset=utf-8",
+          "crossOriginOpenerPolicy": "same-origin",
+          "referrerPolicy": "no-referrer",
+          "xContentTypeOptions": "nosniff",
+          "xFrameOptions": "DENY"
+        }
+      },
+      "health": {
+        "status": 200,
+        "headers": {
+          "cacheControl": "no-store",
+          "contentSecurityPolicy": "default-src 'self'; base-uri 'none'; connect-src 'self' https: http://127.0.0.1:* http://localhost:*; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src 'none'; img-src 'self' data: blob: https:; manifest-src 'self'; media-src 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:",
+          "contentType": "application/json",
+          "crossOriginOpenerPolicy": "same-origin",
+          "referrerPolicy": "no-referrer",
+          "xContentTypeOptions": "nosniff",
+          "xFrameOptions": "DENY"
+        },
+        "body": {
+          "status": "ok",
+          "version": "0.1.0",
+          "buildId": "eb7f38b388ddfd5393e74dfdc2bcd3362838d795",
+          "deploymentMode": "challenge"
+        }
+      },
+      "asset": {
+        "status": 200,
+        "headers": {
+          "cacheControl": "public, max-age=31556952, immutable",
+          "contentSecurityPolicy": "default-src 'self'; base-uri 'none'; connect-src 'self' https: http://127.0.0.1:* http://localhost:*; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src 'none'; img-src 'self' data: blob: https:; manifest-src 'self'; media-src 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:",
+          "contentType": "application/javascript",
+          "crossOriginOpenerPolicy": "same-origin",
+          "referrerPolicy": "no-referrer",
+          "xContentTypeOptions": "nosniff",
+          "xFrameOptions": "DENY"
+        }
+      },
+      "spaFallback": {
+        "status": 200,
+        "headers": {
+          "cacheControl": "public, max-age=0, must-revalidate",
+          "contentSecurityPolicy": "default-src 'self'; base-uri 'none'; connect-src 'self' https: http://127.0.0.1:* http://localhost:*; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src 'none'; img-src 'self' data: blob: https:; manifest-src 'self'; media-src 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:",
+          "contentType": "text/html; charset=utf-8",
+          "crossOriginOpenerPolicy": "same-origin",
+          "referrerPolicy": "no-referrer",
+          "xContentTypeOptions": "nosniff",
+          "xFrameOptions": "DENY"
+        },
+        "servedApplicationShell": true
+      }
+    }
+  },
+  "instrumentation": {
+    "failures": [],
+    "initialReactCommits": 13,
+    "compositorLayers": {
+      "eventCount": 0,
+      "maximum": null
+    }
+  },
+  "rendering": {
+    "canvasSamples": [
+      {
+        "label": "initial-after-warmup",
+        "domNodes": 179,
+        "domElements": 15,
+        "mountedFrames": 3,
+        "mountedFrameIds": ["frame-brief", "frame-components", "frame-flow"]
+      },
+      {
+        "label": "pan-1",
+        "domNodes": 194,
+        "domElements": 19,
+        "mountedFrames": 4,
+        "mountedFrameIds": ["frame-brief", "frame-components", "frame-flow", "frame-gpu"]
+      },
+      {
+        "label": "pan-2",
+        "domNodes": 143,
+        "domElements": 8,
+        "mountedFrames": 2,
+        "mountedFrameIds": ["frame-flow", "frame-gpu"]
+      },
+      {
+        "label": "pan-3",
+        "domNodes": 123,
+        "domElements": 4,
+        "mountedFrames": 1,
+        "mountedFrameIds": ["frame-gpu"]
+      },
+      {
+        "label": "reset",
+        "domNodes": 179,
+        "domElements": 15,
+        "mountedFrames": 3,
+        "mountedFrameIds": ["frame-brief", "frame-components", "frame-flow"]
+      }
+    ],
+    "markerWindowMs": 895.595,
+    "frameIntervalsMs": {
+      "count": 53,
+      "min": 14.7,
+      "p50": 16.7,
+      "p95": 18.1,
+      "max": 18.6,
+      "total": 881.4
+    },
+    "frameIntervalsOver50MsPercent": 0,
+    "longTasksMs": {
+      "count": 0,
+      "min": 0,
+      "p50": 0,
+      "p95": 0,
+      "max": 0,
+      "total": 0
+    },
+    "reactCommits": {
+      "total": 12,
+      "idleTail250Ms": 0
+    },
+    "rendererMainTraceEvents": {
+      "RunTask": {
+        "count": 366,
+        "min": 0.001,
+        "p50": 0.026,
+        "p95": 1.192,
+        "max": 3.587,
+        "total": 81.757
+      },
+      "Layout": {
+        "count": 18,
+        "min": 0.054,
+        "p50": 0.098,
+        "p95": 1.104,
+        "max": 1.104,
+        "total": 2.983
+      },
+      "UpdateLayoutTree": {
+        "count": 35,
+        "min": 0.016,
+        "p50": 0.043,
+        "p95": 0.667,
+        "max": 0.927,
+        "total": 5.113
+      },
+      "Paint": {
+        "count": 33,
+        "min": 0.01,
+        "p50": 0.139,
+        "p95": 0.597,
+        "max": 0.756,
+        "total": 5.363
+      }
+    },
+    "ccActiveTreeLayerRecords": {
+      "count": 18,
+      "min": 11,
+      "p50": 12,
+      "p95": 13,
+      "max": 13,
+      "total": 222
+    }
+  },
+  "memory": {
+    "before": {
+      "dom": {
+        "documents": 1,
+        "nodes": 297,
+        "jsEventListeners": 203
+      },
+      "heap": {
+        "usedSize": 6167092,
+        "totalSize": 7208960,
+        "embedderHeapUsedSize": 2368800,
+        "backingStorageSize": 587208
+      }
+    },
+    "after": {
+      "dom": {
+        "documents": 1,
+        "nodes": 297,
+        "jsEventListeners": 203
+      },
+      "heap": {
+        "usedSize": 6418372,
+        "totalSize": 6946816,
+        "embedderHeapUsedSize": 2112032,
+        "backingStorageSize": 587223
+      }
+    },
+    "retained": {
+      "documents": 0,
+      "frames": 0,
+      "nodes": 0,
+      "eventListeners": 0,
+      "jsHeapBytes": 251280
+    }
+  },
+  "performanceMetricDeltas": {
+    "LayoutCount": 18,
+    "RecalcStyleCount": 35,
+    "LayoutDurationMs": 3.132,
+    "RecalcStyleDurationMs": 5.106,
+    "ScriptDurationMs": 23.215,
+    "TaskDurationMs": 89.263
+  },
+  "resources": {
+    "count": 3,
+    "encodedBodyBytes": 202778,
+    "transferBytes": 203678,
+    "crossOrigin": []
+  },
+  "trace": {
+    "categories": [
+      "blink.user_timing",
+      "devtools.timeline",
+      "disabled-by-default-devtools.timeline",
+      "disabled-by-default-devtools.timeline.frame",
+      "disabled-by-default-devtools.timeline.layers"
+    ],
+    "localPath": "test-results/performance/chrome-trace.json.gz",
+    "rawTracePublished": false,
+    "rawBytes": 2092753,
+    "compressedBytes": 186856,
+    "sha256": "ee159112f9ce7749abbf0befd68be7622ac08998e239dc1491fa5cac22b0bea8"
+  },
+  "budgets": [
+    {
+      "name": "accessibilityViolations",
+      "actual": 0,
+      "maximum": 0,
+      "pass": true
+    },
+    {
+      "name": "consoleAndPageErrors",
+      "actual": 0,
+      "maximum": 0,
+      "pass": true
+    },
+    {
+      "name": "failedRequests",
+      "actual": 0,
+      "maximum": 0,
+      "pass": true
+    },
+    {
+      "name": "httpErrors",
+      "actual": 0,
+      "maximum": 0,
+      "pass": true
+    },
+    {
+      "name": "crossOriginResources",
+      "actual": 0,
+      "maximum": 0,
+      "pass": true
+    },
+    {
+      "name": "hostConfigurationFailures",
+      "actual": 0,
+      "maximum": 0,
+      "pass": true
+    },
+    {
+      "name": "instrumentationFailures",
+      "actual": 0,
+      "maximum": 0,
+      "pass": true
+    },
+    {
+      "name": "peakDomNodes",
+      "actual": 194,
+      "maximum": 300,
+      "pass": true
+    },
+    {
+      "name": "peakDomElements",
+      "actual": 19,
+      "maximum": 24,
+      "pass": true
+    },
+    {
+      "name": "peakMountedFrames",
+      "actual": 4,
+      "maximum": 4,
+      "pass": true
+    },
+    {
+      "name": "farRightMountedFrames",
+      "actual": 1,
+      "maximum": 2,
+      "pass": true
+    },
+    {
+      "name": "resetStateMismatch",
+      "actual": 0,
+      "maximum": 0,
+      "pass": true
+    },
+    {
+      "name": "p95FrameIntervalMs",
+      "actual": 18.1,
+      "maximum": 34,
+      "pass": true
+    },
+    {
+      "name": "frameIntervalsOver50MsPercent",
+      "actual": 0,
+      "maximum": 2,
+      "pass": true
+    },
+    {
+      "name": "longTaskCount",
+      "actual": 0,
+      "maximum": 2,
+      "pass": true
+    },
+    {
+      "name": "totalLongTaskMs",
+      "actual": 0,
+      "maximum": 150,
+      "pass": true
+    },
+    {
+      "name": "longestTaskMs",
+      "actual": 0,
+      "maximum": 100,
+      "pass": true
+    },
+    {
+      "name": "runTaskMaximumMs",
+      "actual": 3.587,
+      "maximum": 75,
+      "pass": true
+    },
+    {
+      "name": "layoutTotalMs",
+      "actual": 2.983,
+      "maximum": 75,
+      "pass": true
+    },
+    {
+      "name": "layoutMaximumMs",
+      "actual": 1.104,
+      "maximum": 8,
+      "pass": true
+    },
+    {
+      "name": "updateLayoutTreeTotalMs",
+      "actual": 5.113,
+      "maximum": 75,
+      "pass": true
+    },
+    {
+      "name": "updateLayoutTreeMaximumMs",
+      "actual": 0.927,
+      "maximum": 8,
+      "pass": true
+    },
+    {
+      "name": "paintTotalMs",
+      "actual": 5.363,
+      "maximum": 100,
+      "pass": true
+    },
+    {
+      "name": "paintMaximumMs",
+      "actual": 0.756,
+      "maximum": 8,
+      "pass": true
+    },
+    {
+      "name": "ccActiveTreeLayerRecords",
+      "actual": 13,
+      "maximum": 200,
+      "pass": true
+    },
+    {
+      "name": "idleTailReactCommits",
+      "actual": 0,
+      "maximum": 2,
+      "pass": true
+    },
+    {
+      "name": "retainedDocuments",
+      "actual": 0,
+      "maximum": 0,
+      "pass": true
+    },
+    {
+      "name": "retainedFrames",
+      "actual": 0,
+      "maximum": 0,
+      "pass": true
+    },
+    {
+      "name": "retainedNodes",
+      "actual": 0,
+      "maximum": 25,
+      "pass": true
+    },
+    {
+      "name": "retainedEventListeners",
+      "actual": 0,
+      "maximum": 25,
+      "pass": true
+    },
+    {
+      "name": "retainedJsHeapBytes",
+      "actual": 251280,
+      "maximum": 4194304,
+      "pass": true
+    },
+    {
+      "name": "encodedResourceBytes",
+      "actual": 202778,
+      "maximum": 2097152,
+      "pass": true
+    },
+    {
+      "name": "finalJsHeapUsedBytes",
+      "actual": 6418372,
+      "maximum": 134217728,
+      "pass": true
+    },
+    {
+      "name": "rawTraceBytes",
+      "actual": 2092753,
+      "maximum": 33554432,
+      "pass": true
+    },
+    {
+      "name": "harnessRuntimeMs",
+      "actual": 4643,
+      "maximum": 30000,
+      "pass": true
+    },
+    {
+      "name": "reactCommits",
+      "actual": 12,
+      "maximum": 22,
+      "pass": true
+    }
+  ],
+  "passed": true
+}

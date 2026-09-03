@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "id": "koi-inline-svg-favicon",
+      "sourcePath": "apps/web/index.html",
+      "sourceSha256": "e98bdfe020fd8d730ed14cc2c9ec065c3044056155cd1737d349cef033ec9d3a",
+      "kind": "inline-svg-favicon",
+      "provenance": "Koi-authored project artwork",
+      "license": "AGPL-3.0-or-later"
+    },
+    {
+      "id": "astryx-lucide-icon-set",
+      "sourcePath": "@astryxdesign/theme-neutral@0.5.0",
+      "kind": "runtime-icon-component-set",
+      "provenance": "AstryX neutral theme using Lucide and Feather-derived icons",
+      "license": "ISC AND MIT",
+      "notice": "See NOTICE and the dependency inventory for package-level evidence."
+    }
+  ],
+  "absentByInspection": [
+    "bundled raster images",
+    "bundled audio",
+    "bundled video",
+    "bundled webfonts"
+  ]
+}

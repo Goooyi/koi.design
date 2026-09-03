@@ -28,10 +28,12 @@ an explicit fallback; Koi ships no WebGL runtime.
 
 ## Run locally
 
-Requirements: Node.js 22.18 or newer and pnpm 11.21.0.
+Requirements: Node.js 22.18 or newer and the repository-pinned pnpm version. Node.js 24 LTS is the
+CI and release reference runtime. If `pnpm --version` already prints `11.21.0`, no bootstrap step is
+needed. Otherwise, activate it with `corepack enable` when Corepack is available, or install it with
+`npm install --global pnpm@11.21.0` when it is not (including Node.js 25 and newer).
 
 ```sh
-npm install --global pnpm@11.21.0 # Skip when this pnpm version is already installed.
 pnpm install --frozen-lockfile
 pnpm dev
 ```
@@ -48,13 +50,27 @@ pnpm exec playwright install chromium
 On Debian or Ubuntu machines that do not already have the browser system libraries, use
 `pnpm exec playwright install --with-deps chromium` instead.
 
+The release-grade `pnpm audit:browser` command separately requires the current stable Google
+Chrome. On macOS, install it in `/Applications`; on Linux, make `google-chrome` or
+`google-chrome-stable` available on `PATH`. The audit deliberately measures the judge-facing
+browser rather than Playwright's pinned test browser. Run `pnpm run doctor` to verify both
+browsers; the explicit `run` avoids pnpm's unrelated built-in `doctor` command.
+
+The doctor exits nonzero only when the local development toolchain is unusable. Its separate
+`challengeAppReleasePrerequisitesPass` result reports stable Chrome, Wrangler, and clean-worktree
+preconditions used by challenge audit and deploy commands; it is not a complete submission-ready
+verdict, and the commands that consume those prerequisites enforce them directly.
+
 Useful repository gates:
 
 ```sh
+pnpm run doctor
 pnpm build
 pnpm check
 pnpm test
 pnpm test:e2e
+pnpm challenge:verify
+pnpm audit:browser
 pnpm ready
 ```
 
@@ -64,6 +80,45 @@ check, unit/protocol test, and browser test gate. Workspace tasks run at most tw
 Playwright uses one Chromium worker and retains traces and screenshots only on failure to keep
 development bounded on small machines.
 GitHub Actions runs the same gate with a frozen lockfile on Node 24.
+
+## Challenge deployment
+
+The judge-facing build is a static, anonymous, browser-local WebMCP application. It keeps the
+seeded canvas, import/export, IndexedDB durability, and all eight WebMCP tools, but hides the
+self-host connection flow so a judge never encounters a dead API URL. The ordinary `pnpm build`
+continues to produce the full self-hostable web client.
+
+```sh
+pnpm challenge:verify
+pnpm challenge:dev       # Cloudflare Pages emulator on http://127.0.0.1:4174
+pnpm exec wrangler login # One time per workstation: authenticate in the browser
+pnpm challenge:setup     # One time: create the Pages project with production branch main
+pnpm challenge:deploy    # Repeat for each production release
+```
+
+`challenge:verify` rejects dirty release trees, missing security/cache metadata, source maps,
+unhashed assets, stale build identity, and Cloudflare Pages file-limit violations. The generated
+`/health.json` reports only the version, exact commit, deployment mode, and an `ok` status. The
+visible header shows the same version and shortened commit. Hashed assets are immutable; HTML and
+health metadata revalidate or use `no-store`; the Content Security Policy is exercised by the
+browser audit. Cloudflare Pages provides its documented SPA fallback when a top-level `404.html`
+is absent.
+
+The configuration names a dedicated Direct Upload project so the submitted deployment can remain
+pinned while Stage 2 moves on. Run `challenge:setup` exactly once before the first deployment; it
+sets `main` explicitly as the production branch and intentionally fails if that project already
+exists. Direct Upload describes how the Pages project is created, not a one-time upload:
+`challenge:deploy` can update the same project repeatedly. The project cannot later be converted to
+Cloudflare's native Git integration; create a different Pages project if that mode is wanted. The
+same Direct Upload project can still be automated from GitHub Actions by running Wrangler with
+scoped Cloudflare credentials. After deployment, rerun the same clean-profile audit against HTTPS:
+
+```sh
+KOI_AUDIT_URL=https://<deployment>.pages.dev pnpm audit:browser
+```
+
+Do not publish the local Chrome trace. It is ignored by Git; the sanitized checked-in report stores
+its SHA-256 and aggregate measurements.
 
 ## Self-host
 
@@ -209,11 +264,19 @@ WebMCP calls use the same editor store and command reducer as direct manipulatio
 attributed to an agent, grouped as one undoable command, await local persistence, and return
 structured conflicts instead of silently replacing a newer human edit.
 
+Every write reports one explicit outcome: `applied`, idempotent `duplicate`, precondition or input
+`rejected`, or `ambiguous` when the change is visible but durable persistence could not be
+confirmed. An ambiguous result tells the agent to retry once with the same command ID and inspect
+before creating new intent; internal exception text is never returned.
+
 `inspect_elements` accepts at most 32 stable IDs and returns depth-, node-, key-, array-, string-,
-and total-byte-bounded property previews with a `truncated` marker. Both the bounded inspect
-response and `export_document` are capped at 1,000,000 UTF-8 bytes, so `export_document` refuses a
-larger result and directs the user to the editor download. The human-triggered `.koi.json` download
-still exports the complete validated Document and is not subject to the model-output cap.
+and total-byte-bounded property previews with truncation and continuation metadata. Stage 1 does
+not paginate property previews, so it says that continuation is unavailable instead of silently
+cutting data. Both the bounded inspect response and `export_document` are capped at 1,000,000 UTF-8
+bytes, so `export_document` refuses a larger result and directs the user to the editor download.
+The human-triggered `.koi.json` download still exports the complete validated Document and is not
+subject to the model-output cap. The checked live-registration manifest is in
+[`docs/evidence/webmcp-tools.json`](docs/evidence/webmcp-tools.json).
 
 ## Architecture
 
@@ -261,11 +324,13 @@ decisions live in [docs/adr](docs/adr); remaining product choices are tracked in
   connector path shares one affine-transform model.
 - Native HTML export is available only as trusted component-level helpers, not yet as a complete
   Page export workflow.
-- WebGPU shaders, comments, image upload, accessibility audits, cross-browser E2E, and managed
-  hosting remain incomplete.
+- WebGPU shaders, comments, image upload, manual accessibility audits, cross-browser E2E, and
+  managed hosting remain incomplete.
 
 ## License
 
-The project license is intentionally undecided. No `LICENSE` file has been added yet. Decide and
-publish a license before describing the repository as open source or accepting external
-contributions.
+Koi is open source under [AGPL-3.0-or-later](LICENSE). Third-party acknowledgements and the
+version-pinned dependency and asset audit are in [NOTICE](NOTICE) and
+[docs/licenses](docs/licenses). Contributions use [Developer Certificate of Origin 1.1
+sign-off](CONTRIBUTING.md); the Koi name and visual identity remain subject to the separate
+[trademark policy](TRADEMARKS.md).

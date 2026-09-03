@@ -8,7 +8,9 @@ Koi is a pnpm 11.21 workspace driven through Vite+ 0.3.0. Vite+ supplies the Vit
 Vitest, Oxlint, Oxfmt, tsdown packaging, and workspace task runner. The repository does not add
 parallel ESLint, Prettier, or standalone Vitest configurations.
 
-Node.js 22.18 or newer is required. Versions are pinned in `package.json`,
+Node.js 22.18 or newer plus the pinned pnpm release is required; Node.js 24 LTS is the CI and release
+reference. Corepack is an optional package-manager bootstrap path, not a runtime requirement.
+Versions are pinned in `package.json`,
 `pnpm-workspace.yaml`, and `pnpm-lock.yaml`; upgrades are explicit changes followed by the full
 repository gates.
 

@@ -1,0 +1,7 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "koi-design-webmcp-challenge",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-09-02",
+  "send_metrics": false,
+}

@@ -65,7 +65,19 @@ export function createWebMcpElementPreviews(
       truncated: budget.truncated,
     };
   });
-  return { elements, missingIds: elementIds.filter((id) => !foundIds.has(id)) };
+  const truncated = elements.some((element) => element.truncated);
+  return {
+    elements,
+    missingIds: elementIds.filter((id) => !foundIds.has(id)),
+    truncated,
+    continuation: truncated
+      ? {
+          available: false,
+          reason:
+            "Element property previews cannot be paginated in Stage 1. Inspect fewer Elements or use the human export action for the complete Document.",
+        }
+      : null,
+  };
 }
 
 export function outputExceedsWebMcpLimit(value: unknown): boolean {
