@@ -12,6 +12,7 @@ import {
   doctorStatus,
   minimumEngineVersion,
   packageManagerVersion,
+  pinnedPnpmCheck,
 } from "./lib/doctor-contract.mjs";
 
 const repositoryRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -87,6 +88,7 @@ const remote = run("git", ["remote", "get-url", "origin"]);
 const worktrees = run("git", ["worktree", "list", "--porcelain"]);
 const expectedPnpmVersion = packageManagerVersion(rootManifest.packageManager);
 const requiredNodeVersion = minimumEngineVersion(rootManifest.engines?.node);
+const pnpmCheck = pinnedPnpmCheck(pnpm.output, expectedPnpmVersion, corepack.available);
 
 const requiredChecks = [
   { name: "git", pass: git.available, detail: git.output },
@@ -97,18 +99,7 @@ const requiredChecks = [
     detail: process.version,
     expected: rootManifest.engines?.node ?? null,
   },
-  {
-    name: "corepack",
-    pass: corepack.available,
-    detail: corepack.output,
-    remediation: "Install Corepack or use the Node.js 24 LTS toolchain used by Koi CI.",
-  },
-  {
-    name: "pnpm",
-    pass: expectedPnpmVersion !== null && pnpm.output === expectedPnpmVersion,
-    detail: pnpm.output,
-    expected: expectedPnpmVersion,
-  },
+  pnpmCheck,
   { name: "vitePlus", pass: vitePlus.available, detail: vitePlus.output },
   { name: "playwright", pass: playwright.available, detail: playwright.output },
   { name: "bundledChromium", pass: bundledChromium, detail: bundledChromiumPath },
@@ -142,6 +133,14 @@ const report = {
   ...statusSummary,
   requiredChecks,
   challengeAppReleasePrerequisiteChecks,
+  packageManagerBootstrap: {
+    corepack: {
+      available: corepack.available,
+      detail: corepack.output,
+      required: false,
+      note: "Optional bootstrap path; an installed packageManager-pinned pnpm is sufficient.",
+    },
+  },
   environment: {
     platform: process.platform,
     architecture: process.arch,

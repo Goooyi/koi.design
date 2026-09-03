@@ -40,10 +40,14 @@ Fill this once, then reuse the values everywhere:
       mixed-content status, CSP status, and storage status in the release evidence.
 - [ ] Verify the submitted public repository from a fresh temporary clone:
 
+Install the pnpm release declared by `packageManager` first, using `corepack enable` when Corepack
+is available or `npm install --global pnpm@11.21.0` when it is not. Corepack is optional when the
+exact pnpm release is already installed.
+
 ```sh
 git clone [PUBLIC_REPOSITORY_URL]
 cd koi-design
-corepack enable
+pnpm --version
 pnpm install --frozen-lockfile
 pnpm ready
 ```

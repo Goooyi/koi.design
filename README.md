@@ -28,11 +28,12 @@ an explicit fallback; Koi ships no WebGL runtime.
 
 ## Run locally
 
-Requirements: Node.js 22.18 or newer, Corepack, and the repository-pinned pnpm version. Node.js 24
-LTS is the CI and release reference runtime.
+Requirements: Node.js 22.18 or newer and the repository-pinned pnpm version. Node.js 24 LTS is the
+CI and release reference runtime. If `pnpm --version` already prints `11.21.0`, no bootstrap step is
+needed. Otherwise, activate it with `corepack enable` when Corepack is available, or install it with
+`npm install --global pnpm@11.21.0` when it is not (including Node.js 25 and newer).
 
 ```sh
-corepack enable
 pnpm install --frozen-lockfile
 pnpm dev
 ```
