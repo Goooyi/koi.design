@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "capturedAt": "2026-09-02T15:34:43.411Z",
-  "generatedFromCommit": "9a1910e2860c30c1371850f17ee80f99618acb51",
+  "capturedAt": "2026-09-03T02:18:52.879Z",
+  "generatedFromCommit": "eb7f38b388ddfd5393e74dfdc2bcd3362838d795",
   "sourceTree": {
     "sourceInputsClean": true,
     "dirtyGeneratedEvidenceBeforeCapture": [
@@ -82,7 +82,7 @@
         "body": {
           "status": "ok",
           "version": "0.1.0",
-          "buildId": "9a1910e2860c30c1371850f17ee80f99618acb51",
+          "buildId": "eb7f38b388ddfd5393e74dfdc2bcd3362838d795",
           "deploymentMode": "challenge"
         }
       },
@@ -159,14 +159,14 @@
         "mountedFrameIds": ["frame-brief", "frame-components", "frame-flow"]
       }
     ],
-    "markerWindowMs": 923.701,
+    "markerWindowMs": 895.595,
     "frameIntervalsMs": {
-      "count": 54,
+      "count": 53,
       "min": 14.7,
       "p50": 16.7,
-      "p95": 17.3,
-      "max": 18.7,
-      "total": 898.8
+      "p95": 18.1,
+      "max": 18.6,
+      "total": 881.4
     },
     "frameIntervalsOver50MsPercent": 0,
     "longTasksMs": {
@@ -183,36 +183,36 @@
     },
     "rendererMainTraceEvents": {
       "RunTask": {
-        "count": 367,
+        "count": 366,
         "min": 0.001,
-        "p50": 0.03,
-        "p95": 1.341,
-        "max": 3.544,
-        "total": 91.155
+        "p50": 0.026,
+        "p95": 1.192,
+        "max": 3.587,
+        "total": 81.757
       },
       "Layout": {
         "count": 18,
-        "min": 0.053,
-        "p50": 0.1,
-        "p95": 0.877,
-        "max": 0.877,
-        "total": 2.86
+        "min": 0.054,
+        "p50": 0.098,
+        "p95": 1.104,
+        "max": 1.104,
+        "total": 2.983
       },
       "UpdateLayoutTree": {
         "count": 35,
-        "min": 0.02,
-        "p50": 0.045,
-        "p95": 0.623,
-        "max": 1.08,
-        "total": 5.766
+        "min": 0.016,
+        "p50": 0.043,
+        "p95": 0.667,
+        "max": 0.927,
+        "total": 5.113
       },
       "Paint": {
         "count": 33,
-        "min": 0.014,
-        "p50": 0.158,
-        "p95": 0.746,
-        "max": 0.774,
-        "total": 6.189
+        "min": 0.01,
+        "p50": 0.139,
+        "p95": 0.597,
+        "max": 0.756,
+        "total": 5.363
       }
     },
     "ccActiveTreeLayerRecords": {
@@ -232,10 +232,10 @@
         "jsEventListeners": 203
       },
       "heap": {
-        "usedSize": 6160164,
+        "usedSize": 6167092,
         "totalSize": 7208960,
-        "embedderHeapUsedSize": 2357296,
-        "backingStorageSize": 586781
+        "embedderHeapUsedSize": 2368800,
+        "backingStorageSize": 587208
       }
     },
     "after": {
@@ -245,10 +245,10 @@
         "jsEventListeners": 203
       },
       "heap": {
-        "usedSize": 6411464,
-        "totalSize": 7208960,
-        "embedderHeapUsedSize": 2107584,
-        "backingStorageSize": 586796
+        "usedSize": 6418372,
+        "totalSize": 6946816,
+        "embedderHeapUsedSize": 2112032,
+        "backingStorageSize": 587223
       }
     },
     "retained": {
@@ -256,21 +256,21 @@
       "frames": 0,
       "nodes": 0,
       "eventListeners": 0,
-      "jsHeapBytes": 251300
+      "jsHeapBytes": 251280
     }
   },
   "performanceMetricDeltas": {
     "LayoutCount": 18,
     "RecalcStyleCount": 35,
-    "LayoutDurationMs": 3.017,
-    "RecalcStyleDurationMs": 5.76,
-    "ScriptDurationMs": 23.233,
-    "TaskDurationMs": 98.989
+    "LayoutDurationMs": 3.132,
+    "RecalcStyleDurationMs": 5.106,
+    "ScriptDurationMs": 23.215,
+    "TaskDurationMs": 89.263
   },
   "resources": {
     "count": 3,
-    "encodedBodyBytes": 202596,
-    "transferBytes": 203496,
+    "encodedBodyBytes": 202778,
+    "transferBytes": 203678,
     "crossOrigin": []
   },
   "trace": {
@@ -283,9 +283,9 @@
     ],
     "localPath": "test-results/performance/chrome-trace.json.gz",
     "rawTracePublished": false,
-    "rawBytes": 2111793,
-    "compressedBytes": 189256,
-    "sha256": "d8fc12db7709e5b52922518c3a2b414a4b0f650ea2ce58b3bb0c890bbc744451"
+    "rawBytes": 2092753,
+    "compressedBytes": 186856,
+    "sha256": "ee159112f9ce7749abbf0befd68be7622ac08998e239dc1491fa5cac22b0bea8"
   },
   "budgets": [
     {
@@ -362,7 +362,7 @@
     },
     {
       "name": "p95FrameIntervalMs",
-      "actual": 17.3,
+      "actual": 18.1,
       "maximum": 34,
       "pass": true
     },
@@ -392,43 +392,43 @@
     },
     {
       "name": "runTaskMaximumMs",
-      "actual": 3.544,
+      "actual": 3.587,
       "maximum": 75,
       "pass": true
     },
     {
       "name": "layoutTotalMs",
-      "actual": 2.86,
+      "actual": 2.983,
       "maximum": 75,
       "pass": true
     },
     {
       "name": "layoutMaximumMs",
-      "actual": 0.877,
+      "actual": 1.104,
       "maximum": 8,
       "pass": true
     },
     {
       "name": "updateLayoutTreeTotalMs",
-      "actual": 5.766,
+      "actual": 5.113,
       "maximum": 75,
       "pass": true
     },
     {
       "name": "updateLayoutTreeMaximumMs",
-      "actual": 1.08,
+      "actual": 0.927,
       "maximum": 8,
       "pass": true
     },
     {
       "name": "paintTotalMs",
-      "actual": 6.189,
+      "actual": 5.363,
       "maximum": 100,
       "pass": true
     },
     {
       "name": "paintMaximumMs",
-      "actual": 0.774,
+      "actual": 0.756,
       "maximum": 8,
       "pass": true
     },
@@ -470,38 +470,38 @@
     },
     {
       "name": "retainedJsHeapBytes",
-      "actual": 251300,
+      "actual": 251280,
       "maximum": 4194304,
       "pass": true
     },
     {
       "name": "encodedResourceBytes",
-      "actual": 202596,
+      "actual": 202778,
       "maximum": 2097152,
       "pass": true
     },
     {
       "name": "finalJsHeapUsedBytes",
-      "actual": 6411464,
+      "actual": 6418372,
       "maximum": 134217728,
       "pass": true
     },
     {
       "name": "rawTraceBytes",
-      "actual": 2111793,
+      "actual": 2092753,
       "maximum": 33554432,
       "pass": true
     },
     {
       "name": "harnessRuntimeMs",
-      "actual": 4118,
+      "actual": 4643,
       "maximum": 30000,
       "pass": true
     },
     {
       "name": "reactCommits",
       "actual": 12,
-      "maximum": 23,
+      "maximum": 22,
       "pass": true
     }
   ],

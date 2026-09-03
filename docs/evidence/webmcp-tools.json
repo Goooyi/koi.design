@@ -1,12 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedFromCommit": "9a1910e2860c30c1371850f17ee80f99618acb51",
+  "generatedFromCommit": "eb7f38b388ddfd5393e74dfdc2bcd3362838d795",
   "sourceTree": {
     "sourceInputsClean": true,
-    "dirtyGeneratedEvidenceBeforeCapture": [
-      "docs/evidence/browser-audit.json",
-      "docs/evidence/webmcp-tools.json"
-    ]
+    "dirtyGeneratedEvidenceBeforeCapture": []
   },
   "tools": [
     {
@@ -17,65 +14,69 @@
         "type": "object",
         "properties": {
           "commandId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128,
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
-            "description": "Stable caller-generated id used for safe retries."
+            "description": "Stable caller-generated id used for safe retries.",
+            "$ref": "#/$defs/__schema0"
           },
           "placements": {
             "minItems": 1,
             "maxItems": 32,
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "pageId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 128,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
-                  "description": "Target Page id. Defaults to the active Page when omitted."
-                },
-                "elementId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 128,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "expectedVersion": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 9007199254740991
-                },
-                "x": {
-                  "type": "number",
-                  "minimum": -1000000000,
-                  "maximum": 1000000000
-                },
-                "y": {
-                  "type": "number",
-                  "minimum": -1000000000,
-                  "maximum": 1000000000
-                },
-                "width": {
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 100000000
-                },
-                "height": {
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 100000000
-                }
-              },
-              "required": ["pageId", "elementId", "expectedVersion", "x", "y"],
-              "additionalProperties": false
+              "$ref": "#/$defs/__schema1"
             }
           }
         },
         "required": ["commandId", "placements"],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "$defs": {
+          "__schema0": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "__schema1": {
+            "type": "object",
+            "properties": {
+              "pageId": {
+                "description": "Target Page id. Defaults to the active Page when omitted.",
+                "$ref": "#/$defs/__schema0"
+              },
+              "elementId": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "expectedVersion": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "x": {
+                "$ref": "#/$defs/__schema2"
+              },
+              "y": {
+                "$ref": "#/$defs/__schema2"
+              },
+              "width": {
+                "$ref": "#/$defs/__schema3"
+              },
+              "height": {
+                "$ref": "#/$defs/__schema3"
+              }
+            },
+            "required": ["pageId", "elementId", "expectedVersion", "x", "y"],
+            "additionalProperties": false
+          },
+          "__schema2": {
+            "type": "number",
+            "minimum": -1000000000,
+            "maximum": 1000000000
+          },
+          "__schema3": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100000000
+          }
+        }
       }
     },
     {
@@ -86,1012 +87,611 @@
         "type": "object",
         "properties": {
           "commandId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128,
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
-            "description": "Stable caller-generated id used for safe retries."
+            "description": "Stable caller-generated id used for safe retries.",
+            "$ref": "#/$defs/__schema0"
           },
           "pageId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128,
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
-            "description": "Target Page id. Defaults to the active Page when omitted."
+            "description": "Target Page id. Defaults to the active Page when omitted.",
+            "$ref": "#/$defs/__schema0"
           },
           "elements": {
             "minItems": 1,
             "maxItems": 32,
             "type": "array",
             "items": {
-              "oneOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "schemaVersion": {
-                      "type": "number",
-                      "const": 1
-                    },
-                    "id": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 128,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    },
-                    "name": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 512
-                    },
-                    "parentId": {
-                      "default": null,
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 128,
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "geometry": {
-                      "type": "object",
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "y": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "width": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "height": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "rotation": {
-                          "default": 0,
-                          "type": "number",
-                          "const": 0
-                        }
-                      },
-                      "required": ["x", "y", "width", "height"],
-                      "additionalProperties": false
-                    },
-                    "kind": {
-                      "type": "string",
-                      "const": "frame"
-                    },
-                    "properties": {
-                      "type": "object",
-                      "properties": {
-                        "clipContent": {
-                          "default": false,
-                          "type": "boolean"
-                        },
-                        "background": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 256
-                        }
-                      },
-                      "additionalProperties": false
-                    }
-                  },
-                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "schemaVersion": {
-                      "type": "number",
-                      "const": 1
-                    },
-                    "id": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 128,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    },
-                    "name": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 512
-                    },
-                    "parentId": {
-                      "default": null,
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 128,
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "geometry": {
-                      "type": "object",
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "y": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "width": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "height": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "rotation": {
-                          "default": 0,
-                          "type": "number",
-                          "const": 0
-                        }
-                      },
-                      "required": ["x", "y", "width", "height"],
-                      "additionalProperties": false
-                    },
-                    "kind": {
-                      "type": "string",
-                      "const": "component"
-                    },
-                    "properties": {
-                      "type": "object",
-                      "properties": {
-                        "profile": {
-                          "type": "string",
-                          "const": "koi.astryx"
-                        },
-                        "profileVersion": {
-                          "type": "string",
-                          "const": "0.5.0"
-                        },
-                        "componentId": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 128,
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                        },
-                        "props": {
-                          "default": {},
-                          "type": "object",
-                          "maxProperties": 256,
-                          "propertyNames": {
-                            "type": "string",
-                            "minLength": 1,
-                            "maxLength": 512
-                          },
-                          "additionalProperties": {
-                            "$ref": "#/$defs/koiJsonValue23"
-                          }
-                        }
-                      },
-                      "required": ["profile", "profileVersion", "componentId"],
-                      "additionalProperties": false
-                    }
-                  },
-                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "schemaVersion": {
-                      "type": "number",
-                      "const": 1
-                    },
-                    "id": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 128,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    },
-                    "name": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 512
-                    },
-                    "parentId": {
-                      "default": null,
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 128,
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "geometry": {
-                      "type": "object",
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "y": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "width": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "height": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "rotation": {
-                          "default": 0,
-                          "type": "number",
-                          "const": 0
-                        }
-                      },
-                      "required": ["x", "y", "width", "height"],
-                      "additionalProperties": false
-                    },
-                    "kind": {
-                      "type": "string",
-                      "const": "text"
-                    },
-                    "properties": {
-                      "type": "object",
-                      "properties": {
-                        "content": {
-                          "type": "string",
-                          "maxLength": 100000
-                        },
-                        "style": {
-                          "default": {},
-                          "type": "object",
-                          "properties": {
-                            "fontFamily": {
-                              "type": "string",
-                              "minLength": 1,
-                              "maxLength": 256
-                            },
-                            "fontSize": {
-                              "type": "number",
-                              "exclusiveMinimum": 0,
-                              "maximum": 10000
-                            },
-                            "fontWeight": {
-                              "type": "integer",
-                              "minimum": 1,
-                              "maximum": 1000
-                            },
-                            "color": {
-                              "type": "string",
-                              "minLength": 1,
-                              "maxLength": 256
-                            },
-                            "align": {
-                              "type": "string",
-                              "enum": ["start", "center", "end", "justify"]
-                            }
-                          },
-                          "additionalProperties": false
-                        }
-                      },
-                      "required": ["content"],
-                      "additionalProperties": false
-                    }
-                  },
-                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "schemaVersion": {
-                      "type": "number",
-                      "const": 1
-                    },
-                    "id": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 128,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    },
-                    "name": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 512
-                    },
-                    "parentId": {
-                      "default": null,
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 128,
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "geometry": {
-                      "type": "object",
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "y": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "width": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "height": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "rotation": {
-                          "default": 0,
-                          "type": "number",
-                          "const": 0
-                        }
-                      },
-                      "required": ["x", "y", "width", "height"],
-                      "additionalProperties": false
-                    },
-                    "kind": {
-                      "type": "string",
-                      "const": "note"
-                    },
-                    "properties": {
-                      "type": "object",
-                      "properties": {
-                        "content": {
-                          "type": "string",
-                          "maxLength": 100000
-                        },
-                        "color": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 256
-                        }
-                      },
-                      "required": ["content"],
-                      "additionalProperties": false
-                    }
-                  },
-                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "schemaVersion": {
-                      "type": "number",
-                      "const": 1
-                    },
-                    "id": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 128,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    },
-                    "name": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 512
-                    },
-                    "parentId": {
-                      "default": null,
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 128,
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "geometry": {
-                      "type": "object",
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "y": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "width": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "height": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "rotation": {
-                          "default": 0,
-                          "type": "number",
-                          "const": 0
-                        }
-                      },
-                      "required": ["x", "y", "width", "height"],
-                      "additionalProperties": false
-                    },
-                    "kind": {
-                      "type": "string",
-                      "const": "shape"
-                    },
-                    "properties": {
-                      "type": "object",
-                      "properties": {
-                        "shape": {
-                          "type": "string",
-                          "enum": ["rectangle", "ellipse", "line", "arrow"]
-                        },
-                        "fill": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 256
-                        },
-                        "stroke": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 256
-                        },
-                        "strokeWidth": {
-                          "default": 1,
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 10000
-                        }
-                      },
-                      "required": ["shape"],
-                      "additionalProperties": false
-                    }
-                  },
-                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "schemaVersion": {
-                      "type": "number",
-                      "const": 1
-                    },
-                    "id": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 128,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    },
-                    "name": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 512
-                    },
-                    "parentId": {
-                      "default": null,
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 128,
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "geometry": {
-                      "type": "object",
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "y": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "width": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "height": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "rotation": {
-                          "default": 0,
-                          "type": "number",
-                          "const": 0
-                        }
-                      },
-                      "required": ["x", "y", "width", "height"],
-                      "additionalProperties": false
-                    },
-                    "kind": {
-                      "type": "string",
-                      "const": "connector"
-                    },
-                    "properties": {
-                      "type": "object",
-                      "properties": {
-                        "from": {
-                          "type": "object",
-                          "properties": {
-                            "elementId": {
-                              "type": "string",
-                              "minLength": 1,
-                              "maxLength": 128,
-                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                            },
-                            "anchor": {
-                              "default": "auto",
-                              "type": "string",
-                              "enum": ["auto", "top", "right", "bottom", "left", "center"]
-                            }
-                          },
-                          "required": ["elementId"],
-                          "additionalProperties": false
-                        },
-                        "to": {
-                          "type": "object",
-                          "properties": {
-                            "elementId": {
-                              "type": "string",
-                              "minLength": 1,
-                              "maxLength": 128,
-                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                            },
-                            "anchor": {
-                              "default": "auto",
-                              "type": "string",
-                              "enum": ["auto", "top", "right", "bottom", "left", "center"]
-                            }
-                          },
-                          "required": ["elementId"],
-                          "additionalProperties": false
-                        },
-                        "route": {
-                          "default": "straight",
-                          "type": "string",
-                          "enum": ["straight", "orthogonal", "bezier"]
-                        },
-                        "points": {
-                          "default": [],
-                          "maxItems": 1024,
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "x": {
-                                "type": "number",
-                                "minimum": -1000000000,
-                                "maximum": 1000000000
-                              },
-                              "y": {
-                                "type": "number",
-                                "minimum": -1000000000,
-                                "maximum": 1000000000
-                              }
-                            },
-                            "required": ["x", "y"],
-                            "additionalProperties": false
-                          }
-                        },
-                        "stroke": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 256
-                        },
-                        "strokeWidth": {
-                          "default": 1,
-                          "type": "number",
-                          "exclusiveMinimum": 0,
-                          "maximum": 10000
-                        }
-                      },
-                      "required": ["from", "to"],
-                      "additionalProperties": false
-                    }
-                  },
-                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "schemaVersion": {
-                      "type": "number",
-                      "const": 1
-                    },
-                    "id": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 128,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    },
-                    "name": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 512
-                    },
-                    "parentId": {
-                      "default": null,
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 128,
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "geometry": {
-                      "type": "object",
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "y": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "width": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "height": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "rotation": {
-                          "default": 0,
-                          "type": "number",
-                          "const": 0
-                        }
-                      },
-                      "required": ["x", "y", "width", "height"],
-                      "additionalProperties": false
-                    },
-                    "kind": {
-                      "type": "string",
-                      "const": "ink"
-                    },
-                    "properties": {
-                      "type": "object",
-                      "properties": {
-                        "points": {
-                          "minItems": 2,
-                          "maxItems": 4096,
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "x": {
-                                "type": "number",
-                                "minimum": -1000000000,
-                                "maximum": 1000000000
-                              },
-                              "y": {
-                                "type": "number",
-                                "minimum": -1000000000,
-                                "maximum": 1000000000
-                              },
-                              "pressure": {
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 1
-                              }
-                            },
-                            "required": ["x", "y"],
-                            "additionalProperties": false
-                          }
-                        },
-                        "color": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 256
-                        },
-                        "width": {
-                          "type": "number",
-                          "exclusiveMinimum": 0,
-                          "maximum": 10000
-                        }
-                      },
-                      "required": ["points", "color", "width"],
-                      "additionalProperties": false
-                    }
-                  },
-                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "schemaVersion": {
-                      "type": "number",
-                      "const": 1
-                    },
-                    "id": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 128,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    },
-                    "name": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 512
-                    },
-                    "parentId": {
-                      "default": null,
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 128,
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "geometry": {
-                      "type": "object",
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "y": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "width": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "height": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "rotation": {
-                          "default": 0,
-                          "type": "number",
-                          "const": 0
-                        }
-                      },
-                      "required": ["x", "y", "width", "height"],
-                      "additionalProperties": false
-                    },
-                    "kind": {
-                      "type": "string",
-                      "const": "image"
-                    },
-                    "properties": {
-                      "type": "object",
-                      "properties": {
-                        "assetId": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 128,
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                        },
-                        "alt": {
-                          "default": "",
-                          "type": "string",
-                          "maxLength": 10000
-                        },
-                        "fit": {
-                          "default": "contain",
-                          "type": "string",
-                          "enum": ["contain", "cover", "fill", "none"]
-                        }
-                      },
-                      "required": ["assetId"],
-                      "additionalProperties": false
-                    }
-                  },
-                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "schemaVersion": {
-                      "type": "number",
-                      "const": 1
-                    },
-                    "id": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 128,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    },
-                    "name": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 512
-                    },
-                    "parentId": {
-                      "default": null,
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 128,
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "geometry": {
-                      "type": "object",
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "y": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "width": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "height": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "rotation": {
-                          "default": 0,
-                          "type": "number",
-                          "const": 0
-                        }
-                      },
-                      "required": ["x", "y", "width", "height"],
-                      "additionalProperties": false
-                    },
-                    "kind": {
-                      "type": "string",
-                      "const": "shader"
-                    },
-                    "properties": {
-                      "type": "object",
-                      "properties": {
-                        "shaderId": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 128,
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                        },
-                        "parameters": {
-                          "default": {},
-                          "type": "object",
-                          "maxProperties": 256,
-                          "propertyNames": {
-                            "type": "string",
-                            "minLength": 1,
-                            "maxLength": 512
-                          },
-                          "additionalProperties": {
-                            "$ref": "#/$defs/koiJsonValue23"
-                          }
-                        },
-                        "playbackSpeed": {
-                          "default": 1,
-                          "type": "number",
-                          "minimum": -100,
-                          "maximum": 100
-                        },
-                        "deterministicFrame": {
-                          "default": 0,
-                          "type": "integer",
-                          "minimum": 0,
-                          "maximum": 9007199254740991
-                        },
-                        "quality": {
-                          "default": 1,
-                          "type": "number",
-                          "minimum": 0.1,
-                          "maximum": 2
-                        },
-                        "fallbackAssetId": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 128,
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                        }
-                      },
-                      "required": ["shaderId"],
-                      "additionalProperties": false
-                    }
-                  },
-                  "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
-                  "additionalProperties": false
-                }
-              ]
+              "$ref": "#/$defs/__schema1"
             }
           }
         },
         "required": ["commandId", "elements"],
         "additionalProperties": false,
         "$defs": {
+          "__schema0": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "__schema1": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "schemaVersion": {
+                    "$ref": "#/$defs/__schema2"
+                  },
+                  "id": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "name": {
+                    "$ref": "#/$defs/__schema3"
+                  },
+                  "parentId": {
+                    "$ref": "#/$defs/__schema4"
+                  },
+                  "geometry": {
+                    "$ref": "#/$defs/__schema5"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "frame"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "properties": {
+                      "clipContent": {
+                        "default": false,
+                        "type": "boolean"
+                      },
+                      "background": {
+                        "$ref": "#/$defs/__schema8"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "schemaVersion": {
+                    "$ref": "#/$defs/__schema2"
+                  },
+                  "id": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "name": {
+                    "$ref": "#/$defs/__schema3"
+                  },
+                  "parentId": {
+                    "$ref": "#/$defs/__schema4"
+                  },
+                  "geometry": {
+                    "$ref": "#/$defs/__schema5"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "component"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "properties": {
+                      "profile": {
+                        "type": "string",
+                        "const": "koi.astryx"
+                      },
+                      "profileVersion": {
+                        "type": "string",
+                        "const": "0.5.0"
+                      },
+                      "componentId": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "props": {
+                        "default": {},
+                        "$ref": "#/$defs/__schema9"
+                      }
+                    },
+                    "required": ["profile", "profileVersion", "componentId"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "schemaVersion": {
+                    "$ref": "#/$defs/__schema2"
+                  },
+                  "id": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "name": {
+                    "$ref": "#/$defs/__schema3"
+                  },
+                  "parentId": {
+                    "$ref": "#/$defs/__schema4"
+                  },
+                  "geometry": {
+                    "$ref": "#/$defs/__schema5"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "text"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "properties": {
+                      "content": {
+                        "type": "string",
+                        "maxLength": 100000
+                      },
+                      "style": {
+                        "default": {},
+                        "type": "object",
+                        "properties": {
+                          "fontFamily": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 256
+                          },
+                          "fontSize": {
+                            "type": "number",
+                            "exclusiveMinimum": 0,
+                            "maximum": 10000
+                          },
+                          "fontWeight": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 1000
+                          },
+                          "color": {
+                            "$ref": "#/$defs/__schema8"
+                          },
+                          "align": {
+                            "type": "string",
+                            "enum": ["start", "center", "end", "justify"]
+                          }
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": ["content"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "schemaVersion": {
+                    "$ref": "#/$defs/__schema2"
+                  },
+                  "id": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "name": {
+                    "$ref": "#/$defs/__schema3"
+                  },
+                  "parentId": {
+                    "$ref": "#/$defs/__schema4"
+                  },
+                  "geometry": {
+                    "$ref": "#/$defs/__schema5"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "note"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "properties": {
+                      "content": {
+                        "type": "string",
+                        "maxLength": 100000
+                      },
+                      "color": {
+                        "$ref": "#/$defs/__schema8"
+                      }
+                    },
+                    "required": ["content"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "schemaVersion": {
+                    "$ref": "#/$defs/__schema2"
+                  },
+                  "id": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "name": {
+                    "$ref": "#/$defs/__schema3"
+                  },
+                  "parentId": {
+                    "$ref": "#/$defs/__schema4"
+                  },
+                  "geometry": {
+                    "$ref": "#/$defs/__schema5"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "shape"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "properties": {
+                      "shape": {
+                        "type": "string",
+                        "enum": ["rectangle", "ellipse", "line", "arrow"]
+                      },
+                      "fill": {
+                        "$ref": "#/$defs/__schema8"
+                      },
+                      "stroke": {
+                        "$ref": "#/$defs/__schema8"
+                      },
+                      "strokeWidth": {
+                        "default": 1,
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 10000
+                      }
+                    },
+                    "required": ["shape"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "schemaVersion": {
+                    "$ref": "#/$defs/__schema2"
+                  },
+                  "id": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "name": {
+                    "$ref": "#/$defs/__schema3"
+                  },
+                  "parentId": {
+                    "$ref": "#/$defs/__schema4"
+                  },
+                  "geometry": {
+                    "$ref": "#/$defs/__schema5"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "connector"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "properties": {
+                      "from": {
+                        "$ref": "#/$defs/__schema10"
+                      },
+                      "to": {
+                        "$ref": "#/$defs/__schema10"
+                      },
+                      "route": {
+                        "default": "straight",
+                        "type": "string",
+                        "enum": ["straight", "orthogonal", "bezier"]
+                      },
+                      "points": {
+                        "default": [],
+                        "maxItems": 1024,
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/$defs/__schema11"
+                        }
+                      },
+                      "stroke": {
+                        "$ref": "#/$defs/__schema8"
+                      },
+                      "strokeWidth": {
+                        "default": 1,
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "maximum": 10000
+                      }
+                    },
+                    "required": ["from", "to"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "schemaVersion": {
+                    "$ref": "#/$defs/__schema2"
+                  },
+                  "id": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "name": {
+                    "$ref": "#/$defs/__schema3"
+                  },
+                  "parentId": {
+                    "$ref": "#/$defs/__schema4"
+                  },
+                  "geometry": {
+                    "$ref": "#/$defs/__schema5"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "ink"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "properties": {
+                      "points": {
+                        "minItems": 2,
+                        "maxItems": 4096,
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/$defs/__schema12"
+                        }
+                      },
+                      "color": {
+                        "$ref": "#/$defs/__schema8"
+                      },
+                      "width": {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "maximum": 10000
+                      }
+                    },
+                    "required": ["points", "color", "width"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "schemaVersion": {
+                    "$ref": "#/$defs/__schema2"
+                  },
+                  "id": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "name": {
+                    "$ref": "#/$defs/__schema3"
+                  },
+                  "parentId": {
+                    "$ref": "#/$defs/__schema4"
+                  },
+                  "geometry": {
+                    "$ref": "#/$defs/__schema5"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "image"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "properties": {
+                      "assetId": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "alt": {
+                        "default": "",
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "fit": {
+                        "default": "contain",
+                        "type": "string",
+                        "enum": ["contain", "cover", "fill", "none"]
+                      }
+                    },
+                    "required": ["assetId"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "schemaVersion": {
+                    "$ref": "#/$defs/__schema2"
+                  },
+                  "id": {
+                    "$ref": "#/$defs/__schema0"
+                  },
+                  "name": {
+                    "$ref": "#/$defs/__schema3"
+                  },
+                  "parentId": {
+                    "$ref": "#/$defs/__schema4"
+                  },
+                  "geometry": {
+                    "$ref": "#/$defs/__schema5"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "shader"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "properties": {
+                      "shaderId": {
+                        "$ref": "#/$defs/__schema0"
+                      },
+                      "parameters": {
+                        "default": {},
+                        "$ref": "#/$defs/__schema9"
+                      },
+                      "playbackSpeed": {
+                        "default": 1,
+                        "type": "number",
+                        "minimum": -100,
+                        "maximum": 100
+                      },
+                      "deterministicFrame": {
+                        "default": 0,
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "quality": {
+                        "default": 1,
+                        "type": "number",
+                        "minimum": 0.1,
+                        "maximum": 2
+                      },
+                      "fallbackAssetId": {
+                        "$ref": "#/$defs/__schema0"
+                      }
+                    },
+                    "required": ["shaderId"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["schemaVersion", "id", "geometry", "kind", "properties"],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "__schema2": {
+            "type": "number",
+            "const": 1
+          },
+          "__schema3": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "__schema4": {
+            "default": null,
+            "anyOf": [
+              {
+                "$ref": "#/$defs/__schema0"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "__schema5": {
+            "type": "object",
+            "properties": {
+              "x": {
+                "$ref": "#/$defs/__schema6"
+              },
+              "y": {
+                "$ref": "#/$defs/__schema6"
+              },
+              "width": {
+                "$ref": "#/$defs/__schema7"
+              },
+              "height": {
+                "$ref": "#/$defs/__schema7"
+              },
+              "rotation": {
+                "default": 0,
+                "type": "number",
+                "const": 0
+              }
+            },
+            "required": ["x", "y", "width", "height"],
+            "additionalProperties": false
+          },
+          "__schema6": {
+            "type": "number",
+            "minimum": -1000000000,
+            "maximum": 1000000000
+          },
+          "__schema7": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100000000
+          },
+          "__schema8": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "__schema9": {
+            "type": "object",
+            "maxProperties": 256,
+            "propertyNames": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "additionalProperties": {
+              "$ref": "#/$defs/koiJsonValue3"
+            }
+          },
+          "__schema10": {
+            "type": "object",
+            "properties": {
+              "elementId": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "anchor": {
+                "default": "auto",
+                "type": "string",
+                "enum": ["auto", "top", "right", "bottom", "left", "center"]
+              }
+            },
+            "required": ["elementId"],
+            "additionalProperties": false
+          },
+          "__schema11": {
+            "type": "object",
+            "properties": {
+              "x": {
+                "$ref": "#/$defs/__schema6"
+              },
+              "y": {
+                "$ref": "#/$defs/__schema6"
+              }
+            },
+            "required": ["x", "y"],
+            "additionalProperties": false
+          },
+          "__schema12": {
+            "type": "object",
+            "properties": {
+              "x": {
+                "$ref": "#/$defs/__schema6"
+              },
+              "y": {
+                "$ref": "#/$defs/__schema6"
+              },
+              "pressure": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": ["x", "y"],
+            "additionalProperties": false
+          },
           "koiJsonValue0": {
             "anyOf": [
               {
@@ -1224,804 +824,6 @@
                 }
               }
             ]
-          },
-          "koiJsonValue4": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue3"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue3"
-                }
-              }
-            ]
-          },
-          "koiJsonValue5": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue4"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue4"
-                }
-              }
-            ]
-          },
-          "koiJsonValue6": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue5"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue5"
-                }
-              }
-            ]
-          },
-          "koiJsonValue7": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue6"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue6"
-                }
-              }
-            ]
-          },
-          "koiJsonValue8": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue7"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue7"
-                }
-              }
-            ]
-          },
-          "koiJsonValue9": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue8"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue8"
-                }
-              }
-            ]
-          },
-          "koiJsonValue10": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue9"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue9"
-                }
-              }
-            ]
-          },
-          "koiJsonValue11": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue10"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue10"
-                }
-              }
-            ]
-          },
-          "koiJsonValue12": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue11"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue11"
-                }
-              }
-            ]
-          },
-          "koiJsonValue13": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue12"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue12"
-                }
-              }
-            ]
-          },
-          "koiJsonValue14": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue13"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue13"
-                }
-              }
-            ]
-          },
-          "koiJsonValue15": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue14"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue14"
-                }
-              }
-            ]
-          },
-          "koiJsonValue16": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue15"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue15"
-                }
-              }
-            ]
-          },
-          "koiJsonValue17": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue16"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue16"
-                }
-              }
-            ]
-          },
-          "koiJsonValue18": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue17"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue17"
-                }
-              }
-            ]
-          },
-          "koiJsonValue19": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue18"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue18"
-                }
-              }
-            ]
-          },
-          "koiJsonValue20": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue19"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue19"
-                }
-              }
-            ]
-          },
-          "koiJsonValue21": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue20"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue20"
-                }
-              }
-            ]
-          },
-          "koiJsonValue22": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue21"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue21"
-                }
-              }
-            ]
-          },
-          "koiJsonValue23": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue22"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue22"
-                }
-              }
-            ]
-          },
-          "koiJsonValue24": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue23"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue23"
-                }
-              }
-            ]
           }
         }
       }
@@ -2034,45 +836,47 @@
         "type": "object",
         "properties": {
           "commandId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128,
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
-            "description": "Stable caller-generated id used for safe retries."
+            "description": "Stable caller-generated id used for safe retries.",
+            "$ref": "#/$defs/__schema0"
           },
           "elements": {
             "minItems": 1,
             "maxItems": 32,
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "pageId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 128,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
-                  "description": "Target Page id. Defaults to the active Page when omitted."
-                },
-                "elementId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 128,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "expectedVersion": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 9007199254740991
-                }
-              },
-              "required": ["pageId", "elementId", "expectedVersion"],
-              "additionalProperties": false
+              "$ref": "#/$defs/__schema1"
             }
           }
         },
         "required": ["commandId", "elements"],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "$defs": {
+          "__schema0": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "__schema1": {
+            "type": "object",
+            "properties": {
+              "pageId": {
+                "description": "Target Page id. Defaults to the active Page when omitted.",
+                "$ref": "#/$defs/__schema0"
+              },
+              "elementId": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "expectedVersion": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": ["pageId", "elementId", "expectedVersion"],
+            "additionalProperties": false
+          }
+        }
       }
     },
     {
@@ -2107,15 +911,20 @@
             "maxItems": 32,
             "type": "array",
             "items": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 128,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              "$ref": "#/$defs/__schema0"
             }
           }
         },
         "required": ["elementIds"],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "$defs": {
+          "__schema0": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        }
       }
     },
     {
@@ -2136,120 +945,131 @@
         "type": "object",
         "properties": {
           "commandId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128,
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
-            "description": "Stable caller-generated id used for safe retries."
+            "description": "Stable caller-generated id used for safe retries.",
+            "$ref": "#/$defs/__schema0"
           },
           "updates": {
             "minItems": 1,
             "maxItems": 32,
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "pageId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 128,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
-                  "description": "Target Page id. Defaults to the active Page when omitted."
-                },
-                "elementId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 128,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "expectedVersion": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 9007199254740991
-                },
-                "changes": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 512
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "parentId": {
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 128,
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "geometry": {
-                      "type": "object",
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "y": {
-                          "type": "number",
-                          "minimum": -1000000000,
-                          "maximum": 1000000000
-                        },
-                        "width": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "height": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 100000000
-                        },
-                        "rotation": {
-                          "default": 0,
-                          "type": "number",
-                          "const": 0
-                        }
-                      },
-                      "additionalProperties": false
-                    },
-                    "properties": {
-                      "type": "object",
-                      "maxProperties": 256,
-                      "propertyNames": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 512
-                      },
-                      "additionalProperties": {
-                        "$ref": "#/$defs/koiJsonValue23"
-                      }
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              },
-              "required": ["pageId", "elementId", "expectedVersion", "changes"],
-              "additionalProperties": false
+              "$ref": "#/$defs/__schema1"
             }
           }
         },
         "required": ["commandId", "updates"],
         "additionalProperties": false,
         "$defs": {
+          "__schema0": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "__schema1": {
+            "type": "object",
+            "properties": {
+              "pageId": {
+                "description": "Target Page id. Defaults to the active Page when omitted.",
+                "$ref": "#/$defs/__schema0"
+              },
+              "elementId": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "expectedVersion": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "changes": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "$ref": "#/$defs/__schema2"
+                  },
+                  "parentId": {
+                    "$ref": "#/$defs/__schema3"
+                  },
+                  "geometry": {
+                    "$ref": "#/$defs/__schema4"
+                  },
+                  "properties": {
+                    "$ref": "#/$defs/__schema7"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": ["pageId", "elementId", "expectedVersion", "changes"],
+            "additionalProperties": false
+          },
+          "__schema2": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "__schema3": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/__schema0"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "__schema4": {
+            "type": "object",
+            "properties": {
+              "x": {
+                "$ref": "#/$defs/__schema5"
+              },
+              "y": {
+                "$ref": "#/$defs/__schema5"
+              },
+              "width": {
+                "$ref": "#/$defs/__schema6"
+              },
+              "height": {
+                "$ref": "#/$defs/__schema6"
+              },
+              "rotation": {
+                "default": 0,
+                "type": "number",
+                "const": 0
+              }
+            },
+            "additionalProperties": false
+          },
+          "__schema5": {
+            "type": "number",
+            "minimum": -1000000000,
+            "maximum": 1000000000
+          },
+          "__schema6": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100000000
+          },
+          "__schema7": {
+            "type": "object",
+            "maxProperties": 256,
+            "propertyNames": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "additionalProperties": {
+              "$ref": "#/$defs/koiJsonValue3"
+            }
+          },
           "koiJsonValue0": {
             "anyOf": [
               {
@@ -2379,804 +1199,6 @@
                 },
                 "additionalProperties": {
                   "$ref": "#/$defs/koiJsonValue2"
-                }
-              }
-            ]
-          },
-          "koiJsonValue4": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue3"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue3"
-                }
-              }
-            ]
-          },
-          "koiJsonValue5": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue4"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue4"
-                }
-              }
-            ]
-          },
-          "koiJsonValue6": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue5"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue5"
-                }
-              }
-            ]
-          },
-          "koiJsonValue7": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue6"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue6"
-                }
-              }
-            ]
-          },
-          "koiJsonValue8": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue7"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue7"
-                }
-              }
-            ]
-          },
-          "koiJsonValue9": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue8"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue8"
-                }
-              }
-            ]
-          },
-          "koiJsonValue10": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue9"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue9"
-                }
-              }
-            ]
-          },
-          "koiJsonValue11": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue10"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue10"
-                }
-              }
-            ]
-          },
-          "koiJsonValue12": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue11"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue11"
-                }
-              }
-            ]
-          },
-          "koiJsonValue13": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue12"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue12"
-                }
-              }
-            ]
-          },
-          "koiJsonValue14": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue13"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue13"
-                }
-              }
-            ]
-          },
-          "koiJsonValue15": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue14"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue14"
-                }
-              }
-            ]
-          },
-          "koiJsonValue16": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue15"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue15"
-                }
-              }
-            ]
-          },
-          "koiJsonValue17": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue16"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue16"
-                }
-              }
-            ]
-          },
-          "koiJsonValue18": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue17"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue17"
-                }
-              }
-            ]
-          },
-          "koiJsonValue19": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue18"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue18"
-                }
-              }
-            ]
-          },
-          "koiJsonValue20": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue19"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue19"
-                }
-              }
-            ]
-          },
-          "koiJsonValue21": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue20"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue20"
-                }
-              }
-            ]
-          },
-          "koiJsonValue22": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue21"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue21"
-                }
-              }
-            ]
-          },
-          "koiJsonValue23": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue22"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue22"
-                }
-              }
-            ]
-          },
-          "koiJsonValue24": {
-            "anyOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "number",
-                "minimum": -1.7976931348623157e308,
-                "maximum": 1.7976931348623157e308
-              },
-              {
-                "type": "string",
-                "maxLength": 100000
-              },
-              {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "$ref": "#/$defs/koiJsonValue23"
-                }
-              },
-              {
-                "type": "object",
-                "maxProperties": 256,
-                "propertyNames": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 512
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/koiJsonValue23"
                 }
               }
             ]
