@@ -22,7 +22,7 @@ function resolvePublicPath(root, requestUrl) {
   return candidate.startsWith(`${root}${path.sep}`) ? candidate : null;
 }
 
-export async function serveStaticDirectory(root) {
+export async function serveStaticDirectory(root, { responseHeaders = {} } = {}) {
   const resolvedRoot = path.resolve(root);
   const server = createServer(async (request, response) => {
     if (request.method !== "GET" && request.method !== "HEAD") {
@@ -39,6 +39,7 @@ export async function serveStaticDirectory(root) {
       if (!stat.isFile()) throw Object.assign(new Error("Not a file"), { code: "ENOENT" });
       const content = await fs.readFile(candidate);
       response.writeHead(200, {
+        ...responseHeaders,
         "Cache-Control": "no-store",
         "Content-Length": String(content.byteLength),
         "Content-Type": mediaTypes.get(path.extname(candidate)) ?? "application/octet-stream",
