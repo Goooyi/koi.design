@@ -91,8 +91,9 @@ continues to produce the full self-hostable web client.
 ```sh
 pnpm challenge:verify
 pnpm challenge:dev       # Cloudflare Pages emulator on http://127.0.0.1:4174
+pnpm exec wrangler login # One time per workstation: authenticate in the browser
 pnpm challenge:setup     # One time: create the Pages project with production branch main
-pnpm challenge:deploy    # Requires an authenticated Wrangler account and existing project
+pnpm challenge:deploy    # Repeat for each production release
 ```
 
 `challenge:verify` rejects dirty release trees, missing security/cache metadata, source maps,
@@ -106,9 +107,11 @@ is absent.
 The configuration names a dedicated Direct Upload project so the submitted deployment can remain
 pinned while Stage 2 moves on. Run `challenge:setup` exactly once before the first deployment; it
 sets `main` explicitly as the production branch and intentionally fails if that project already
-exists. Direct Upload projects cannot later be converted to Git-integrated Pages projects; use a
-different Pages project if continuous Git deployment is wanted later. After deployment, rerun the
-same clean-profile audit against HTTPS:
+exists. Direct Upload describes how the Pages project is created, not a one-time upload:
+`challenge:deploy` can update the same project repeatedly. The project cannot later be converted to
+Cloudflare's native Git integration; create a different Pages project if that mode is wanted. The
+same Direct Upload project can still be automated from GitHub Actions by running Wrangler with
+scoped Cloudflare credentials. After deployment, rerun the same clean-profile audit against HTTPS:
 
 ```sh
 KOI_AUDIT_URL=https://<deployment>.pages.dev pnpm audit:browser
