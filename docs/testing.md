@@ -46,7 +46,7 @@ Koi's deterministic baseline is implemented and runs within bounded resources:
 - `pnpm audit:browser` builds the production web artifact and uses one clean headless Chrome process
   to capture axe results, console/network failures, DOM and mounted-Frame samples, animation-frame
   and long-task distributions, React commit cadence, CDP/trace rendering metrics, compositor-layer
-  records, and post-GC retention. The checked-in Stage 1 fixture passes all 35 declared budgets; see
+  records, and post-GC retention. The checked-in Stage 1 fixture passes all declared budgets; see
   [`browser-audit.json`](evidence/browser-audit.json). The raw trace stays ignored because browser
   traces can contain sensitive implementation details; the report records its hash and sizes.
 - An isolated native Chrome smoke discovered all eight WebMCP tools and executed bounded context

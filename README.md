@@ -28,10 +28,11 @@ an explicit fallback; Koi ships no WebGL runtime.
 
 ## Run locally
 
-Requirements: Node.js 22.18 or newer and pnpm 11.21.0.
+Requirements: Node.js 22.18 or newer, Corepack, and the repository-pinned pnpm version. Node.js 24
+LTS is the CI and release reference runtime.
 
 ```sh
-npm install --global pnpm@11.21.0 # Skip when this pnpm version is already installed.
+corepack enable
 pnpm install --frozen-lockfile
 pnpm dev
 ```
@@ -53,6 +54,11 @@ Chrome. On macOS, install it in `/Applications`; on Linux, make `google-chrome` 
 `google-chrome-stable` available on `PATH`. The audit deliberately measures the judge-facing
 browser rather than Playwright's pinned test browser. Run `pnpm run doctor` to verify both
 browsers; the explicit `run` avoids pnpm's unrelated built-in `doctor` command.
+
+The doctor exits nonzero only when the local development toolchain is unusable. Its separate
+`challengeAppReleasePrerequisitesPass` result reports stable Chrome, Wrangler, and clean-worktree
+preconditions used by challenge audit and deploy commands; it is not a complete submission-ready
+verdict, and the commands that consume those prerequisites enforce them directly.
 
 Useful repository gates:
 

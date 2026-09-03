@@ -319,6 +319,12 @@ Every mutating tool uses bounded batches, stable IDs, preconditions, idempotency
 
 Tool descriptions are static and precise. Document text and agent-returned labels are untrusted content and are never interpolated into tool instructions.
 
+Generated input schemas reuse local references and advertise at most four nested arbitrary-JSON
+levels, which covers the current Astryx properties while keeping every individual tool declaration
+at or below 10,240 UTF-8 bytes and the complete advertised catalog at or below 20,480 bytes. The
+portable Document validator retains its deeper 24-level bound; that larger storage/import allowance
+is deliberately not repeated inside every model-visible tool schema.
+
 `inspect_elements` accepts 1–32 stable IDs. It returns semantic property previews bounded by depth,
 node count, key count, array length, string length, and a 1,000,000-byte total model output, marking
 truncated Elements explicitly and reporting whether continuation is available. Stage 1 has no

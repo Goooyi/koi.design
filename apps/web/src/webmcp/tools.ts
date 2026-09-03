@@ -29,6 +29,27 @@ const coordinate = geometrySchema.shape.x;
 const dimension = geometrySchema.shape.width;
 const MAX_CONTEXT_SELECTION_IDS = 64;
 const MAX_ERROR_TEXT_LENGTH = 512;
+const SAFE_ERROR_KINDS = new Set([
+  "AbortError",
+  "DOMException",
+  "Error",
+  "EvalError",
+  "InvalidStateError",
+  "NotAllowedError",
+  "NotFoundError",
+  "QuotaExceededError",
+  "RangeError",
+  "ReferenceError",
+  "SecurityError",
+  "SyntaxError",
+  "TimeoutError",
+  "TypeError",
+  "URIError",
+]);
+// WebMCP hosts place advertised schemas in model context. Four JSON levels cover the current
+// Astryx props and shader parameters without repeating Koi's deeper portable-document allowance
+// in every tool declaration. Runtime validation remains bounded by the core document schema.
+const MAX_WEBMCP_SCHEMA_JSON_DEPTH = 4;
 
 const contextInput = z.strictObject({});
 const inspectInput = z.strictObject({ elementIds: z.array(stableIdSchema).min(1).max(32) });
@@ -110,7 +131,7 @@ function boundedJsonDefinitions(): Record<string, JsonSchema> {
     koiJsonValue0: { anyOf: primitiveSchemas() },
   };
 
-  for (let depth = 1; depth <= KOI_JSON_LIMITS.maxDepth; depth += 1) {
+  for (let depth = 1; depth < MAX_WEBMCP_SCHEMA_JSON_DEPTH; depth += 1) {
     const child = { $ref: `#/$defs/koiJsonValue${depth - 1}` };
     definitions[`koiJsonValue${depth}`] = {
       anyOf: [
@@ -141,7 +162,7 @@ function inputJsonSchema(schema: ToolSchema) {
   const jsonSchema = z.toJSONSchema(schema, {
     target: "draft-2020-12",
     io: "input",
-    reused: "inline",
+    reused: "ref",
     unrepresentable: "any",
     override: ({ zodSchema, jsonSchema: generated }) => {
       if (zodSchema !== jsonObjectSchema) return;
@@ -155,7 +176,7 @@ function inputJsonSchema(schema: ToolSchema) {
           maxLength: KOI_JSON_LIMITS.maxKeyLength,
         },
         additionalProperties: {
-          $ref: `#/$defs/koiJsonValue${KOI_JSON_LIMITS.maxDepth - 1}`,
+          $ref: `#/$defs/koiJsonValue${MAX_WEBMCP_SCHEMA_JSON_DEPTH - 1}`,
         },
       });
     },
@@ -198,9 +219,16 @@ function executionFailure(readOnly: boolean, signal: AbortSignal) {
       message: signal.aborted
         ? "The tool call was cancelled before Koi accepted a change."
         : "Koi could not complete the tool call.",
-      retryable: !signal.aborted,
+      retryable: false,
     },
   };
+}
+
+function reportUnexpectedFailure(scope: string, error: unknown, signal: AbortSignal): void {
+  if (signal.aborted) return;
+  const candidate = error instanceof Error ? error.name : typeof error;
+  const kind = SAFE_ERROR_KINDS.has(candidate) ? candidate : "Unknown";
+  console.error(`[Koi WebMCP] ${scope} failed (${kind}).`);
 }
 
 function defineTool<Schema extends ToolSchema>(
@@ -225,7 +253,8 @@ function defineTool<Schema extends ToolSchema>(
       try {
         executionOptions.signal.throwIfAborted();
         return await definition.execute(parsed.data, executionOptions);
-      } catch {
+      } catch (error) {
+        reportUnexpectedFailure(`Tool ${definition.name}`, error, executionOptions.signal);
         return executionFailure(definition.readOnly, executionOptions.signal);
       }
     },
@@ -282,8 +311,9 @@ async function commitTool(
         signal: options.signal,
       }),
     );
-  } catch {
+  } catch (error) {
     const receipt = ownRecordValue(store.getProjection().receipts, options.commandId);
+    reportUnexpectedFailure("Durable commit", error, options.signal);
     if (!receipt) return executionFailure(false, options.signal);
     return {
       ok: false,

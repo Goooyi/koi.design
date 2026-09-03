@@ -139,7 +139,20 @@ describe("Koi WebMCP", () => {
     ).toBe(true);
     for (const tool of tools) {
       expectBoundedInputSchema(tool.inputSchema as JsonSchema);
+      expect(
+        new TextEncoder().encode(JSON.stringify(tool.inputSchema)).byteLength,
+      ).toBeLessThanOrEqual(10 * 1_024);
     }
+    const advertisedCatalog = tools.map((tool) => ({
+      name: tool.name,
+      title: tool.title,
+      description: tool.description,
+      inputSchema: tool.inputSchema,
+      annotations: tool.annotations,
+    }));
+    expect(
+      new TextEncoder().encode(JSON.stringify(advertisedCatalog)).byteLength,
+    ).toBeLessThanOrEqual(20 * 1_024);
     expect(tools.find((tool) => tool.name === "create_elements")?.annotations).toEqual({
       readOnlyHint: false,
       untrustedContentHint: true,
@@ -344,6 +357,7 @@ describe("Koi WebMCP", () => {
   });
 
   it("reports an accepted write as ambiguous when durability cannot be confirmed", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
     let attempts = 0;
     const runtime = dependencies(() => {
       attempts += 1;
@@ -376,6 +390,8 @@ describe("Koi WebMCP", () => {
       error: { code: "durability_outcome_unknown", retryable: true },
     });
     expect(JSON.stringify(ambiguous)).not.toContain("private storage detail");
+    expect(consoleError).toHaveBeenCalledWith("[Koi WebMCP] Durable commit failed (Error).");
+    expect(JSON.stringify(consoleError.mock.calls)).not.toContain("private storage detail");
 
     await Promise.resolve();
     await expect(tool.execute(input, executionOptions())).resolves.toMatchObject({
@@ -384,12 +400,16 @@ describe("Koi WebMCP", () => {
       replayed: true,
     });
     expect(runtime.store.getActivePage()?.elements).toHaveLength(1);
+    consoleError.mockRestore();
   });
 
   it("bounds unexpected read errors without exposing internal details", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
     const runtime = dependencies();
     vi.spyOn(runtime.camera, "get").mockImplementation(() => {
-      throw new Error("private camera detail");
+      const error = new Error("private camera detail");
+      error.name = "PrivateCameraDetail";
+      throw error;
     });
     const tool = createKoiWebMcpTools(runtime).find(
       (candidate) => candidate.name === "get_canvas_context",
@@ -401,10 +421,94 @@ describe("Koi WebMCP", () => {
       error: {
         code: "execution_failed",
         message: "Koi could not complete the tool call.",
-        retryable: true,
+        retryable: false,
       },
     });
     expect(JSON.stringify(result)).not.toContain("private camera detail");
+    expect(consoleError).toHaveBeenCalledWith(
+      "[Koi WebMCP] Tool get_canvas_context failed (Unknown).",
+    );
+    expect(JSON.stringify(consoleError.mock.calls)).not.toContain("PrivateCameraDetail");
+    expect(JSON.stringify(consoleError.mock.calls)).not.toContain("private camera detail");
+    consoleError.mockRestore();
+  });
+
+  it("rejects an unexpected pre-accept write failure without changing state or inviting retries", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const runtime = dependencies();
+    const privateError = new Error("private commit detail");
+    privateError.name = "PrivateCommitDetail";
+    vi.spyOn(runtime.store, "commitDurably").mockRejectedValueOnce(privateError);
+    const tool = createKoiWebMcpTools(runtime).find(
+      (candidate) => candidate.name === "create_elements",
+    )!;
+
+    const result = await tool.execute(
+      {
+        commandId: "failed-before-acceptance",
+        pageId: "page-1",
+        elements: [
+          {
+            schemaVersion: 1,
+            id: "uncommitted-note",
+            kind: "note",
+            parentId: null,
+            geometry: { x: 10, y: 10, width: 200, height: 100, rotation: 0 },
+            properties: { content: "Must not appear", color: "#ffe694" },
+          },
+        ],
+      },
+      executionOptions(),
+    );
+
+    expect(result).toMatchObject({
+      ok: false,
+      outcome: "rejected",
+      error: { code: "execution_failed", retryable: false },
+    });
+    expect(runtime.store.getActivePage()?.elements).toHaveLength(0);
+    expect(consoleError).toHaveBeenCalledTimes(1);
+    expect(consoleError).toHaveBeenCalledWith("[Koi WebMCP] Durable commit failed (Unknown).");
+    expect(JSON.stringify(consoleError.mock.calls)).not.toContain("PrivateCommitDetail");
+    expect(JSON.stringify(consoleError.mock.calls)).not.toContain("private commit detail");
+    consoleError.mockRestore();
+  });
+
+  it("treats a cancelled write as non-retryable without logging an unexpected error", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const runtime = dependencies();
+    const tool = createKoiWebMcpTools(runtime).find(
+      (candidate) => candidate.name === "create_elements",
+    )!;
+    const controller = new AbortController();
+    controller.abort();
+
+    const result = await tool.execute(
+      {
+        commandId: "cancelled-before-acceptance",
+        pageId: "page-1",
+        elements: [
+          {
+            schemaVersion: 1,
+            id: "cancelled-note",
+            kind: "note",
+            parentId: null,
+            geometry: { x: 10, y: 10, width: 200, height: 100, rotation: 0 },
+            properties: { content: "Must not appear", color: "#ffe694" },
+          },
+        ],
+      },
+      { signal: controller.signal },
+    );
+
+    expect(result).toMatchObject({
+      ok: false,
+      outcome: "rejected",
+      error: { code: "execution_cancelled", retryable: false },
+    });
+    expect(runtime.store.getActivePage()?.elements).toHaveLength(0);
+    expect(consoleError).not.toHaveBeenCalled();
+    consoleError.mockRestore();
   });
 
   it("reports mutation success only after the durable callback completes", async () => {

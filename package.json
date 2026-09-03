@@ -16,8 +16,9 @@
     "dev": "vp run -r --concurrency-limit 2 build && vp run @koi/web#dev",
     "doctor": "node scripts/doctor.mjs",
     "licenses:generate": "node scripts/generate-license-evidence.mjs",
-    "ready": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 check && vp run -r --concurrency-limit 2 test && vp exec playwright test --workers=1",
-    "test": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 test",
+    "ready": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 check && pnpm test:doctor && vp run -r --concurrency-limit 2 test && vp exec playwright test --workers=1",
+    "test": "vp run -r --concurrency-limit 2 build && pnpm test:doctor && vp run -r --concurrency-limit 2 test",
+    "test:doctor": "node --test scripts/lib/doctor-contract.test.mjs",
     "test:e2e": "vp run -r --concurrency-limit 2 build && vp exec playwright test --workers=1",
     "webmcp:manifest": "pnpm challenge:build && node scripts/capture-webmcp-tools.mjs"
   },

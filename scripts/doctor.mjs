@@ -1,14 +1,21 @@
 #!/usr/bin/env node
 
 import { execFileSync } from "node:child_process";
-import { accessSync, constants } from "node:fs";
+import { accessSync, constants, readFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { chromium } from "@playwright/test";
 
+import {
+  doctorStatus,
+  minimumEngineVersion,
+  packageManagerVersion,
+} from "./lib/doctor-contract.mjs";
+
 const repositoryRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const rootManifest = JSON.parse(readFileSync(path.join(repositoryRoot, "package.json"), "utf8"));
 
 function run(command, arguments_ = []) {
   try {
@@ -78,19 +85,41 @@ const branch = run("git", ["branch", "--show-current"]);
 const head = run("git", ["rev-parse", "HEAD"]);
 const remote = run("git", ["remote", "get-url", "origin"]);
 const worktrees = run("git", ["worktree", "list", "--porcelain"]);
+const expectedPnpmVersion = packageManagerVersion(rootManifest.packageManager);
+const requiredNodeVersion = minimumEngineVersion(rootManifest.engines?.node);
 
 const requiredChecks = [
   { name: "git", pass: git.available, detail: git.output },
   {
     name: "node",
-    pass: atLeast(majorMinorPatch(nodeVersion), [22, 18, 0]),
+    pass:
+      requiredNodeVersion !== null && atLeast(majorMinorPatch(nodeVersion), requiredNodeVersion),
     detail: process.version,
+    expected: rootManifest.engines?.node ?? null,
   },
-  { name: "corepack", pass: corepack.available, detail: corepack.output },
-  { name: "pnpm", pass: pnpm.output === "11.21.0", detail: pnpm.output },
+  {
+    name: "corepack",
+    pass: corepack.available,
+    detail: corepack.output,
+    remediation: "Install Corepack or use the Node.js 24 LTS toolchain used by Koi CI.",
+  },
+  {
+    name: "pnpm",
+    pass: expectedPnpmVersion !== null && pnpm.output === expectedPnpmVersion,
+    detail: pnpm.output,
+    expected: expectedPnpmVersion,
+  },
   { name: "vitePlus", pass: vitePlus.available, detail: vitePlus.output },
   { name: "playwright", pass: playwright.available, detail: playwright.output },
   { name: "bundledChromium", pass: bundledChromium, detail: bundledChromiumPath },
+  {
+    name: "platform",
+    pass: platformSupported && architectureSupported,
+    detail: `${process.platform}/${process.arch}`,
+  },
+];
+
+const challengeAppReleasePrerequisiteChecks = [
   {
     name: "stableChrome",
     pass: chrome.available,
@@ -100,21 +129,19 @@ const requiredChecks = [
   },
   { name: "wrangler", pass: wrangler.available, detail: wrangler.output },
   {
-    name: "platform",
-    pass: platformSupported && architectureSupported,
-    detail: `${process.platform}/${process.arch}`,
-  },
-  {
     name: "cleanWorktree",
     pass: status.available && status.output === "",
     detail: status.output || "clean",
   },
 ];
 
+const statusSummary = doctorStatus(requiredChecks, challengeAppReleasePrerequisiteChecks);
+
 const report = {
   schemaVersion: 1,
-  ok: requiredChecks.every(({ pass }) => pass),
+  ...statusSummary,
   requiredChecks,
+  challengeAppReleasePrerequisiteChecks,
   environment: {
     platform: process.platform,
     architecture: process.arch,
