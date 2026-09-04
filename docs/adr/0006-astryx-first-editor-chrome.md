@@ -21,9 +21,10 @@ Koi's user interface has exactly three layers, and the repository layout states 
 
 1. `packages/astryx` is Koi's Astryx layer. It holds the trusted component registry, the Koi theme
    expressed only as token values on Astryx's contract (`src/theme/koi.ts`, built and drift-checked
-   by `astryx theme build`), Koi's glyphs shaped for Astryx's `Icon`, and Koi-authored components
-   that follow Astryx conventions because Astryx lacks them. Anything here is a candidate for
-   publishing or upstreaming.
+   by `astryx theme build`), starting from Astryx's defaults rather than a shipped theme so that
+   every value in it is a Koi decision, Koi's glyphs shaped for Astryx's `Icon`, and Koi-authored
+   components that follow Astryx conventions because Astryx lacks them. Anything here is a candidate
+   for publishing or upstreaming.
 2. `packages/editor/src/chrome` composes Astryx components. It owns no visual styling beyond the
    shell box and the interaction lock; sizes, colors, radii, shadows, and motion come from Astryx.
 3. `packages/editor/src/canvas` is Koi's product surface. It is authored in StyleX, references only

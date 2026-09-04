@@ -206,6 +206,8 @@ async function sourceHash(manifestPaths) {
 async function trackedAssetEvidence() {
   const indexPath = path.join(repositoryRoot, "apps", "web", "index.html");
   const indexSource = await fs.readFile(indexPath, "utf8");
+  const glyphPath = "packages/astryx/src/icons.tsx";
+  const glyphSource = await fs.readFile(path.join(repositoryRoot, glyphPath), "utf8");
   if (!indexSource.includes("data:image/svg+xml") || !indexSource.includes("%3Csvg")) {
     throw new Error("Expected the Koi-authored inline SVG favicon in apps/web/index.html");
   }
@@ -222,11 +224,20 @@ async function trackedAssetEvidence() {
         license: "AGPL-3.0-or-later",
       },
       {
-        id: "astryx-lucide-icon-set",
-        sourcePath: "@astryxdesign/theme-neutral@0.5.0",
+        id: "koi-editor-glyphs",
+        sourcePath: glyphPath,
+        sourceSha256: sha256(glyphSource),
+        kind: "inline-svg-icon-components",
+        provenance: "Koi-authored editor glyphs rendered through Astryx's Icon component",
+        license: "AGPL-3.0-or-later",
+      },
+      {
+        id: "astryx-core-fallback-icons",
+        sourcePath: "@astryxdesign/core@0.5.0",
         kind: "runtime-icon-component-set",
-        provenance: "AstryX neutral theme using Lucide and Feather-derived icons",
-        license: "ISC AND MIT",
+        provenance:
+          "Astryx core's built-in inline SVG fallback icons (Meta-authored), used because the Koi theme registers no icon library",
+        license: "MIT",
         notice: "See NOTICE and the dependency inventory for package-level evidence.",
       },
     ],

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceInputsSha256": "48882a5bf69f86f4e708894de379f0c061e1a26a226396e1350294f9b86eb2c7",
+  "sourceInputsSha256": "0cbec3d3262dbb1355baaa9b0751856c6c428f24b4ca7c2e0653274ec19b5479",
   "environment": {
     "node": "v26.8.1",
     "platform": "darwin",
@@ -9,7 +9,7 @@
   },
   "summary": {
     "packageVersions": 345,
-    "directPackageNames": 26,
+    "directPackageNames": 25,
     "licenseCounts": {
       "0BSD": 1,
       "Apache-2.0": 13,
@@ -112,20 +112,7 @@
       "version": "0.5.0",
       "declaredLicense": "MIT",
       "verifiedLicense": "MIT",
-      "directUses": [
-        {
-          "section": "dependencies",
-          "workspace": "@koi/astryx"
-        },
-        {
-          "section": "dependencies",
-          "workspace": "@koi/mcp-view"
-        },
-        {
-          "section": "dependencies",
-          "workspace": "@koi/web"
-        }
-      ],
+      "directUses": [],
       "homepage": "https://github.com/facebook/astryx#readme",
       "repository": "git+https://github.com/facebook/astryx.git",
       "localLicenseFiles": [

@@ -1,12 +1,8 @@
 import { Badge } from "@astryxdesign/core/Badge";
-import { Button } from "@astryxdesign/core/Button";
-import { Divider } from "@astryxdesign/core/Divider";
-import { Grid } from "@astryxdesign/core/Grid";
 import { Icon } from "@astryxdesign/core/Icon";
 import { Kbd } from "@astryxdesign/core/Kbd";
 import { List, ListItem } from "@astryxdesign/core/List";
 import { Text } from "@astryxdesign/core/Text";
-import { ToggleButton, ToggleButtonGroup } from "@astryxdesign/core/ToggleButton";
 import { VStack } from "@astryxdesign/core/VStack";
 import { createComponentDefaults, KoiIcons, listComponents, type KoiIconName } from "@koi/astryx";
 
@@ -29,10 +25,16 @@ const componentGlyphs: Record<string, KoiIconName> = {
   "astryx.banner": "banner",
 };
 
-const pointerTools: readonly { tool: EditorTool; label: string; icon: KoiIconName }[] = [
-  { tool: "select", label: "Select", icon: "select" },
-  { tool: "hand", label: "Hand", icon: "hand" },
-  { tool: "pen", label: "Pen", icon: "pen" },
+/** Pointer modes. The shortcuts mirror the bindings in `koi-editor.tsx`. */
+const pointerTools: readonly {
+  tool: EditorTool;
+  label: string;
+  icon: KoiIconName;
+  shortcut: string;
+}[] = [
+  { tool: "select", label: "Select", icon: "select", shortcut: "V" },
+  { tool: "hand", label: "Hand", icon: "hand", shortcut: "H" },
+  { tool: "pen", label: "Pen", icon: "pen", shortcut: "P" },
 ];
 
 function SectionTitle({ children }: { children: string }) {
@@ -54,6 +56,11 @@ function placement(
   return { parentId: null, x: point.x, y: point.y };
 }
 
+/**
+ * The editor's left panel: every group is an Astryx `List` of rows so pointer modes, inserts,
+ * pages, the component library, and document actions all read the same way. Selection state is
+ * carried by `ListItem`'s `isSelected` (`aria-current`), and each row's action is a real button.
+ */
 export function ToolPanel({ onExport, onImport }: ToolPanelProps) {
   const { camera, setTool, store, tool } = useEditorRuntime();
   const projection = useProjection(store);
@@ -141,65 +148,43 @@ export function ToolPanel({ onExport, onImport }: ToolPanelProps) {
   };
 
   const inserts = [
-    { label: "Frame", shortcut: "F", icon: "frame", onClick: addFrame },
-    { label: "Text", shortcut: "T", icon: "text", onClick: addText },
-    { label: "Note", shortcut: "N", icon: "note", onClick: addNote },
-    { label: "Shape", shortcut: "R", icon: "shape", onClick: addShape },
+    { label: "Frame", icon: "frame", onClick: addFrame },
+    { label: "Text", icon: "text", onClick: addText },
+    { label: "Note", icon: "note", onClick: addNote },
+    { label: "Shape", icon: "shape", onClick: addShape },
   ] as const;
 
   return (
-    <VStack gap={4}>
-      <VStack gap={2}>
-        <SectionTitle>Tools</SectionTitle>
-        <ToggleButtonGroup
-          type="single"
-          label="Pointer mode"
-          size="sm"
-          value={tool}
-          onChange={(next) => {
-            if (next) setTool(next as EditorTool);
-          }}
-        >
-          {pointerTools.map((entry) => (
-            <ToggleButton
-              key={entry.tool}
-              value={entry.tool}
-              label={entry.label}
-              tooltip={entry.label}
-              isIconOnly
-              size="sm"
-              icon={<Icon icon={KoiIcons[entry.icon]} />}
-            />
-          ))}
-        </ToggleButtonGroup>
-        <Grid columns={1} gap={0.5}>
-          {inserts.map((entry) => (
-            <Button
-              key={entry.label}
-              variant="ghost"
-              size="sm"
-              width="100%"
-              label={entry.label}
-              icon={<Icon icon={KoiIcons[entry.icon]} />}
-              endContent={<Kbd keys={entry.shortcut} />}
-              onClick={entry.onClick}
-            />
-          ))}
-          <Button
-            variant="ghost"
-            size="sm"
-            width="100%"
-            label="Connect"
-            icon={<Icon icon={KoiIcons.connect} />}
-            endContent={<Kbd keys="C" />}
-            isDisabled={selection.length !== 2}
-            tooltip="Connect two selected elements"
-            onClick={addConnector}
+    <VStack gap={5}>
+      <List density="compact" header={<SectionTitle>Tools</SectionTitle>}>
+        {pointerTools.map((entry) => (
+          <ListItem
+            key={entry.tool}
+            label={entry.label}
+            startContent={<Icon icon={KoiIcons[entry.icon]} />}
+            endContent={<Kbd keys={entry.shortcut} />}
+            isSelected={tool === entry.tool}
+            onClick={() => setTool(entry.tool)}
           />
-        </Grid>
-      </VStack>
+        ))}
+      </List>
 
-      <Divider />
+      <List density="compact" header={<SectionTitle>Insert</SectionTitle>}>
+        {inserts.map((entry) => (
+          <ListItem
+            key={entry.label}
+            label={entry.label}
+            startContent={<Icon icon={KoiIcons[entry.icon]} />}
+            onClick={entry.onClick}
+          />
+        ))}
+        <ListItem
+          label="Connect"
+          startContent={<Icon icon={KoiIcons.connect} />}
+          isDisabled={selection.length !== 2}
+          onClick={addConnector}
+        />
+      </List>
 
       <List density="compact" header={<SectionTitle>Pages</SectionTitle>}>
         {projection.document.pages.map((candidate) => (
@@ -213,8 +198,6 @@ export function ToolPanel({ onExport, onImport }: ToolPanelProps) {
           />
         ))}
       </List>
-
-      <Divider />
 
       <List
         density="compact"
@@ -261,31 +244,22 @@ export function ToolPanel({ onExport, onImport }: ToolPanelProps) {
       </List>
 
       {(onImport || onExport) && (
-        <>
-          <Divider />
-          <VStack gap={1}>
-            {onImport && (
-              <Button
-                variant="secondary"
-                size="sm"
-                width="100%"
-                label="Import .koi.json"
-                icon={<Icon icon={KoiIcons.import} />}
-                onClick={onImport}
-              />
-            )}
-            {onExport && (
-              <Button
-                variant="secondary"
-                size="sm"
-                width="100%"
-                label="Export .koi.json"
-                icon={<Icon icon={KoiIcons.export} />}
-                onClick={onExport}
-              />
-            )}
-          </VStack>
-        </>
+        <List density="compact" header={<SectionTitle>Document</SectionTitle>}>
+          {onImport && (
+            <ListItem
+              label="Import .koi.json"
+              startContent={<Icon icon={KoiIcons.import} />}
+              onClick={onImport}
+            />
+          )}
+          {onExport && (
+            <ListItem
+              label="Export .koi.json"
+              startContent={<Icon icon={KoiIcons.export} />}
+              onClick={onExport}
+            />
+          )}
+        </List>
       )}
     </VStack>
   );

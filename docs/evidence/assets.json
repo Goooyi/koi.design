@@ -10,11 +10,19 @@
       "license": "AGPL-3.0-or-later"
     },
     {
-      "id": "astryx-lucide-icon-set",
-      "sourcePath": "@astryxdesign/theme-neutral@0.5.0",
+      "id": "koi-editor-glyphs",
+      "sourcePath": "packages/astryx/src/icons.tsx",
+      "sourceSha256": "64e4b310411f2e3d519d83ded7d6376683da50639573a2e28b480da61cb991b5",
+      "kind": "inline-svg-icon-components",
+      "provenance": "Koi-authored editor glyphs rendered through Astryx's Icon component",
+      "license": "AGPL-3.0-or-later"
+    },
+    {
+      "id": "astryx-core-fallback-icons",
+      "sourcePath": "@astryxdesign/core@0.5.0",
       "kind": "runtime-icon-component-set",
-      "provenance": "AstryX neutral theme using Lucide and Feather-derived icons",
-      "license": "ISC AND MIT",
+      "provenance": "Astryx core's built-in inline SVG fallback icons (Meta-authored), used because the Koi theme registers no icon library",
+      "license": "MIT",
       "notice": "See NOTICE and the dependency inventory for package-level evidence."
     }
   ],

@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "@astryxdesign/core": "catalog:",
-    "@astryxdesign/theme-neutral": "catalog:",
     "@koi/core": "workspace:*",
     "@stylexjs/stylex": "catalog:",
     "react": "catalog:",

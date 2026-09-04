@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@astryxdesign/core": "catalog:",
-    "@astryxdesign/theme-neutral": "catalog:",
     "@koi/astryx": "workspace:*",
     "@koi/core": "workspace:*",
     "@koi/editor": "workspace:*",

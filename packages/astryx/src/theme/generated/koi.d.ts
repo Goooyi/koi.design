@@ -6,6 +6,5 @@
  * Core: @astryxdesign/core@0.5.0
  */
 
-/// <reference path="./koi.variants.d.ts" />
 import type { DefinedTheme } from '@astryxdesign/core/theme';
 export declare const koiTheme: DefinedTheme;
