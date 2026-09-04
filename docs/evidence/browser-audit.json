@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "capturedAt": "2026-09-04T03:04:11.373Z",
-  "generatedFromCommit": "d51d141dd399a3ad6af37b5750658f69a8c46e86",
+  "capturedAt": "2026-09-04T07:01:16.074Z",
+  "generatedFromCommit": "7a2deff8bf3a6330a8caa9aa1b4c0f7591f01fb5",
   "sourceTree": {
     "sourceInputsClean": true,
-    "dirtyGeneratedEvidenceBeforeCapture": ["docs/evidence/webmcp-tools.json"]
+    "dirtyGeneratedEvidenceBeforeCapture": []
   },
   "fixture": {
     "id": "welcome-document-baseline",
@@ -19,7 +19,7 @@
     "claimScope": "Welcome Document regression sentinel; not a general canvas-capacity claim"
   },
   "environment": {
-    "url": "http://127.0.0.1:56937/",
+    "url": "http://127.0.0.1:52561/",
     "scope": "loopback-production-build",
     "browser": "151.0.7922.174",
     "node": "v26.8.1",
@@ -33,7 +33,7 @@
   "accessibility": {
     "standard": ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
     "violations": [],
-    "passes": 23,
+    "passes": 26,
     "incomplete": [
       {
         "id": "color-contrast",
@@ -41,7 +41,7 @@
         "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
         "help": "Elements must meet minimum color contrast ratio thresholds",
         "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=playwright",
-        "nodeCount": 16
+        "nodeCount": 15
       }
     ]
   },
@@ -56,7 +56,7 @@
   },
   "instrumentation": {
     "failures": [],
-    "initialReactCommits": 13,
+    "initialReactCommits": 16,
     "compositorLayers": {
       "eventCount": 0,
       "maximum": null
@@ -66,48 +66,48 @@
     "canvasSamples": [
       {
         "label": "initial-after-warmup",
-        "domNodes": 179,
+        "domNodes": 339,
         "domElements": 15,
         "mountedFrames": 3,
         "mountedFrameIds": ["frame-brief", "frame-components", "frame-flow"]
       },
       {
         "label": "pan-1",
-        "domNodes": 194,
+        "domNodes": 354,
         "domElements": 19,
         "mountedFrames": 4,
         "mountedFrameIds": ["frame-brief", "frame-components", "frame-flow", "frame-gpu"]
       },
       {
         "label": "pan-2",
-        "domNodes": 143,
+        "domNodes": 305,
         "domElements": 8,
         "mountedFrames": 2,
         "mountedFrameIds": ["frame-flow", "frame-gpu"]
       },
       {
         "label": "pan-3",
-        "domNodes": 123,
+        "domNodes": 285,
         "domElements": 4,
         "mountedFrames": 1,
         "mountedFrameIds": ["frame-gpu"]
       },
       {
         "label": "reset",
-        "domNodes": 179,
+        "domNodes": 339,
         "domElements": 15,
         "mountedFrames": 3,
         "mountedFrameIds": ["frame-brief", "frame-components", "frame-flow"]
       }
     ],
-    "markerWindowMs": 915.169,
+    "markerWindowMs": 872.285,
     "frameIntervalsMs": {
-      "count": 54,
-      "min": 14.8,
-      "p50": 16.7,
-      "p95": 18,
-      "max": 18.6,
-      "total": 900
+      "count": 52,
+      "min": 15,
+      "p50": 16.6,
+      "p95": 17.8,
+      "max": 18.3,
+      "total": 867.5
     },
     "frameIntervalsOver50MsPercent": 0,
     "longTasksMs": {
@@ -119,77 +119,77 @@
       "total": 0
     },
     "reactCommits": {
-      "total": 12,
+      "total": 14,
       "idleTail250Ms": 0
     },
     "rendererMainTraceEvents": {
       "RunTask": {
-        "count": 370,
+        "count": 401,
         "min": 0.001,
-        "p50": 0.032,
-        "p95": 1.504,
-        "max": 4.561,
-        "total": 107.371
+        "p50": 0.018,
+        "p95": 1.545,
+        "max": 4.52,
+        "total": 106.241
       },
       "Layout": {
         "count": 18,
-        "min": 0.049,
-        "p50": 0.111,
-        "p95": 1.027,
-        "max": 1.027,
-        "total": 3.143
+        "min": 0.043,
+        "p50": 0.122,
+        "p95": 0.792,
+        "max": 0.792,
+        "total": 3.081
       },
       "UpdateLayoutTree": {
-        "count": 35,
-        "min": 0.019,
-        "p50": 0.053,
-        "p95": 0.996,
-        "max": 1.032,
-        "total": 6.684
+        "count": 70,
+        "min": 0.014,
+        "p50": 0.07,
+        "p95": 0.54,
+        "max": 0.739,
+        "total": 9.053
       },
       "Paint": {
-        "count": 33,
-        "min": 0.013,
-        "p50": 0.173,
-        "p95": 0.727,
-        "max": 0.899,
-        "total": 6.773
+        "count": 37,
+        "min": 0.014,
+        "p50": 0.178,
+        "p95": 0.669,
+        "max": 0.708,
+        "total": 10.016
       }
     },
     "ccActiveTreeLayerRecords": {
-      "count": 18,
-      "min": 11,
-      "p50": 12,
-      "p95": 13,
-      "max": 13,
-      "total": 222
+      "count": 69,
+      "min": 12,
+      "p50": 14,
+      "p95": 15,
+      "max": 15,
+      "total": 961
     }
   },
   "memory": {
     "before": {
       "dom": {
         "documents": 1,
-        "nodes": 294,
-        "jsEventListeners": 204
+        "nodes": 466,
+        "jsEventListeners": 267
       },
       "heap": {
-        "usedSize": 6147736,
-        "totalSize": 7208960,
-        "embedderHeapUsedSize": 2345400,
-        "backingStorageSize": 586984
+        "usedSize": 7204920,
+        "totalSize": 7733248,
+        "embedderHeapUsedSize": 2821592,
+        "backingStorageSize": 720780
       }
     },
     "after": {
       "dom": {
         "documents": 1,
-        "nodes": 294,
-        "jsEventListeners": 204
+        "nodes": 466,
+        "jsEventListeners": 267
       },
       "heap": {
-        "usedSize": 6389996,
-        "totalSize": 7208960,
-        "embedderHeapUsedSize": 2105184,
-        "backingStorageSize": 586999
+        "usedSize": 7366480,
+        "totalSize": 7995392,
+        "embedderHeapUsedSize": 2763424,
+        "backingStorageSize": 720853
       }
     },
     "retained": {
@@ -197,21 +197,21 @@
       "frames": 0,
       "nodes": 0,
       "eventListeners": 0,
-      "jsHeapBytes": 242260
+      "jsHeapBytes": 161560
     }
   },
   "performanceMetricDeltas": {
     "LayoutCount": 18,
-    "RecalcStyleCount": 35,
-    "LayoutDurationMs": 3.301,
-    "RecalcStyleDurationMs": 6.696,
-    "ScriptDurationMs": 28.197,
-    "TaskDurationMs": 116.544
+    "RecalcStyleCount": 89,
+    "LayoutDurationMs": 3.228,
+    "RecalcStyleDurationMs": 9.843,
+    "ScriptDurationMs": 26.432,
+    "TaskDurationMs": 117.205
   },
   "resources": {
     "count": 3,
-    "encodedBodyBytes": 763736,
-    "transferBytes": 764636,
+    "encodedBodyBytes": 891959,
+    "transferBytes": 892859,
     "crossOrigin": []
   },
   "trace": {
@@ -224,9 +224,9 @@
     ],
     "localPath": "test-results/performance/chrome-trace.json.gz",
     "rawTracePublished": false,
-    "rawBytes": 2111197,
-    "compressedBytes": 190555,
-    "sha256": "ea3fc62b2d103bae9cff31135c192ae8d06f7e65b07e24f768120e463e64c177"
+    "rawBytes": 3894986,
+    "compressedBytes": 372382,
+    "sha256": "e3fb4dc52341ec67b1c1baeb24d6898a42a7f867dc7626503ab8f1f04045391d"
   },
   "budgets": [
     {
@@ -273,8 +273,8 @@
     },
     {
       "name": "peakDomNodes",
-      "actual": 194,
-      "maximum": 300,
+      "actual": 354,
+      "maximum": 420,
       "pass": true
     },
     {
@@ -303,7 +303,7 @@
     },
     {
       "name": "p95FrameIntervalMs",
-      "actual": 18,
+      "actual": 17.8,
       "maximum": 34,
       "pass": true
     },
@@ -333,49 +333,49 @@
     },
     {
       "name": "runTaskMaximumMs",
-      "actual": 4.561,
+      "actual": 4.52,
       "maximum": 75,
       "pass": true
     },
     {
       "name": "layoutTotalMs",
-      "actual": 3.143,
+      "actual": 3.081,
       "maximum": 75,
       "pass": true
     },
     {
       "name": "layoutMaximumMs",
-      "actual": 1.027,
+      "actual": 0.792,
       "maximum": 8,
       "pass": true
     },
     {
       "name": "updateLayoutTreeTotalMs",
-      "actual": 6.684,
+      "actual": 9.053,
       "maximum": 75,
       "pass": true
     },
     {
       "name": "updateLayoutTreeMaximumMs",
-      "actual": 1.032,
+      "actual": 0.739,
       "maximum": 8,
       "pass": true
     },
     {
       "name": "paintTotalMs",
-      "actual": 6.773,
+      "actual": 10.016,
       "maximum": 100,
       "pass": true
     },
     {
       "name": "paintMaximumMs",
-      "actual": 0.899,
+      "actual": 0.708,
       "maximum": 8,
       "pass": true
     },
     {
       "name": "ccActiveTreeLayerRecords",
-      "actual": 13,
+      "actual": 15,
       "maximum": 200,
       "pass": true
     },
@@ -411,38 +411,38 @@
     },
     {
       "name": "retainedJsHeapBytes",
-      "actual": 242260,
+      "actual": 161560,
       "maximum": 4194304,
       "pass": true
     },
     {
       "name": "encodedResourceBytes",
-      "actual": 763736,
+      "actual": 891959,
       "maximum": 2097152,
       "pass": true
     },
     {
       "name": "finalJsHeapUsedBytes",
-      "actual": 6389996,
+      "actual": 7366480,
       "maximum": 134217728,
       "pass": true
     },
     {
       "name": "rawTraceBytes",
-      "actual": 2111197,
+      "actual": 3894986,
       "maximum": 33554432,
       "pass": true
     },
     {
       "name": "harnessRuntimeMs",
-      "actual": 4802,
+      "actual": 5211,
       "maximum": 30000,
       "pass": true
     },
     {
       "name": "reactCommits",
-      "actual": 12,
-      "maximum": 23,
+      "actual": 14,
+      "maximum": 22,
       "pass": true
     }
   ],
