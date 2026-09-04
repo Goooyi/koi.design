@@ -264,12 +264,17 @@ test.describe("Koi browser editor", () => {
     const canvasBox = await canvas.boundingBox();
     expect(canvasBox).not.toBeNull();
     await page.getByRole("button", { name: /^Hand/ }).click();
-    await page.mouse.move(canvasBox!.x + canvasBox!.width * 0.7, canvasBox!.y + 300);
-    await page.mouse.down();
-    await page.mouse.move(canvasBox!.x + canvasBox!.width * 0.25, canvasBox!.y + 300, {
-      steps: 6,
-    });
-    await page.mouse.up();
+    // Two swipes bring the Flow Frame fully inside the canvas. Under the width budget (tools 256 |
+    // canvas | inspector 380) the canvas is about 800px wide, and one 45% swipe left the Frame's
+    // left edge under the inspector, so the drag below could not start on the Frame.
+    for (let swipe = 0; swipe < 2; swipe += 1) {
+      await page.mouse.move(canvasBox!.x + canvasBox!.width * 0.85, canvasBox!.y + 300);
+      await page.mouse.down();
+      await page.mouse.move(canvasBox!.x + canvasBox!.width * 0.25, canvasBox!.y + 300, {
+        steps: 6,
+      });
+      await page.mouse.up();
+    }
     await page.getByRole("button", { name: /^Select/ }).click();
 
     const frame = page.locator('[data-element-id="frame-flow"]');
