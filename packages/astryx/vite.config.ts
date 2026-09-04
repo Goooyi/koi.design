@@ -20,6 +20,7 @@ export default defineConfig({
     exports: {
       customExports(exports) {
         exports["./theme.css"] = "./src/theme/generated/koi.css";
+        exports["./themes/apple.css"] = "./src/theme/generated/apple.css";
         exports["./components.css"] = "./dist/components.css";
         return exports;
       },

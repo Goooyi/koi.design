@@ -31,10 +31,11 @@ Koi's user interface has exactly three layers, and the repository layout states 
    Astryx token groups, and follows Astryx's styling rules, including the `@media (hover: hover)`
    guard for hover states.
 
-Koi keeps no token layer of its own. Where a value is Koi's, it lives in the Koi theme; where a
-name is missing, the Astryx token families are extended through the theme's `localTokens`, never
-through parallel variables. Per-document design tokens will apply through a nested Astryx `Theme`
-around the canvas so that a design's theme never restyles the editor.
+Koi keeps no token layer of its own. Where a value is Koi's, it lives in the Koi theme; where a name
+is missing, it is a diagnostic and stays in the design profile, never a parallel variable (Astryx
+0.5.0 offers no `localTokens`). Per-document design tokens will apply through a nested Astryx
+`Theme` around the canvas so that a design's theme never restyles the editor. The theme itself is
+compiled from the repository's `DESIGN.md` by `@koidesign/design-md` (ADR 0007).
 
 The editor's width budget follows Astryx's layout guide: structural widths are pixels, everything
 inside them uses the spacing scale, and a region is dropped rather than left to compete for space.

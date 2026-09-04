@@ -1,0 +1,46 @@
+{
+  "name": "@koidesign/design-md",
+  "version": "0.1.0",
+  "description": "Bridge a DESIGN.md (Google's design-system format for agents) onto Astryx's token contract and Koi's design profile.",
+  "keywords": [
+    "astryx",
+    "design-tokens",
+    "design.md",
+    "koi",
+    "stylex"
+  ],
+  "license": "AGPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Goooyi/koi.design.git",
+    "directory": "packages/design-md"
+  },
+  "bin": {
+    "koi-design-md": "./dist/cli.mjs"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.mjs",
+      "./package.json": "./package.json"
+    },
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "check": "vp check",
+    "test": "vp test --run"
+  },
+  "dependencies": {
+    "yaml": "catalog:",
+    "zod": "catalog:"
+  }
+}

@@ -207,6 +207,8 @@ async function trackedAssetEvidence() {
   const indexPath = path.join(repositoryRoot, "apps", "web", "index.html");
   const indexSource = await fs.readFile(indexPath, "utf8");
   const glyphPath = "packages/astryx/src/icons.tsx";
+  const applePath = "packages/design-md/fixtures/apple/DESIGN.md";
+  const appleSource = await fs.readFile(path.join(repositoryRoot, applePath), "utf8");
   const glyphSource = await fs.readFile(path.join(repositoryRoot, glyphPath), "utf8");
   if (!indexSource.includes("data:image/svg+xml") || !indexSource.includes("%3Csvg")) {
     throw new Error("Expected the Koi-authored inline SVG favicon in apps/web/index.html");
@@ -230,6 +232,16 @@ async function trackedAssetEvidence() {
         kind: "inline-svg-icon-components",
         provenance: "Koi-authored editor glyphs rendered through Astryx's Icon component",
         license: "AGPL-3.0-or-later",
+      },
+      {
+        id: "design-md-apple-fixture",
+        sourcePath: applePath,
+        sourceSha256: sha256(appleSource),
+        kind: "design-md-fixture",
+        provenance:
+          "Apple design analysis from VoltAgent/awesome-design-md, vendored unchanged as a test fixture and worked example",
+        license: "MIT",
+        notice: "Licence text vendored beside the file; Apple is a trademark of Apple Inc.",
       },
       {
         id: "astryx-core-fallback-icons",

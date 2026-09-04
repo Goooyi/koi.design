@@ -23,6 +23,7 @@ catalog:
   vitest: 4.1.11
   webmcp-types: 0.1.5
   wrangler: 4.128.0
+  yaml: 2.9.0
   zod: 4.4.3
 
 overrides:

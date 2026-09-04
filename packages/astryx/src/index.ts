@@ -11,4 +11,5 @@ export {
   type ComponentProperty,
 } from "./registry.tsx";
 export { koiTheme } from "./theme/generated/koi.js";
+export { appleTheme } from "./theme/generated/apple.js";
 export { KoiThemeProvider } from "./theme.tsx";

@@ -12,10 +12,19 @@
     {
       "id": "koi-editor-glyphs",
       "sourcePath": "packages/astryx/src/icons.tsx",
-      "sourceSha256": "64e4b310411f2e3d519d83ded7d6376683da50639573a2e28b480da61cb991b5",
+      "sourceSha256": "97e080be7a7fe5e9a2387cf58bbedd5cb3782c8e04b0f8c771d4432508a8af1e",
       "kind": "inline-svg-icon-components",
       "provenance": "Koi-authored editor glyphs rendered through Astryx's Icon component",
       "license": "AGPL-3.0-or-later"
+    },
+    {
+      "id": "design-md-apple-fixture",
+      "sourcePath": "packages/design-md/fixtures/apple/DESIGN.md",
+      "sourceSha256": "796eb2b940d9cc2c29869e7ac93b00e5c5db1c78d4287d63662678fe1cf8c0f9",
+      "kind": "design-md-fixture",
+      "provenance": "Apple design analysis from VoltAgent/awesome-design-md, vendored unchanged as a test fixture and worked example",
+      "license": "MIT",
+      "notice": "Licence text vendored beside the file; Apple is a trademark of Apple Inc."
     },
     {
       "id": "astryx-core-fallback-icons",

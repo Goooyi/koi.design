@@ -26,6 +26,11 @@ React and React DOM
   MIT License
   https://github.com/facebook/react
 
+Apple DESIGN.md fixture (packages/design-md/fixtures/apple)
+  Copyright (c) 2026 VoltAgent
+  MIT License
+  https://github.com/VoltAgent/awesome-design-md
+
 Lucide icons
   Copyright (c) 2026 Lucide Icons and Contributors
   ISC License

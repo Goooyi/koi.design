@@ -8,7 +8,8 @@
     ".": "./dist/index.mjs",
     "./package.json": "./package.json",
     "./components.css": "./dist/components.css",
-    "./theme.css": "./src/theme/generated/koi.css"
+    "./theme.css": "./src/theme/generated/koi.css",
+    "./themes/apple.css": "./src/theme/generated/apple.css"
   },
   "publishConfig": {
     "exports": {
@@ -20,8 +21,8 @@
     "build": "vp pack",
     "check": "pnpm theme:check && vp check",
     "test": "vp test --run",
-    "theme:build": "astryx theme build src/theme/koi.ts --out src/theme/generated/koi.css",
-    "theme:check": "astryx theme build src/theme/koi.ts --out src/theme/generated/koi.css --check"
+    "theme:build": "node scripts/build-themes.mjs",
+    "theme:check": "node scripts/build-themes.mjs --check"
   },
   "dependencies": {
     "@astryxdesign/core": "catalog:",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@astryxdesign/cli": "catalog:",
+    "@koidesign/design-md": "workspace:*",
     "@stylexjs/rollup-plugin": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

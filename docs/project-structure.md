@@ -26,6 +26,7 @@ koi-design/
 ├── packages/
 │   ├── core/                 # document, commands, history, queries, serialization
 │   ├── astryx/               # Koi's Astryx layer: registry, Koi theme, glyphs, Astryx-style components
+│   ├── design-md/            # @koidesign/design-md: DESIGN.md → Astryx theme + Koi design profile
 │   ├── editor/               # canvas/ (Koi's spatial surface), chrome/ (Astryx composition), store/
 │   └── mcp/                  # shared MCP tools, resources, bounds, demo repository
 ├── tests/
@@ -61,6 +62,10 @@ core + mcp + mcp-view ← server
   the Koi theme (`src/theme/koi.ts`, values only on Astryx's token contract, built into
   `src/theme/generated` by `astryx theme build` and drift-checked by `pnpm theme:check`), Koi's
   glyphs for Astryx's `Icon`, and Astryx-style components Astryx lacks, such as `ColorInput`.
+- `packages/design-md` — `@koidesign/design-md`, the published bridge from a DESIGN.md (format
+  `alpha`) onto the `koi.astryx/0.5.0` profile: parser, mapper, `defineTheme` emitter, CLI, and the
+  MIT-licensed Apple fixture. The repository's root `DESIGN.md` is Koi's own and compiles into
+  `packages/astryx/src/theme/generated/`.
 - `packages/editor` owns the store, camera, DOM/SVG/Canvas2D/overlay layers, direct interaction,
   Frame visibility, shared drag-preview offsets, and inspector. `src/canvas` is Koi's own product
   surface, authored in StyleX on Astryx token groups; `src/chrome` composes Astryx components and

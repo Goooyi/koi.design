@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceInputsSha256": "0cbec3d3262dbb1355baaa9b0751856c6c428f24b4ca7c2e0653274ec19b5479",
+  "sourceInputsSha256": "2c5f703be32d56cc5a9f3551fc8c9d30f924442d7394f74615dd6e79b4a692c0",
   "environment": {
     "node": "v26.8.1",
     "platform": "darwin",
@@ -8,8 +8,8 @@
     "packageManager": "pnpm@11.21.0"
   },
   "summary": {
-    "packageVersions": 345,
-    "directPackageNames": 25,
+    "packageVersions": 346,
+    "directPackageNames": 27,
     "licenseCounts": {
       "0BSD": 1,
       "Apache-2.0": 13,
@@ -18,7 +18,7 @@
       "BSD-3-Clause": 5,
       "CC-BY-4.0": 1,
       "CC0-1.0": 1,
-      "ISC": 20,
+      "ISC": 21,
       "LGPL-3.0-or-later": 1,
       "MIT": 291,
       "MIT OR Apache-2.0": 3,
@@ -5961,6 +5961,28 @@
       "reviewStatus": "reviewed-from-installed-package"
     },
     {
+      "name": "yaml",
+      "version": "2.9.0",
+      "declaredLicense": "ISC",
+      "verifiedLicense": "ISC",
+      "directUses": [
+        {
+          "section": "dependencies",
+          "workspace": "@koidesign/design-md"
+        }
+      ],
+      "homepage": "https://eemeli.org/yaml/",
+      "repository": "github:eemeli/yaml",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "5bba27375d93e9119f76c1015f7672cf9ad5f70952296e0842fb2243d6376869"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
       "name": "youch-core",
       "version": "0.3.3",
       "declaredLicense": "MIT",
@@ -6062,6 +6084,10 @@
         {
           "section": "dependencies",
           "workspace": "@koi/web"
+        },
+        {
+          "section": "dependencies",
+          "workspace": "@koidesign/design-md"
         }
       ],
       "homepage": "https://zod.dev",

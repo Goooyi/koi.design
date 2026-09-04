@@ -294,7 +294,8 @@ Future programmable GPU leaves: WebGPU/WGSL only
 The repository is a pnpm/Vite+ workspace:
 
 - `packages/core` — document schemas, commands, replay, queries, and serialization;
-- `packages/astryx` — trusted Astryx 0.5.0 registry and HTML rendering/export helpers;
+- `packages/astryx` — trusted Astryx 0.5.0 registry, Koi's theme compiled from `DESIGN.md`, and HTML rendering/export helpers;
+- `packages/design-md` — `@koidesign/design-md`, the bridge from a DESIGN.md onto Astryx's token contract and Koi's design profile;
 - `packages/editor` — reusable React canvas, interactions, virtualization, and inspector;
 - `packages/mcp` — shared MCP tools, UI resource registration, bounded snapshot transfer, and an
   injectable demo repository;
