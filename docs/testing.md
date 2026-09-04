@@ -1,7 +1,7 @@
 # Koi testing strategy
 
-Status: Stage 1 application and final demonstration media certified; account-bound publication
-and submission remain, 2026-09-03.
+Status: deterministic application baseline implemented; manual and cross-host coverage remain
+partial, 2026-09-04.
 
 ## Current evidence
 
@@ -45,17 +45,15 @@ Koi's deterministic baseline is implemented and runs within bounded resources:
   Frame move, and all eight native WebMCP tools under the production CSP.
 - Playwright is fixed to one Chromium worker, 30-second test timeouts, video disabled, and traces
   and screenshots retained only on failure.
-- `pnpm audit:browser` builds the production web artifact and uses one clean headless Chrome process
+- `pnpm audit:browser` builds the standalone web artifact and uses one clean headless Chrome process
   to capture axe results, console/network failures, DOM and mounted-Frame samples, animation-frame
   and long-task distributions, React commit cadence, CDP/trace rendering metrics, compositor-layer
-  records, and post-GC retention. The checked-in Stage 1 fixture passes all declared budgets; see
+  records, and post-GC retention. The checked-in welcome fixture passes all declared budgets; see
   [`browser-audit.json`](evidence/browser-audit.json). The raw trace stays ignored because browser
   traces can contain sensitive implementation details; the report records its hash and sizes.
-- An isolated stable-Chrome release capture against the deployed HTTPS build discovered all eight
-  WebMCP tools and executed context, component discovery, inspect, create, update, and arrange
-  calls. It verified persistence after reload, preserved Camera and Selection, and reported no
-  console, page, network, or CSP errors. The deterministic local production-CSP journey executes
-  all eight tools, including delete and export.
+- The deterministic production-CSP browser journey discovers and executes all eight WebMCP tools,
+  including delete and export. It verifies persistence after reload, preserves Camera and
+  Selection, and reports console, page, network, and CSP failures.
 
 Run the gates from the root:
 
@@ -65,7 +63,7 @@ pnpm build
 pnpm check
 pnpm test
 pnpm test:e2e
-pnpm challenge:verify
+pnpm standalone:verify
 pnpm audit:browser
 # Or run the aggregate gate:
 pnpm ready
@@ -75,9 +73,9 @@ pnpm ready
 respective checks, so no separate build is required on a clean checkout. `pnpm ready` builds once,
 then runs format, lint, type, workspace test, and one-worker Chromium gates.
 
-The current browser suite, deployed native smoke, and bounded manual accessibility review are
-meaningful Stage 1 release evidence. Manual screen-reader and color-contrast checks, interactive
-third-party MCP host smoke tests, and cross-browser coverage remain outstanding. See
+The current browser suite and bounded manual accessibility review provide meaningful product
+evidence. Manual screen-reader and color-contrast checks, interactive third-party MCP host smoke
+tests, and cross-browser coverage remain outstanding. See
 [`manual-accessibility.md`](evidence/manual-accessibility.md) for the tested scope and known
 keyboard and zoom limitations.
 
@@ -145,9 +143,9 @@ Measure:
 The implemented camera coalesces the world-transform hot path to at most one write per animation
 frame. Camera listeners also trigger a throttled React visibility commit at most once every 64 ms
 and one refresh when a pointer pan ends; tests and traces must distinguish that intended
-virtualization work from per-pointer React reconciliation. The Stage 1 welcome fixture now has a
-bounded production-build baseline; it is a regression sentinel for that four-Frame fixture, not a
-general canvas-capacity claim. Product budgets for live DOM, ink, shader pixels, and memory must
+virtualization work from per-pointer React reconciliation. The welcome fixture has a bounded
+production-build baseline; it is a regression sentinel for that four-Frame fixture, not a general
+canvas-capacity claim. Product budgets for live DOM, ink, shader pixels, and memory must
 continue to come from measured fixture curves rather than generic Lighthouse DOM warnings.
 
 ## Failure evidence

@@ -1,6 +1,6 @@
-# Stage 1 WebMCP contract evidence
+# WebMCP contract evidence
 
-The Stage 1 web application exposes exactly eight top-level tools through
+The web application exposes exactly eight top-level tools through
 `document.modelContext.registerTool()`. The checked machine-readable result is generated from the
 built application, not copied from a separate hand-maintained list:
 
@@ -29,8 +29,8 @@ can prove Koi's live registration path but cannot prove a host's WebMCP implemen
   durability never instructs the caller to invent a new command ID.
 - Invalid and unexpected errors return bounded public messages. Browser/storage exception details
   are not exposed to the model.
-- Truncated previews and selections state whether continuation is available. Stage 1 reports
-  continuation as unavailable rather than pretending a partial preview is complete.
+- Truncated previews and selections state whether continuation is available. The current API
+  reports continuation as unavailable rather than pretending a partial preview is complete.
 - One abort-controlled registration lifetime releases every tool when the active editor store is
   replaced or the page is unloaded.
 

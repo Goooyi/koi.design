@@ -163,11 +163,11 @@ function selectedHeaders(headers) {
 }
 
 async function inspectConfiguredHost(page, mainResponse, targetUrl, expectedBuildId) {
-  if (!mainResponse) throw new Error("The challenge navigation returned no HTTP response");
+  if (!mainResponse) throw new Error("The standalone navigation returned no HTTP response");
   const assetPath =
     (await page.locator('script[src^="/assets/"]').first().getAttribute("src")) ??
     (await page.locator('link[href^="/assets/"]').first().getAttribute("href"));
-  if (!assetPath) throw new Error("The challenge page does not reference a deployable asset");
+  if (!assetPath) throw new Error("The standalone page does not reference a deployable asset");
   const [healthResponse, assetResponse, fallbackResponse] = await Promise.all([
     page.request.get(new URL("/health.json", targetUrl).href),
     page.request.get(new URL(assetPath, targetUrl).href),
@@ -470,10 +470,10 @@ try {
   ]);
   const mainResponse = await page.goto(targetUrl, { waitUntil: "networkidle" });
   await page.getByRole("region", { name: /Explorations infinite canvas/ }).waitFor();
-  await page.getByText("Challenge demo · browser-local", { exact: true }).waitFor();
+  await page.getByText("Standalone · browser-local", { exact: true }).waitFor();
   await page.getByTestId("koi-build-identifier").waitFor();
   if ((await page.getByRole("button", { name: "Connect hosting" }).count()) !== 0) {
-    throw new Error("The challenge deployment unexpectedly exposes the self-host connection flow");
+    throw new Error("The standalone deployment unexpectedly exposes the self-host connection flow");
   }
   const hostInspection = configuredTarget
     ? await inspectConfiguredHost(page, mainResponse, targetUrl, generatedFromCommit)
@@ -659,13 +659,13 @@ try {
     generatedFromCommit,
     sourceTree,
     fixture: {
-      id: "stage1-welcome-document",
+      id: "welcome-document-baseline",
       documentId: "welcome-document",
       frameCount: 4,
       elementCount: 22,
       interaction: "warm up, then pan three times to the far-right Frame and reset the camera",
       viewport,
-      claimScope: "Stage 1 demo regression sentinel; not a general canvas-capacity claim",
+      claimScope: "Welcome Document regression sentinel; not a general canvas-capacity claim",
     },
     environment: {
       url: publicUrl(targetUrl),
@@ -778,7 +778,7 @@ try {
       .filter(({ pass }) => !pass)
       .map(({ name, actual: measured, maximum }) => `${name}: ${measured} > ${maximum}`)
       .join(", ");
-    throw new Error(`Browser audit exceeded its Stage 1 budgets: ${failures}`);
+    throw new Error(`Browser audit exceeded its declared budgets: ${failures}`);
   }
   console.log(
     `Browser audit passed ${budgetResults.length} budgets; local trace ${compressedTrace.byteLength} bytes compressed.`,

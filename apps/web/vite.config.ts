@@ -27,9 +27,9 @@ function resolveBuildId(): string {
 
 export default defineConfig(({ mode }) => {
   const buildId = resolveBuildId();
-  const deploymentMode = mode === "challenge" ? "challenge" : "self-hosted";
-  if (deploymentMode === "challenge" && buildId === "unknown") {
-    throw new Error("A challenge build requires CF_PAGES_COMMIT_SHA, GITHUB_SHA, or Git metadata");
+  const deploymentMode = mode === "standalone" ? "standalone" : "self-hosted";
+  if (deploymentMode === "standalone" && buildId === "unknown") {
+    throw new Error("A standalone build requires CF_PAGES_COMMIT_SHA, GITHUB_SHA, or Git metadata");
   }
   const buildMetadata = {
     status: "ok",

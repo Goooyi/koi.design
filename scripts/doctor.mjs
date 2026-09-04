@@ -68,7 +68,6 @@ const playwright = run(path.join(repositoryRoot, "node_modules", ".bin", "playwr
 const wrangler = run(path.join(repositoryRoot, "node_modules", ".bin", "wrangler"), ["--version"]);
 const sqlite = run("sqlite3", ["--version"]);
 const docker = run("docker", ["--version"]);
-const ffprobe = run("ffprobe", ["-version"]);
 const chromeCandidates =
   process.platform === "darwin"
     ? ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"]
@@ -110,7 +109,7 @@ const requiredChecks = [
   },
 ];
 
-const challengeAppReleasePrerequisiteChecks = [
+const standaloneReleasePrerequisiteChecks = [
   {
     name: "stableChrome",
     pass: chrome.available,
@@ -126,13 +125,13 @@ const challengeAppReleasePrerequisiteChecks = [
   },
 ];
 
-const statusSummary = doctorStatus(requiredChecks, challengeAppReleasePrerequisiteChecks);
+const statusSummary = doctorStatus(requiredChecks, standaloneReleasePrerequisiteChecks);
 
 const report = {
   schemaVersion: 1,
   ...statusSummary,
   requiredChecks,
-  challengeAppReleasePrerequisiteChecks,
+  standaloneReleasePrerequisiteChecks,
   packageManagerBootstrap: {
     corepack: {
       available: corepack.available,
@@ -158,7 +157,6 @@ const report = {
   optionalOrLaterGateChecks: {
     sqlite: sqlite.output,
     docker: docker.output,
-    ffprobe: ffprobe.output?.split("\n", 1)[0] ?? null,
     cloudflareAccountEnvironment: {
       CLOUDFLARE_ACCOUNT_ID: Boolean(process.env.CLOUDFLARE_ACCOUNT_ID),
       CLOUDFLARE_API_TOKEN: Boolean(process.env.CLOUDFLARE_API_TOKEN),
@@ -167,8 +165,6 @@ const report = {
       "Wrangler account authentication or scoped CI credentials",
       "Chrome native WebMCP capability",
       "ChatGPT in-app browser access",
-      "microphone and screen recording",
-      "YouTube and Devpost accounts",
     ],
   },
 };

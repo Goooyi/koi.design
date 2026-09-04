@@ -47,7 +47,9 @@ semantics. The browser adapters use `EditorStore`, which commits through the sam
 by MCP and REST. The current suites verify core invariants and each adapter independently; a stored
 cross-surface parity suite remains to be added.
 
-The browser API behind WebMCP remains isolated because it is evolving. That isolation does not make WebMCP experimental within Koi: WebMCP has product parity, documentation, acceptance tests, and a challenge release gate.
+The browser API behind WebMCP remains isolated because it is evolving. That isolation does not
+make WebMCP experimental within Koi: WebMCP has product parity, documentation, acceptance tests,
+and a product release gate.
 
 ## Spatial and rendering architecture
 
@@ -327,11 +329,11 @@ is deliberately not repeated inside every model-visible tool schema.
 
 `inspect_elements` accepts 1–32 stable IDs. It returns semantic property previews bounded by depth,
 node count, key count, array length, string length, and a 1,000,000-byte total model output, marking
-truncated Elements explicitly and reporting whether continuation is available. Stage 1 has no
-property-preview pagination, so a truncated result says that continuation is unavailable. The same
-1,000,000-byte WebMCP output limit applies to `export_document`; a larger Document is refused rather
-than partially returned and must use the human editor's full `.koi.json` download, which is not
-constrained by the model-output cap.
+truncated Elements explicitly and reporting whether continuation is available. The current API has
+no property-preview pagination, so a truncated result says that continuation is unavailable. The
+same 1,000,000-byte WebMCP output limit applies to `export_document`; a larger Document is refused
+rather than partially returned and must use the human editor's full `.koi.json` download, which is
+not constrained by the model-output cap.
 
 ## MCP App contract
 

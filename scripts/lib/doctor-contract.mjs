@@ -32,10 +32,10 @@ export function pinnedPnpmCheck(actualVersion, expectedVersion, corepackAvailabl
   };
 }
 
-export function doctorStatus(requiredChecks, challengeAppReleasePrerequisiteChecks) {
+export function doctorStatus(requiredChecks, standaloneReleasePrerequisiteChecks) {
   return {
     ok: requiredChecks.every(({ pass }) => pass),
-    challengeAppReleasePrerequisitesPass: challengeAppReleasePrerequisiteChecks.every(
+    standaloneReleasePrerequisitesPass: standaloneReleasePrerequisiteChecks.every(
       ({ pass }) => pass,
     ),
   };

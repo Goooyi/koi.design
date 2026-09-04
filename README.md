@@ -8,19 +8,6 @@ hosted service the source of truth.
 This repository contains a working MVP. It is suitable for local exploration and a bounded
 single-owner self-hosted deployment; it is not yet a multi-user cloud service.
 
-## Try the WebMCP challenge build
-
-- Live application: <https://koi-design-webmcp-challenge.pages.dev/>
-- Health and build identity: <https://koi-design-webmcp-challenge.pages.dev/health.json>
-- Public source: <https://github.com/Goooyi/koi.design>
-- Release certification: [`docs/evidence/stage1-live-certification.md`](docs/evidence/stage1-live-certification.md)
-
-The anonymous challenge build opens directly into a seeded browser-local Document and requires no
-account. ChatGPT's in-app browser exposes the eight semantic tools documented below through its
-address-bar Site Tools menu. Chrome with WebMCP testing enabled exposes the same registrations
-through the native API. The certified deployment serves
-`c31366f3ae3a7a58af56b9e7f7933bda4491b694`.
-
 ## What works
 
 - One infinite Page with virtualized top-level Frames and real Astryx HTML/CSS components.
@@ -65,14 +52,13 @@ On Debian or Ubuntu machines that do not already have the browser system librari
 
 The release-grade `pnpm audit:browser` command separately requires the current stable Google
 Chrome. On macOS, install it in `/Applications`; on Linux, make `google-chrome` or
-`google-chrome-stable` available on `PATH`. The audit deliberately measures the judge-facing
-browser rather than Playwright's pinned test browser. Run `pnpm run doctor` to verify both
-browsers; the explicit `run` avoids pnpm's unrelated built-in `doctor` command.
+`google-chrome-stable` available on `PATH`. The audit deliberately measures the production browser
+rather than Playwright's pinned test browser. Run `pnpm run doctor` to verify both browsers; the
+explicit `run` avoids pnpm's unrelated built-in `doctor` command.
 
-The doctor exits nonzero only when the local development toolchain is unusable. Its separate
-`challengeAppReleasePrerequisitesPass` result reports stable Chrome, Wrangler, and clean-worktree
-preconditions used by challenge audit and deploy commands; it is not a complete submission-ready
-verdict, and the commands that consume those prerequisites enforce them directly.
+The doctor exits nonzero only when the local development toolchain is unusable. It reports stable
+Chrome, Wrangler, and clean-worktree release preconditions separately; the standalone verification
+and deployment commands enforce the requirements they consume.
 
 Useful repository gates:
 
@@ -82,7 +68,7 @@ pnpm build
 pnpm check
 pnpm test
 pnpm test:e2e
-pnpm challenge:verify
+pnpm standalone:verify
 pnpm audit:browser
 pnpm ready
 ```
@@ -94,22 +80,26 @@ Playwright uses one Chromium worker and retains traces and screenshots only on f
 development bounded on small machines.
 GitHub Actions runs the same gate with a frozen lockfile on Node 24.
 
-## Challenge deployment
+## Standalone browser deployment
 
-The judge-facing build is a static, anonymous, browser-local WebMCP application. It keeps the
-seeded canvas, import/export, IndexedDB durability, and all eight WebMCP tools, but hides the
-self-host connection flow so a judge never encounters a dead API URL. The ordinary `pnpm build`
+The standalone build is a static, anonymous, browser-local WebMCP application. It keeps the seeded
+canvas, import/export, IndexedDB durability, and all eight WebMCP tools while omitting the
+self-host connection flow, so it can be served without a backend. The ordinary `pnpm build`
 continues to produce the full self-hostable web client.
 
+The current public demo is <https://koi-design-webmcp-challenge.pages.dev/>. Its hostname is the
+legacy identifier of the existing Cloudflare Pages project; it does not select a challenge mode or
+change the standalone product. Moving to a new Pages project or custom domain is a separate hosting
+migration because Cloudflare does not rename Direct Upload projects in place.
+
 ```sh
-pnpm challenge:verify
-pnpm challenge:dev       # Cloudflare Pages emulator on http://127.0.0.1:4174
+pnpm standalone:verify   # Build and validate the static browser-local artifact
+pnpm pages:dev           # Cloudflare Pages emulator on http://127.0.0.1:4174
 pnpm exec wrangler login # One time per workstation: authenticate in the browser
-pnpm challenge:setup     # One time: create the Pages project with production branch main
-pnpm challenge:deploy    # Repeat for each production release
+pnpm pages:deploy        # Deploy the configured Cloudflare Pages project
 ```
 
-`challenge:verify` rejects dirty release trees, missing security/cache metadata, source maps,
+`standalone:verify` rejects dirty release trees, missing security/cache metadata, source maps,
 unhashed assets, stale build identity, and Cloudflare Pages file-limit violations. The generated
 `/health.json` reports only the version, exact commit, deployment mode, and an `ok` status. The
 visible header shows the same version and shortened commit. Hashed assets are immutable; HTML and
@@ -117,14 +107,12 @@ health metadata revalidate or use `no-store`; the Content Security Policy is exe
 browser audit. Cloudflare Pages provides its documented SPA fallback when a top-level `404.html`
 is absent.
 
-The configuration names a dedicated Direct Upload project so the submitted deployment can remain
-pinned while Stage 2 moves on. Run `challenge:setup` exactly once before the first deployment; it
-sets `main` explicitly as the production branch and intentionally fails if that project already
-exists. Direct Upload describes how the Pages project is created, not a one-time upload:
-`challenge:deploy` can update the same project repeatedly. The project cannot later be converted to
-Cloudflare's native Git integration; create a different Pages project if that mode is wanted. The
-same Direct Upload project can still be automated from GitHub Actions by running Wrangler with
-scoped Cloudflare credentials. After deployment, rerun the same clean-profile audit against HTTPS:
+The configuration targets a Cloudflare Pages Direct Upload project. Direct Upload describes how
+the project receives assets, not a one-time deployment: `pages:deploy` can update the same project
+repeatedly. A Direct Upload project cannot later be converted to Cloudflare's native Git
+integration; create a different Pages project if that mode is wanted. The project can still be
+automated from GitHub Actions by running Wrangler with scoped Cloudflare credentials. After
+deployment, rerun the same clean-profile audit against HTTPS:
 
 ```sh
 KOI_AUDIT_URL=https://<deployment>.pages.dev pnpm audit:browser
@@ -283,10 +271,11 @@ confirmed. An ambiguous result tells the agent to retry once with the same comma
 before creating new intent; internal exception text is never returned.
 
 `inspect_elements` accepts at most 32 stable IDs and returns depth-, node-, key-, array-, string-,
-and total-byte-bounded property previews with truncation and continuation metadata. Stage 1 does
-not paginate property previews, so it says that continuation is unavailable instead of silently
-cutting data. Both the bounded inspect response and `export_document` are capped at 1,000,000 UTF-8
-bytes, so `export_document` refuses a larger result and directs the user to the editor download.
+and total-byte-bounded property previews with truncation and continuation metadata. The current API
+does not paginate property previews, so it says that continuation is unavailable instead of
+silently cutting data. Both the bounded inspect response and `export_document` are capped at
+1,000,000 UTF-8 bytes, so `export_document` refuses a larger result and directs the user to the
+editor download.
 The human-triggered `.koi.json` download still exports the complete validated Document and is not
 subject to the model-output cap. The checked live-registration manifest is in
 [`docs/evidence/webmcp-tools.json`](docs/evidence/webmcp-tools.json).
@@ -338,7 +327,7 @@ decisions live in [docs/adr](docs/adr); remaining product choices are tracked in
 - Native HTML export is available only as trusted component-level helpers, not yet as a complete
   Page export workflow.
 - WebGPU shaders, comments, image upload, cross-browser E2E, screen-reader testing, and managed
-  hosting remain incomplete. The Stage 1 manual accessibility review also records missing keyboard
+  hosting remain incomplete. The manual accessibility review also records missing keyboard
   interaction for arbitrary canvas records, one invisible import-input tab stop, unavailable
   inspector controls at a 200%-zoom-equivalent desktop viewport, and incomplete manual contrast
   validation.

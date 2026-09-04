@@ -33,8 +33,8 @@ function requireText(source, expected, file) {
 }
 
 const dirty = git("status", "--porcelain=v1");
-if (dirty && process.env.KOI_ALLOW_DIRTY_CHALLENGE_BUILD !== "1") {
-  throw new Error("Challenge verification requires a clean Git worktree");
+if (dirty && process.env.KOI_ALLOW_DIRTY_STANDALONE_BUILD !== "1") {
+  throw new Error("Standalone verification requires a clean Git worktree");
 }
 
 const files = await listFiles(distributionRoot);
@@ -52,7 +52,7 @@ for (const file of files) {
   if (stat.size > maximumFileBytes) {
     throw new Error(`${path.relative(distributionRoot, file)} exceeds the 25 MiB Pages limit`);
   }
-  if (file.endsWith(".map")) throw new Error("Challenge output must not publish source maps");
+  if (file.endsWith(".map")) throw new Error("Standalone output must not publish source maps");
 }
 
 const relativeFiles = new Set(files.map((file) => path.relative(distributionRoot, file)));
@@ -64,7 +64,7 @@ for (const required of [
   "llms.txt",
   "robots.txt",
 ]) {
-  if (!relativeFiles.has(required)) throw new Error(`Challenge output is missing ${required}`);
+  if (!relativeFiles.has(required)) throw new Error(`Standalone output is missing ${required}`);
 }
 if (relativeFiles.has("404.html")) {
   throw new Error("A top-level 404.html would disable Cloudflare Pages' default SPA fallback");
@@ -74,11 +74,11 @@ const commit = git("rev-parse", "HEAD");
 const health = JSON.parse(await read("health.json"));
 if (
   health.status !== "ok" ||
-  health.deploymentMode !== "challenge" ||
+  health.deploymentMode !== "standalone" ||
   health.buildId !== commit ||
   typeof health.version !== "string"
 ) {
-  throw new Error("health.json does not identify this exact challenge commit and version");
+  throw new Error("health.json does not identify this exact standalone commit and version");
 }
 
 const html = await read("index.html");
@@ -88,7 +88,7 @@ const assetReferences = [...html.matchAll(/(?:src|href)="\/(assets\/[^"?#]+)"/g)
 if (assetReferences.length < 2) throw new Error("index.html is missing hashed JS/CSS assets");
 for (const asset of assetReferences) {
   if (!/[-_][A-Za-z0-9_-]{8}\.(?:css|js)$/.test(asset)) {
-    throw new Error(`Challenge asset is not content-hashed: ${asset}`);
+    throw new Error(`Standalone asset is not content-hashed: ${asset}`);
   }
   if (!relativeFiles.has(asset)) throw new Error(`index.html references missing asset ${asset}`);
 }
