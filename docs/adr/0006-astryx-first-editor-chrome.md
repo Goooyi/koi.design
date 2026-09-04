@@ -47,8 +47,10 @@ the guide's Dialog because it stays open while editing.
 
 - The editor looks and behaves like an Astryx application, and exported projects can reuse the
   same theme and component conventions.
-- Component composition adds DOM nodes compared with hand-styled elements; the browser audit's DOM
-  budget is reviewed against measured peaks rather than assumed.
+- Component composition adds HTML elements compared with hand-styled elements; the browser audit's
+  whole-page budget (`peakPageHtmlElements`) is reviewed against measured peaks rather than
+  assumed, and the canvas is measured on its own (`peakCanvasHtmlElements` and
+  `peakMountedKoiElements`) so that a chrome change never moves the canvas sentinels.
 - Missing Astryx controls, such as a color input, are built to Astryx conventions inside
   `packages/astryx` instead of as one-off fields.
 - Upgrading Astryx is a deliberate change that re-runs the theme build and the audit.

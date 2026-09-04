@@ -38,10 +38,15 @@ const fixedBudgets = {
   crossOriginResources: 0,
   hostConfigurationFailures: 0,
   instrumentationFailures: 0,
-  // Astryx composition renders real component structure (landmarks, groups, labelled controls)
-  // rather than bare styled elements; the sentinel tracks the measured peak with headroom.
-  peakDomNodes: 420,
-  peakDomElements: 24,
+  // Each element budget names what it counts. peakPageHtmlElements counts every element in the
+  // document, so it moves whenever the chrome changes: Astryx composition renders real component
+  // structure (landmarks, groups, labelled controls) rather than bare styled elements, and the
+  // sentinel tracks the measured peak with headroom. peakCanvasHtmlElements counts only the
+  // canvas region's subtree and peakMountedKoiElements counts the Koi Elements mounted by the
+  // canvas DOM layer; those are the canvas sentinels, and a chrome change must not move them.
+  peakPageHtmlElements: 420,
+  peakCanvasHtmlElements: 110,
+  peakMountedKoiElements: 24,
   peakMountedFrames: 4,
   farRightMountedFrames: 2,
   resetStateMismatch: 0,
@@ -258,18 +263,24 @@ async function settleAnimationFrames(page, count = 3) {
 
 async function sampleCanvas(page, label) {
   await settleAnimationFrames(page);
-  return page.evaluate(
-    (sampleLabel) => ({
+  return page.evaluate((sampleLabel) => {
+    const canvasRoot = document.querySelector(".koi-canvas");
+    if (!canvasRoot) throw new Error("The canvas region is missing its koi-canvas hook class");
+    const mountedFrames = [...canvasRoot.querySelectorAll('[data-element-kind="frame"]')];
+    return {
       label: sampleLabel,
-      domNodes: document.querySelectorAll("*").length,
-      domElements: document.querySelectorAll(".koi-dom-element").length,
-      mountedFrames: document.querySelectorAll('[data-element-kind="frame"]').length,
-      mountedFrameIds: [...document.querySelectorAll('[data-element-kind="frame"]')]
+      // Every element in the document; the chrome moves this count as much as the canvas does.
+      pageHtmlElements: document.querySelectorAll("*").length,
+      // Elements inside the canvas region only; a chrome change cannot move this count.
+      canvasHtmlElements: canvasRoot.querySelectorAll("*").length,
+      // Koi Elements mounted by the canvas DOM layer.
+      mountedKoiElements: canvasRoot.querySelectorAll(".koi-dom-element").length,
+      mountedFrames: mountedFrames.length,
+      mountedFrameIds: mountedFrames
         .map((element) => element.getAttribute("data-element-id"))
         .sort((left, right) => (left ?? "").localeCompare(right ?? "")),
-    }),
-    label,
-  );
+    };
+  }, label);
 }
 
 async function panCanvas(page, box, swipes) {
@@ -357,8 +368,9 @@ function retainedCounters(before, after, performanceBefore, performanceAfter) {
 
 function resetMismatch(initial, reset) {
   return Number(
-    initial.domNodes !== reset.domNodes ||
-      initial.domElements !== reset.domElements ||
+    initial.pageHtmlElements !== reset.pageHtmlElements ||
+      initial.canvasHtmlElements !== reset.canvasHtmlElements ||
+      initial.mountedKoiElements !== reset.mountedKoiElements ||
       initial.mountedFrames !== reset.mountedFrames ||
       initial.mountedFrameIds.join("\n") !== reset.mountedFrameIds.join("\n"),
   );
@@ -620,8 +632,9 @@ try {
     crossOriginResources: resourceSummary.crossOrigin.length,
     hostConfigurationFailures: hostInspection.failures.length,
     instrumentationFailures: instrumentationFailures.length,
-    peakDomNodes: Math.max(...canvasSamples.map((sample) => sample.domNodes)),
-    peakDomElements: Math.max(...canvasSamples.map((sample) => sample.domElements)),
+    peakPageHtmlElements: Math.max(...canvasSamples.map((sample) => sample.pageHtmlElements)),
+    peakCanvasHtmlElements: Math.max(...canvasSamples.map((sample) => sample.canvasHtmlElements)),
+    peakMountedKoiElements: Math.max(...canvasSamples.map((sample) => sample.mountedKoiElements)),
     peakMountedFrames: Math.max(...canvasSamples.map((sample) => sample.mountedFrames)),
     farRightMountedFrames: farRightSample.mountedFrames,
     resetStateMismatch: resetMismatch(initialSample, resetSample),

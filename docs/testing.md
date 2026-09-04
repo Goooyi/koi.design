@@ -46,9 +46,10 @@ Koi's deterministic baseline is implemented and runs within bounded resources:
 - Playwright is fixed to one Chromium worker, 30-second test timeouts, video disabled, and traces
   and screenshots retained only on failure.
 - `pnpm audit:browser` builds the standalone web artifact and uses one clean headless Chrome process
-  to capture axe results, console/network failures, DOM and mounted-Frame samples, animation-frame
-  and long-task distributions, React commit cadence, CDP/trace rendering metrics, compositor-layer
-  records, and post-GC retention. The checked-in welcome fixture passes all declared budgets; see
+  to capture axe results, console/network failures, page and canvas element samples with mounted
+  Koi Element and Frame counts, animation-frame and long-task distributions, React commit cadence,
+  CDP/trace rendering metrics, compositor-layer records, and post-GC retention. The checked-in
+  welcome fixture passes all declared budgets; see
   [`browser-audit.json`](evidence/browser-audit.json). The raw trace stays ignored because browser
   traces can contain sensitive implementation details; the report records its hash and sizes.
 - The deterministic production-CSP browser journey discovers and executes all eight WebMCP tools,
@@ -136,7 +137,8 @@ multiple component studies, dense connectors/ink, and supported/offscreen Shader
 Measure:
 
 - camera frame time, main-thread long tasks, React commits, layout, paint, and layer count;
-- mounted Frame and DOM counts as the viewport moves;
+- mounted Frame, mounted Koi Element, and page and canvas HTML element counts as the viewport
+  moves;
 - server body, connection, subscriber, queue, and storage limits;
 - retained Frames, observers, event listeners, and future GPU resources after repeated navigation;
 - supported, unavailable, and device-loss WebGPU states without loading a WebGL fallback.
@@ -146,8 +148,12 @@ frame. Camera listeners also trigger a throttled React visibility commit at most
 and one refresh when a pointer pan ends; tests and traces must distinguish that intended
 virtualization work from per-pointer React reconciliation. The welcome fixture has a bounded
 production-build baseline; it is a regression sentinel for that four-Frame fixture, not a general
-canvas-capacity claim. Product budgets for live DOM, ink, shader pixels, and memory must
-continue to come from measured fixture curves rather than generic Lighthouse DOM warnings.
+canvas-capacity claim. Its element budgets name what they count: `peakPageHtmlElements` is every
+element in the document and moves whenever the chrome changes, while `peakCanvasHtmlElements`
+(the canvas region's subtree) and `peakMountedKoiElements` (Koi Elements mounted by the canvas DOM
+layer) are the canvas sentinels and must not move when only the chrome changes. Product budgets
+for live DOM, ink, shader pixels, and memory must continue to come from measured fixture curves
+rather than generic Lighthouse DOM warnings.
 
 ## Failure evidence
 
