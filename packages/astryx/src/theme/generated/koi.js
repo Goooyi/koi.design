@@ -16,13 +16,7 @@
 export const koiTheme = {
   name: 'koi',
   __built: true,
-  tokens: {
-    "--color-accent": "light-dark(#2f5fe8, #6d9cfe)",
-    "--color-on-accent": "light-dark(#ffffff, #0b1226)",
-    "--color-accent-muted": "light-dark(#e8eeff, #2f5fe83d)",
-    "--color-background-body": "light-dark(#e9ebef, #111112)",
-    "--focus-outline-color": "var(--color-accent)"
-  },
+  tokens: {},
   __onDark: {
     "tokens": {
       "color-scheme": "dark",

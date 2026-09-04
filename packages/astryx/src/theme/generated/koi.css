@@ -78,22 +78,6 @@
 }
 
 @layer astryx-theme {
-  :root { color-scheme: light dark; }
-  html[data-theme="light"] { color-scheme: light; }
-  html[data-theme="dark"] { color-scheme: dark; }
-
-@scope ([data-astryx-theme="koi"]) to ([data-astryx-theme]) {
-  :scope {
-    --color-accent: light-dark(#2f5fe8, #6d9cfe);
-    --color-on-accent: light-dark(#ffffff, #0b1226);
-    --color-accent-muted: light-dark(#e8eeff, #2f5fe83d);
-    --color-background-body: light-dark(#e9ebef, #111112);
-    --focus-outline-color: var(--color-accent);
-  }
-}
-}
-
-@layer astryx-theme {
 @scope ([data-astryx-theme="koi"]) to ([data-astryx-theme]) {
   [data-astryx-media="dark"] {
     color-scheme: dark;

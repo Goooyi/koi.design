@@ -143,8 +143,8 @@ test.describe("Koi browser editor", () => {
   test("keeps modifier-wheel zoom inside the canvas camera", async ({ page }) => {
     await page.goto("/");
     const canvas = page.getByRole("region", { name: /infinite canvas/ });
-    const tools = page.getByRole("complementary", { name: "Editor tools" });
-    const inspector = page.getByRole("complementary").nth(1);
+    const tools = page.getByRole("toolbar", { name: "Editor tools" });
+    const inspector = page.getByRole("complementary", { name: "Element inspector" });
     const zoomLabel = canvas.locator(".koi-canvas-meta span").first();
     const canvasBox = await canvas.boundingBox();
     const shellBoxes = await Promise.all([tools.boundingBox(), inspector.boundingBox()]);
@@ -530,24 +530,28 @@ test.describe("Koi browser editor", () => {
   test("drops side panels below Koi's width budget and brings them back", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByTestId("koi-build-identifier")).toContainText("Koi v0.1.0");
-    const tools = page.getByRole("complementary", { name: "Editor tools" });
+    const rail = page.getByRole("toolbar", { name: "Editor tools" });
+    const pages = page.getByRole("complementary", { name: "Pages and library" });
     const inspector = page.getByRole("complementary", { name: "Element inspector" });
-    await expect(tools).toBeVisible();
+    await expect(rail).toBeVisible();
+    await expect(pages).toBeVisible();
     await expect(inspector).toBeVisible();
 
     await page.setViewportSize({ width: 1024, height: 800 });
     await expect(inspector).toHaveCount(0);
-    await expect(tools).toBeVisible();
+    await expect(pages).toBeVisible();
     await page.getByRole("button", { name: "Inspector", exact: true }).click();
     await expect(inspector).toBeVisible();
 
     await page.setViewportSize({ width: 760, height: 800 });
-    await expect(tools).toHaveCount(0);
-    await page.getByRole("button", { name: "Tools panel", exact: true }).click();
-    await expect(tools).toBeVisible();
+    await expect(pages).toHaveCount(0);
+    await expect(rail).toBeVisible();
+    await page.getByRole("button", { name: "Pages and library", exact: true }).click();
+    await expect(pages).toBeVisible();
 
     await page.setViewportSize({ width: 1440, height: 900 });
-    await expect(tools).toBeVisible();
+    await expect(pages).toBeVisible();
     await expect(inspector).toBeVisible();
+    await expect(rail).toBeVisible();
   });
 });

@@ -14,10 +14,11 @@ import { useInteractionLocked } from "../store/hooks.js";
 import { AppBar } from "./app-bar.js";
 import { Inspector } from "./inspector.js";
 import { chromeStyles } from "./styles.js";
-import { ToolPanel } from "./tool-panel.js";
+import { SidePanel } from "./side-panel.js";
+import { ToolRail } from "./tool-rail.js";
 
 export type EditorStatusTone = "ok" | "busy" | "error";
-export type EditorPanel = "tools" | "inspector";
+export type EditorPanel = "pages" | "inspector";
 
 /**
  * Koi's width budget, after Astryx's layout guide: structural widths are the one place raw pixels
@@ -25,18 +26,20 @@ export type EditorPanel = "tools" | "inspector";
  * rather than left to compete for space.
  *
  * ```text
- * > 1024px   tools 256 | canvas | inspector 380   both resizable, both collapsible
+ * > 1024px   pages 256 | rail 48 | canvas | inspector 380   panels resizable and collapsible
  * <= 1024px  the inspector is dropped; the app bar toggle brings it back
- * <= 768px   the tools panel is dropped too; the canvas takes the width
+ * <= 768px   the pages panel is dropped too; the canvas takes the width
  * ```
  *
- * The inspector minimum keeps two number inputs per row; the maximum stops it eating the canvas.
+ * The tool rail never drops: it is the editor's tools, and it is icon-only already. The inspector
+ * minimum keeps two number inputs per row; the maximum stops it eating the canvas.
  */
 export const editorWidthBudget = {
-  tools: { defaultSize: 256, minSizePx: 208, maxSizePx: 320 },
+  pages: { defaultSize: 256, minSizePx: 208, maxSizePx: 320 },
   inspector: { defaultSize: 380, minSizePx: 372, maxSizePx: 480 },
+  rail: 48,
   dropInspectorAt: 1024,
-  dropToolsAt: 768,
+  dropPagesAt: 768,
 } as const;
 
 export interface KoiEditorProps {
@@ -75,36 +78,36 @@ export function KoiEditor({
     [camera, editingId, hud, store, tool],
   );
 
-  const tools = useResizable({ ...editorWidthBudget.tools, collapsible: true, collapsedSize: 0 });
+  const pages = useResizable({ ...editorWidthBudget.pages, collapsible: true, collapsedSize: 0 });
   const inspector = useResizable({
     ...editorWidthBudget.inspector,
     collapsible: true,
     collapsedSize: 0,
   });
-  const regions = useRef({ tools, inspector });
-  regions.current = { tools, inspector };
+  const regions = useRef({ pages, inspector });
+  regions.current = { pages, inspector };
   const isInspectorDropped = useMediaQuery(
     `(max-width: ${editorWidthBudget.dropInspectorAt}px)`,
     false,
   );
-  const isToolsDropped = useMediaQuery(`(max-width: ${editorWidthBudget.dropToolsAt}px)`, false);
+  const isPagesDropped = useMediaQuery(`(max-width: ${editorWidthBudget.dropPagesAt}px)`, false);
   useEffect(() => {
     const region = regions.current.inspector;
     if (isInspectorDropped) region.collapse();
     else region.expand();
   }, [isInspectorDropped]);
   useEffect(() => {
-    const region = regions.current.tools;
-    if (isToolsDropped) region.collapse();
+    const region = regions.current.pages;
+    if (isPagesDropped) region.collapse();
     else region.expand();
-  }, [isToolsDropped]);
+  }, [isPagesDropped]);
 
   const openPanels: EditorPanel[] = [];
-  if (!tools.isCollapsed) openPanels.push("tools");
+  if (!pages.isCollapsed) openPanels.push("pages");
   if (!inspector.isCollapsed) openPanels.push("inspector");
   const setOpenPanels = (next: readonly EditorPanel[]) => {
-    if (next.includes("tools")) tools.expand();
-    else tools.collapse();
+    if (next.includes("pages")) pages.expand();
+    else pages.collapse();
     if (next.includes("inspector")) inspector.expand();
     else inspector.collapse();
   };
@@ -149,19 +152,20 @@ export function KoiEditor({
             }
             start={
               <>
-                {!tools.isCollapsed && (
+                {!pages.isCollapsed && (
                   <LayoutPanel
                     role="complementary"
-                    label="Editor tools"
-                    resizable={tools.props}
+                    label="Pages and library"
+                    resizable={pages.props}
                     hasDivider={false}
                     padding={3}
                     isScrollable
                   >
-                    <ToolPanel onExport={onExport} onImport={onImport} />
+                    <SidePanel onExport={onExport} onImport={onImport} />
                   </LayoutPanel>
                 )}
-                <ResizeHandle hasDivider resizable={tools.props} label="Resize tools" />
+                <ResizeHandle hasDivider resizable={pages.props} label="Resize pages panel" />
+                <ToolRail />
               </>
             }
             content={

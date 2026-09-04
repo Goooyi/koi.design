@@ -74,11 +74,11 @@ export function AppBar({
             onChange={(values) => onOpenPanelsChange(values as EditorPanel[])}
           >
             <ToggleButton
-              value="tools"
+              value="pages"
               size="sm"
               isIconOnly
-              label="Tools panel"
-              tooltip="Tools panel"
+              label="Pages and library"
+              tooltip="Pages and library"
               icon={<Icon icon={KoiIcons.panelStart} />}
             />
             <ToggleButton
