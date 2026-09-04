@@ -1,11 +1,14 @@
 import { renderComponent } from "@koi/astryx";
+import * as stylex from "@stylexjs/stylex";
 import type { CSSProperties } from "react";
 
 import type { KoiElement, Page } from "@koi/core";
 
 import { useElementDrag } from "../interaction/use-element-drag.js";
-import { useEditorRuntime } from "../../shell/editor-context.js";
+import { useEditorRuntime } from "../../runtime/editor-context.js";
 import { useElement, useIsSelected } from "../../store/hooks.js";
+import { canvasStyles } from "../styles.js";
+import { sx } from "../sx.js";
 
 const domKinds = new Set<KoiElement["kind"]>([
   "frame",
@@ -32,20 +35,20 @@ function ElementContent({ element }: { element: KoiElement }) {
     case "frame":
       return (
         <div
-          className="koi-frame-surface"
+          {...stylex.props(canvasStyles.fill, canvasStyles.frameSurface)}
           style={{ background: element.properties.background ?? "#ffffff" }}
         />
       );
     case "component":
       return (
-        <div className="koi-component-surface">
+        <div {...stylex.props(canvasStyles.fill, canvasStyles.componentSurface)}>
           {renderComponent(element.properties.componentId, element.properties.props)}
         </div>
       );
     case "text":
       return (
         <div
-          className="koi-text-surface"
+          {...stylex.props(canvasStyles.fill, canvasStyles.textSurface)}
           style={{
             color: element.properties.style.color,
             fontFamily: element.properties.style.fontFamily,
@@ -60,7 +63,7 @@ function ElementContent({ element }: { element: KoiElement }) {
     case "note":
       return (
         <div
-          className="koi-note-surface"
+          {...sx("koi-note-surface", canvasStyles.fill, canvasStyles.noteSurface)}
           style={{ background: element.properties.color ?? "#ffe694" }}
         >
           {element.properties.content}
@@ -70,22 +73,22 @@ function ElementContent({ element }: { element: KoiElement }) {
       const asset = store.getAsset(element.properties.assetId);
       return asset ? (
         <img
-          className="koi-image-surface"
+          {...stylex.props(canvasStyles.fill, canvasStyles.imageSurface)}
           src={asset.uri}
           alt={element.properties.alt}
           draggable={false}
           style={{ objectFit: element.properties.fit }}
         />
       ) : (
-        <div className="koi-missing-surface">Missing image</div>
+        <div {...stylex.props(canvasStyles.fill, canvasStyles.missingSurface)}>Missing image</div>
       );
     }
     case "shader":
       return (
-        <div className="koi-shader-surface">
-          <span>WebGPU leaf</span>
+        <div {...stylex.props(canvasStyles.fill, canvasStyles.shaderSurface)}>
+          <span {...stylex.props(canvasStyles.shaderMeta)}>WebGPU leaf</span>
           <strong>{element.properties.shaderId}</strong>
-          <small>Capability-gated preview</small>
+          <small {...stylex.props(canvasStyles.shaderMeta)}>Capability-gated preview</small>
         </div>
       );
     default:
@@ -102,17 +105,24 @@ function DomElementNode({
   page: Page;
   childrenByParent: ReadonlyMap<string, readonly KoiElement[]>;
 }) {
-  const { setEditingId, store } = useEditorRuntime();
+  const { setEditingId, store, tool } = useEditorRuntime();
   const element = useElement(store, elementId);
   const selected = useIsSelected(store, elementId);
   const { handlers, preview } = useElementDrag(element, page.id);
   if (!element || !domKinds.has(element.kind)) return null;
   const children = childrenByParent.get(element.id) ?? [];
+  const isFrame = element.kind === "frame";
 
   return (
     <div
       {...handlers}
-      className={`koi-dom-element koi-${element.kind}${selected ? " is-selected" : ""}`}
+      {...sx(
+        selected ? "koi-dom-element is-selected" : "koi-dom-element",
+        canvasStyles.element,
+        isFrame && canvasStyles.frame,
+        tool === "select" && !isFrame && canvasStyles.hoverable,
+        selected && canvasStyles.selected,
+      )}
       data-element-id={element.id}
       data-element-kind={element.kind}
       onDoubleClick={
@@ -127,13 +137,21 @@ function DomElementNode({
       role="group"
       aria-label={element.name ?? `${element.kind} ${element.id}`}
     >
-      {element.kind === "frame" && (
-        <span className="koi-frame-label">{element.name ?? "Frame"}</span>
+      {isFrame && (
+        <span
+          {...sx(
+            "koi-frame-label",
+            canvasStyles.frameLabel,
+            selected && canvasStyles.frameLabelSelected,
+          )}
+        >
+          {element.name ?? "Frame"}
+        </span>
       )}
       <ElementContent element={element} />
       {element.kind === "frame" && (
         <div
-          className="koi-frame-children"
+          {...stylex.props(canvasStyles.frameChildren)}
           style={{ overflow: element.properties.clipContent ? "hidden" : "visible" }}
         >
           {children
@@ -166,7 +184,7 @@ export function DomLayer({
       element.parentId === null && domKinds.has(element.kind) && visibleRootIds.has(element.id),
   );
   return (
-    <div className="koi-dom-layer">
+    <div {...stylex.props(canvasStyles.layer, canvasStyles.domLayer)}>
       {roots.map((element) => (
         <DomElementNode
           key={element.id}

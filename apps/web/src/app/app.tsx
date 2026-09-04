@@ -1,3 +1,17 @@
+import { Banner } from "@astryxdesign/core/Banner";
+import { Button } from "@astryxdesign/core/Button";
+import { Center } from "@astryxdesign/core/Center";
+import { Dialog, DialogHeader } from "@astryxdesign/core/Dialog";
+import { FormLayout } from "@astryxdesign/core/FormLayout";
+import { HStack } from "@astryxdesign/core/HStack";
+import { RadioList, RadioListItem } from "@astryxdesign/core/RadioList";
+import { Spinner } from "@astryxdesign/core/Spinner";
+import { Text } from "@astryxdesign/core/Text";
+import { TextInput } from "@astryxdesign/core/TextInput";
+import { useToast } from "@astryxdesign/core/Toast";
+import { Token } from "@astryxdesign/core/Token";
+import { VisuallyHidden } from "@astryxdesign/core/VisuallyHidden";
+import { VStack } from "@astryxdesign/core/VStack";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
@@ -12,7 +26,7 @@ import {
   type Command,
   type Projection,
 } from "@koi/core";
-import { CameraController, EditorStore, KoiEditor } from "@koi/editor";
+import { CameraController, EditorStore, KoiEditor, type EditorStatusTone } from "@koi/editor";
 
 import {
   HostedKoiClient,
@@ -97,95 +111,113 @@ function ConnectPanel({ busy, error, initialBaseUrl, onCancel, onConnect }: Conn
   const [baseUrl, setBaseUrl] = useState(initialBaseUrl);
   const [token, setToken] = useState("");
   const [mode, setMode] = useState<ConnectMode>("open");
+  const close = (isOpen: boolean) => {
+    if (!isOpen && !busy) onCancel();
+  };
   return (
-    <div
-      className="koi-login-backdrop"
-      role="presentation"
-      onPointerDown={busy ? undefined : onCancel}
-    >
+    <Dialog isOpen purpose="form" width={460} padding={5} onOpenChange={close}>
       <form
-        className="koi-login-panel"
-        aria-labelledby="koi-login-title"
-        onPointerDown={(event) => event.stopPropagation()}
         onSubmit={(event) => {
           event.preventDefault();
           void onConnect(baseUrl, token, mode);
         }}
       >
-        <span className="koi-login-eyebrow">Self-hosted Koi</span>
-        <h2 id="koi-login-title">Connect to your workspace</h2>
-        <p>
-          Enter this deployment’s owner token. It stays in this browser tab and is never written
-          into a Koi Document.
-        </p>
-        <label>
-          <span>Server URL</span>
-          <input
-            type="url"
-            value={baseUrl}
-            onChange={(event) => setBaseUrl(event.target.value)}
-            disabled={busy}
-            required
+        <VStack gap={4}>
+          <DialogHeader
+            title="Connect to your workspace"
+            subtitle="Self-hosted Koi"
+            onOpenChange={close}
           />
-        </label>
-        <fieldset className="koi-connect-mode">
-          <legend>After connecting</legend>
-          <label>
-            <input
-              type="radio"
-              name="connect-mode"
-              value="open"
-              checked={mode === "open"}
-              onChange={() => setMode("open")}
-              disabled={busy}
+          <Text size="sm" color="secondary">
+            Enter this deployment’s owner token. It stays in this browser tab and is never written
+            into a Koi Document.
+          </Text>
+          <FormLayout>
+            <TextInput
+              label="Server URL"
+              type="text"
+              value={baseUrl}
+              onChange={setBaseUrl}
+              isDisabled={busy}
+              isRequired
             />
-            <span>
-              <strong>Open hosted canvas</strong>
-              <small>Your current local canvas stays in this browser.</small>
-            </span>
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="connect-mode"
-              value="publish"
-              checked={mode === "publish"}
-              onChange={() => setMode("publish")}
-              disabled={busy}
+            <RadioList
+              label="After connecting"
+              value={mode}
+              onChange={(next) => setMode(next as ConnectMode)}
+              isDisabled={busy}
+            >
+              <RadioListItem
+                value="open"
+                label="Open hosted canvas"
+                description="Your current local canvas stays in this browser."
+              />
+              <RadioListItem
+                value="publish"
+                label="Publish this canvas"
+                description="Replace the first hosted canvas with the current local content."
+              />
+            </RadioList>
+            <TextInput
+              label="Owner token"
+              type="password"
+              value={token}
+              onChange={setToken}
+              isDisabled={busy}
+              isRequired
             />
-            <span>
-              <strong>Publish this canvas</strong>
-              <small>Replace the first hosted canvas with the current local content.</small>
-            </span>
-          </label>
-        </fieldset>
-        <label>
-          <span>Owner token</span>
-          <input
-            type="password"
-            value={token}
-            onChange={(event) => setToken(event.target.value)}
-            autoComplete="current-password"
-            disabled={busy}
-            required
-          />
-        </label>
-        {error && (
-          <div className="koi-login-error" role="alert">
-            {error}
-          </div>
-        )}
-        <div className="koi-login-actions">
-          <button type="button" onClick={onCancel} disabled={busy}>
-            Keep working locally
-          </button>
-          <button type="submit" disabled={busy}>
-            {busy ? "Connecting…" : "Connect"}
-          </button>
-        </div>
+          </FormLayout>
+          {error && <Banner status="error" title="Connection failed" description={error} />}
+          <HStack gap={2} justify="end">
+            <Button
+              variant="secondary"
+              label="Keep working locally"
+              onClick={onCancel}
+              isDisabled={busy}
+            />
+            <Button
+              type="submit"
+              variant="primary"
+              label={busy ? "Connecting…" : "Connect"}
+              isDisabled={busy}
+              isLoading={busy}
+            />
+          </HStack>
+        </VStack>
       </form>
-    </div>
+    </Dialog>
   );
+}
+
+/**
+ * Surfaces host messages through Astryx's toast stack. The `koi-toast` hook on the body is the
+ * stable handle the browser journeys read.
+ */
+function HostMessages({ message, onDismiss }: { message: string | null; onDismiss: () => void }) {
+  const showToast = useToast();
+  const latest = useRef(message);
+  latest.current = message;
+  const dismissRef = useRef(onDismiss);
+  dismissRef.current = onDismiss;
+  useEffect(() => {
+    if (!message) return;
+    // One host message at a time: a newer message overwrites the toast in place instead of
+    // stacking beneath the previous one.
+    const dismiss = showToast({
+      type: "info",
+      isAutoHide: false,
+      uniqueID: "koi-host-message",
+      collisionBehavior: "overwrite",
+      body: <span className="koi-toast">{message}</span>,
+      onHide: () => {
+        if (latest.current === message) dismissRef.current();
+      },
+    });
+    return () => {
+      if (latest.current === null) dismiss();
+    };
+  }, [message, showToast]);
+  return null;
 }
 
 export function App() {
@@ -205,6 +237,7 @@ export function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const dismissMessage = useCallback(() => setMessage(null), []);
   const [localReturnId, setLocalReturnId] = useState(readLocalReturnId);
   const [transitionBusy, setTransitionBusy] = useState(false);
   const transitionCoordinator = useMemo(() => new TransitionCoordinator(setTransitionBusy), []);
@@ -688,88 +721,99 @@ export function App() {
 
   if (!store) {
     return (
-      <main className="koi-loading">
-        <span>K</span>
-        <p>{message ?? "Opening your canvas…"}</p>
-      </main>
+      <Center height="100%">
+        <VStack gap={2} align="center">
+          <Spinner size="lg" label="Opening your canvas" />
+          <Text color="secondary">{message ?? "Opening your canvas…"}</Text>
+        </VStack>
+      </Center>
     );
   }
 
+  const busy = transitionBusy || syncState === "Connecting" || syncState === "Syncing";
+  const statusTone: EditorStatusTone =
+    syncState === "Sync error" ||
+    syncState === "Publish outcome unknown" ||
+    webMcpState === "WebMCP error"
+      ? "error"
+      : syncState === "Connecting" ||
+          syncState === "Syncing" ||
+          syncState === "Hosted offline" ||
+          webMcpState === "WebMCP unavailable"
+        ? "busy"
+        : "ok";
+  const hostActions = (
+    <>
+      <Token
+        size="sm"
+        label={BUILD_LABEL}
+        description={`${BUILD_LABEL} · ${__KOI_DEPLOYMENT_MODE__}`}
+        data-testid="koi-build-identifier"
+      />
+      {!IS_STANDALONE_DEPLOYMENT && localReturnId && localReturnId !== store.getDocument().id ? (
+        <Button
+          variant="secondary"
+          size="sm"
+          label="Return to local"
+          onClick={returnToLocal}
+          isDisabled={busy}
+        />
+      ) : null}
+      {IS_STANDALONE_DEPLOYMENT ? (
+        <Token size="sm" color="blue" label="Standalone · browser-local" />
+      ) : (
+        <Button
+          variant="primary"
+          size="sm"
+          label={syncState === "Synced" ? "Hosted workspace" : "Connect hosting"}
+          onClick={() => setShowLogin(true)}
+          isDisabled={busy}
+        />
+      )}
+    </>
+  );
+
   return (
-    <div className="koi-web-app">
+    <>
       <KoiEditor
         store={store}
         camera={camera}
         title="Koi"
         status={`${syncState} · ${webMcpState}`}
+        statusTone={statusTone}
+        actions={hostActions}
         onExport={() => downloadDocument(store.getProjection())}
         onImport={() => fileInput.current?.click()}
-      />
-      <input
-        ref={fileInput}
-        className="koi-visually-hidden"
-        type="file"
-        aria-label="Import Koi document"
-        accept={`.json,.koi.json,application/json,${KOI_DOCUMENT_MEDIA_TYPE}`}
-        disabled={transitionBusy || syncState === "Connecting" || syncState === "Syncing"}
-        onChange={(event) => {
-          const file = event.target.files?.[0];
-          if (file) void importFile(file);
-          event.target.value = "";
-        }}
-      />
-      <div className="koi-host-actions">
-        <span
-          className="koi-build-meta"
-          data-testid="koi-build-identifier"
-          title={`${BUILD_LABEL} · ${__KOI_DEPLOYMENT_MODE__}`}
-        >
-          {BUILD_LABEL}
-        </span>
-        {!IS_STANDALONE_DEPLOYMENT && localReturnId && localReturnId !== store.getDocument().id ? (
-          <button
-            className="koi-host-button koi-local-return"
-            type="button"
-            onClick={returnToLocal}
-            disabled={transitionBusy || syncState === "Connecting" || syncState === "Syncing"}
-          >
-            Return to local
-          </button>
+      >
+        <HostMessages message={message} onDismiss={dismissMessage} />
+        {showLogin && !IS_STANDALONE_DEPLOYMENT ? (
+          <ConnectPanel
+            busy={transitionBusy}
+            error={loginError}
+            initialBaseUrl={
+              authorityRef.current.kind === "hosted"
+                ? authorityRef.current.baseUrl
+                : readHostBaseUrl(location.origin)
+            }
+            onCancel={() => setShowLogin(false)}
+            onConnect={connect}
+          />
         ) : null}
-        {IS_STANDALONE_DEPLOYMENT ? (
-          <span className="koi-standalone-mode">Standalone · browser-local</span>
-        ) : (
-          <button
-            className="koi-host-button"
-            type="button"
-            onClick={() => setShowLogin(true)}
-            disabled={transitionBusy || syncState === "Connecting" || syncState === "Syncing"}
-          >
-            {syncState === "Synced" ? "Hosted workspace" : "Connect hosting"}
-          </button>
-        )}
-      </div>
-      {message && (
-        <div className="koi-toast" role="status">
-          <span>{message}</span>
-          <button type="button" onClick={() => setMessage(null)} aria-label="Dismiss">
-            ×
-          </button>
-        </div>
-      )}
-      {showLogin && !IS_STANDALONE_DEPLOYMENT ? (
-        <ConnectPanel
-          busy={transitionBusy}
-          error={loginError}
-          initialBaseUrl={
-            authorityRef.current.kind === "hosted"
-              ? authorityRef.current.baseUrl
-              : readHostBaseUrl(location.origin)
-          }
-          onCancel={() => setShowLogin(false)}
-          onConnect={connect}
+      </KoiEditor>
+      <VisuallyHidden>
+        <input
+          ref={fileInput}
+          type="file"
+          aria-label="Import Koi document"
+          accept={`.json,.koi.json,application/json,${KOI_DOCUMENT_MEDIA_TYPE}`}
+          disabled={busy}
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file) void importFile(file);
+            event.target.value = "";
+          }}
         />
-      ) : null}
-    </div>
+      </VisuallyHidden>
+    </>
   );
 }

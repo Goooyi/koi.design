@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
-  "sourceInputsSha256": "3ec7f8aa08fc75db3a051804b645646ba8c2e60b3b7288510b41c1c95e443d13",
+  "sourceInputsSha256": "48882a5bf69f86f4e708894de379f0c061e1a26a226396e1350294f9b86eb2c7",
   "environment": {
-    "node": "v24.20.0",
+    "node": "v26.8.1",
     "platform": "darwin",
     "architecture": "arm64",
     "packageManager": "pnpm@11.21.0"
   },
   "summary": {
-    "packageVersions": 340,
-    "directPackageNames": 25,
+    "packageVersions": 345,
+    "directPackageNames": 26,
     "licenseCounts": {
       "0BSD": 1,
       "Apache-2.0": 13,
@@ -20,7 +20,7 @@
       "CC0-1.0": 1,
       "ISC": 20,
       "LGPL-3.0-or-later": 1,
-      "MIT": 286,
+      "MIT": 291,
       "MIT OR Apache-2.0": 3,
       "MPL-2.0": 4,
       "NOASSERTION": 2
@@ -36,6 +36,9 @@
       "@oxfmt/binding-darwin-arm64@0.64.0",
       "@oxlint/binding-darwin-arm64@1.79.0",
       "@polka/url@1.0.0-next.29",
+      "@stylexjs/babel-plugin@0.19.0",
+      "@stylexjs/rollup-plugin@0.19.0",
+      "@stylexjs/shared@0.19.0",
       "@voidzero-dev/vite-plus-darwin-arm64@0.3.0",
       "@yuku-toolchain/types@0.5.43",
       "flow-estree@0.329.0",
@@ -81,6 +84,10 @@
         {
           "section": "dependencies",
           "workspace": "@koi/astryx"
+        },
+        {
+          "section": "dependencies",
+          "workspace": "@koi/editor"
         },
         {
           "section": "dependencies",
@@ -852,6 +859,23 @@
       "reviewStatus": "reviewed-from-installed-package"
     },
     {
+      "name": "@dual-bundle/import-meta-resolve",
+      "version": "4.2.1",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": null,
+      "repository": "un-es/import-meta-resolve",
+      "localLicenseFiles": [
+        {
+          "file": "license",
+          "sha256": "8770a1a4b69ee722636643e81340ce4a8f0b8415b1c568487edc9062338bfcc7"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
       "name": "@esbuild/darwin-arm64",
       "version": "0.27.7",
       "declaredLicense": "MIT",
@@ -1406,6 +1430,51 @@
       "reviewStatus": "reviewed-from-installed-package"
     },
     {
+      "name": "@stylexjs/babel-plugin",
+      "version": "0.19.0",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": null,
+      "repository": "git+https://github.com/facebook/stylex.git",
+      "localLicenseFiles": [],
+      "upstreamEvidence": null,
+      "reviewStatus": "declared-license-without-local-license-file"
+    },
+    {
+      "name": "@stylexjs/rollup-plugin",
+      "version": "0.19.0",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [
+        {
+          "section": "devDependencies",
+          "workspace": "@koi/astryx"
+        },
+        {
+          "section": "devDependencies",
+          "workspace": "@koi/editor"
+        }
+      ],
+      "homepage": null,
+      "repository": "git+https://github.com/facebook/stylex.git",
+      "localLicenseFiles": [],
+      "upstreamEvidence": null,
+      "reviewStatus": "declared-license-without-local-license-file"
+    },
+    {
+      "name": "@stylexjs/shared",
+      "version": "0.19.0",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": null,
+      "repository": "git+https://github.com/facebook/stylex.git",
+      "localLicenseFiles": [],
+      "upstreamEvidence": null,
+      "reviewStatus": "declared-license-without-local-license-file"
+    },
+    {
       "name": "@stylexjs/stylex",
       "version": "0.19.0",
       "declaredLicense": "MIT",
@@ -1414,6 +1483,10 @@
         {
           "section": "dependencies",
           "workspace": "@koi/astryx"
+        },
+        {
+          "section": "dependencies",
+          "workspace": "@koi/editor"
         }
       ],
       "homepage": null,
@@ -4557,6 +4630,23 @@
         {
           "file": "LICENSE",
           "sha256": "be75ef59c5cf59715588a17a82dff7dd3e83c4dba3c458676bb9311e05fbedc5"
+        }
+      ],
+      "upstreamEvidence": null,
+      "reviewStatus": "reviewed-from-installed-package"
+    },
+    {
+      "name": "postcss-value-parser",
+      "version": "4.2.0",
+      "declaredLicense": "MIT",
+      "verifiedLicense": "MIT",
+      "directUses": [],
+      "homepage": "https://github.com/TrySound/postcss-value-parser",
+      "repository": "https://github.com/TrySound/postcss-value-parser.git",
+      "localLicenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "3687447039151857a6ba378db062172c7f33d4aa70a615c87a43a9c50e990485"
         }
       ],
       "upstreamEvidence": null,

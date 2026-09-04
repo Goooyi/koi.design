@@ -4,7 +4,7 @@
     {
       "id": "koi-inline-svg-favicon",
       "sourcePath": "apps/web/index.html",
-      "sourceSha256": "e98bdfe020fd8d730ed14cc2c9ec065c3044056155cd1737d349cef033ec9d3a",
+      "sourceSha256": "3d0b5e2e643c09e29af85ae46761d450f562bbfa8b9b1b05fd019acb83f61f32",
       "kind": "inline-svg-favicon",
       "provenance": "Koi-authored project artwork",
       "license": "AGPL-3.0-or-later"

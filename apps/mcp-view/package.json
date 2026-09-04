@@ -16,6 +16,7 @@
   "dependencies": {
     "@astryxdesign/core": "0.5.0",
     "@astryxdesign/theme-neutral": "0.5.0",
+    "@koi/astryx": "workspace:*",
     "@koi/core": "workspace:*",
     "@koi/editor": "workspace:*",
     "@koi/mcp": "workspace:*",

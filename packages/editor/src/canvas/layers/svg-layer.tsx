@@ -1,11 +1,14 @@
+import * as stylex from "@stylexjs/stylex";
 import type { ReactNode } from "react";
 
 import type { KoiElement, Page, Point } from "@koi/core";
 
-import { useEditorRuntime } from "../../shell/editor-context.js";
+import { useEditorRuntime } from "../../runtime/editor-context.js";
 import { useIsSelected, usePreviewRevision } from "../../store/hooks.js";
 import { connectorAnchor, worldGeometry } from "../geometry.js";
 import { useElementDrag } from "../interaction/use-element-drag.js";
+import { canvasStyles } from "../styles.js";
+import { sx } from "../sx.js";
 
 function pointsToPath(points: readonly Point[], offsetX = 0, offsetY = 0): string {
   return points
@@ -32,7 +35,7 @@ function ShapeNode({
   const y = geometry.y + preview.y;
   const common = {
     ...handlers,
-    className: `koi-svg-element${selected ? " is-selected" : ""}`,
+    ...stylex.props(selected && canvasStyles.svgSelected),
     fill: element.properties.fill ?? "transparent",
     stroke: element.properties.stroke ?? "#33405d",
     strokeWidth: element.properties.strokeWidth,
@@ -100,7 +103,7 @@ function ConnectorNode({
       vectorEffect="non-scaling-stroke"
       markerEnd="url(#koi-arrow)"
       pointerEvents="stroke"
-      className={selected ? "is-selected" : undefined}
+      {...stylex.props(selected && canvasStyles.svgSelected)}
       onPointerDown={(event) => {
         event.stopPropagation();
         store.select([element.id]);
@@ -135,7 +138,7 @@ function InkNode({
       strokeLinejoin="round"
       vectorEffect="non-scaling-stroke"
       pointerEvents="stroke"
-      className={selected ? "is-selected" : undefined}
+      {...stylex.props(selected && canvasStyles.svgSelected)}
     />
   );
 }
@@ -196,7 +199,11 @@ export function SvgLayer({
   };
 
   return (
-    <svg className="koi-svg-layer" overflow="visible" aria-hidden="true">
+    <svg
+      {...sx("koi-svg-layer", canvasStyles.layer, canvasStyles.svgLayer)}
+      overflow="visible"
+      aria-hidden="true"
+    >
       <defs>
         <marker id="koi-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
           <path d="M0,0 L8,4 L0,8 z" fill="context-stroke" />

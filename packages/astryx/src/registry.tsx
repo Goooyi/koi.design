@@ -2,7 +2,10 @@ import { Badge } from "@astryxdesign/core/Badge";
 import { Banner } from "@astryxdesign/core/Banner";
 import { Button } from "@astryxdesign/core/Button";
 import { Card } from "@astryxdesign/core/Card";
+import { EmptyState } from "@astryxdesign/core/EmptyState";
+import { Text } from "@astryxdesign/core/Text";
 import { TextInput } from "@astryxdesign/core/TextInput";
+import { VStack } from "@astryxdesign/core/VStack";
 import type { ReactElement } from "react";
 
 import type { JsonObject } from "@koi/core";
@@ -138,13 +141,16 @@ const entries: readonly RegistryEntry[] = [
       <Card
         width="100%"
         height="100%"
+        padding={5}
         variant={optionProp(props, "variant", cardVariants, "default")}
         elevation={optionProp(props, "elevation", elevations, "low")}
       >
-        <div className="koi-astryx-card-copy">
-          <strong>{stringProp(props, "title", "Design with context")}</strong>
-          <span>{stringProp(props, "body", "Keep the composition editable.")}</span>
-        </div>
+        <VStack gap={2}>
+          <Text weight="bold">{stringProp(props, "title", "Design with context")}</Text>
+          <Text size="sm" color="secondary">
+            {stringProp(props, "body", "Keep the composition editable.")}
+          </Text>
+        </VStack>
       </Card>
     ),
     toHtml: (props) => {
@@ -260,7 +266,7 @@ export function getComponentDescriptor(componentId: string): ComponentDescriptor
 export function renderComponent(componentId: string, props: Readonly<JsonObject>): ReactElement {
   const entry = registry.get(componentId);
   if (!entry) {
-    return <div className="koi-unsupported-component">Unsupported component: {componentId}</div>;
+    return <EmptyState title="Unsupported component" description={componentId} isCompact />;
   }
   return entry.render(props);
 }

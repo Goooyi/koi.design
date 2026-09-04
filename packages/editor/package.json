@@ -22,12 +22,15 @@
     "test": "vp test --run"
   },
   "dependencies": {
+    "@astryxdesign/core": "catalog:",
     "@koi/astryx": "workspace:*",
     "@koi/core": "workspace:*",
+    "@stylexjs/stylex": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@stylexjs/rollup-plugin": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "typescript": "catalog:",

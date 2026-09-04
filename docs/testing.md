@@ -71,7 +71,8 @@ pnpm ready
 
 `pnpm check`, `pnpm test`, and `pnpm test:e2e` build workspace dependencies before their
 respective checks, so no separate build is required on a clean checkout. `pnpm ready` builds once,
-then runs format, lint, type, workspace test, and one-worker Chromium gates.
+then runs format, lint, type, the Astryx theme drift check in `packages/astryx`, workspace test,
+and one-worker Chromium gates.
 
 The current browser suite and bounded manual accessibility review provide meaningful product
 evidence. Manual screen-reader and color-contrast checks, interactive third-party MCP host smoke

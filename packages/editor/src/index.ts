@@ -1,5 +1,3 @@
-import "./styles.css";
-
 export {
   CameraController,
   screenToWorld,
@@ -7,7 +5,7 @@ export {
   zoomAround,
 } from "./canvas/camera/camera.js";
 export { SpatialIndex } from "./canvas/visibility/spatial-index.js";
-export { KoiEditor, type KoiEditorProps } from "./shell/koi-editor.js";
+export { KoiEditor, type EditorStatusTone, type KoiEditorProps } from "./chrome/koi-editor.js";
 export {
   EditorStore,
   type CommitOptions,

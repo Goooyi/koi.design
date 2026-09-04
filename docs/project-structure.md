@@ -25,8 +25,8 @@ koi-design/
 │   └── server/               # authenticated REST/HTTP MCP persistence + static serving
 ├── packages/
 │   ├── core/                 # document, commands, history, queries, serialization
-│   ├── astryx/               # trusted Astryx profile and renderer/export helpers
-│   ├── editor/               # reusable React spatial editor
+│   ├── astryx/               # Koi's Astryx layer: registry, Koi theme, glyphs, Astryx-style components
+│   ├── editor/               # canvas/ (Koi's spatial surface), chrome/ (Astryx composition), store/
 │   └── mcp/                  # shared MCP tools, resources, bounds, demo repository
 ├── tests/
 │   └── e2e/                  # assembled browser journeys
@@ -57,9 +57,14 @@ core + mcp + mcp-view ← server
   Element kinds, validation, semantic operations, deterministic replay, undo, queries, and the
   portable Koi representation. The current cross-surface geometry contract fixes rotation at `0`,
   and one Projection may retain at most 64 undelivered Commands and 50,000 lifetime Commands.
-- `packages/astryx` owns the `koi.astryx/0.5.0` trusted registry and component-level HTML helpers.
+- `packages/astryx` is Koi's Astryx layer: the `koi.astryx/0.5.0` trusted registry and HTML helpers,
+  the Koi theme (`src/theme/koi.ts`, values only on Astryx's token contract, built into
+  `src/theme/generated` by `astryx theme build` and drift-checked by `pnpm theme:check`), Koi's
+  glyphs for Astryx's `Icon`, and Astryx-style components Astryx lacks, such as `ColorInput`.
 - `packages/editor` owns the store, camera, DOM/SVG/Canvas2D/overlay layers, direct interaction,
-  Frame visibility, shared drag-preview offsets, and inspector. Its per-Element subscriptions are
+  Frame visibility, shared drag-preview offsets, and inspector. `src/canvas` is Koi's own product
+  surface, authored in StyleX on Astryx token groups; `src/chrome` composes Astryx components and
+  owns no visual styling of its own (ADR 0006). Its per-Element subscriptions are
   useful but do not isolate every committed render because the Canvas shell also consumes the full
   Projection.
 - `packages/mcp` maps MCP tools to core commands, registers the MCP App resource, defines direct
@@ -86,7 +91,9 @@ pagination in the model tool catalog.
 - `apps/mcp-view/dist/mcp-app.html` — one self-contained MCP App document.
 - `apps/mcp-server/dist/cli.mjs` — executable stdio server; `dist/index.mjs` is its module export.
 - `apps/server/dist/main.js` — bundled Node REST/static server.
-- `packages/core/dist/index.mjs` and `packages/astryx/dist/index.mjs` — public package entrypoints.
+- `packages/core/dist/index.mjs` and `packages/astryx/dist/index.mjs` — public package entrypoints;
+  `@koi/astryx/theme.css` and `@koi/astryx/components.css` are the Koi theme and Astryx-style
+  component styles that hosts import with the editor stylesheet.
 - `packages/editor/dist/index.mjs` and `dist/style.css` — editor module and required stylesheet.
 - `packages/mcp/dist/index.mjs` and `dist/protocol.mjs` — MCP implementation and protocol-only
   entrypoints.
@@ -128,6 +135,8 @@ example
   share interaction invariants.
 - Add a package only when it has an independent contract and more than one real consumer.
 - Keep protocol mapping at app edges; domain behavior belongs in `core`.
+- Compose editor chrome from Astryx components and Koi's theme; write styles only for the spatial
+  canvas, and only on Astryx tokens.
 - Remove obsolete paths instead of adding compatibility layers.
 
 ## References

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } f
 
 import type { KoiElement } from "@koi/core";
 
-import { useEditorRuntime } from "../../shell/editor-context.js";
+import { useEditorRuntime } from "../../runtime/editor-context.js";
 
 export interface DragPreview {
   x: number;

@@ -38,7 +38,9 @@ const fixedBudgets = {
   crossOriginResources: 0,
   hostConfigurationFailures: 0,
   instrumentationFailures: 0,
-  peakDomNodes: 300,
+  // Astryx composition renders real component structure (landmarks, groups, labelled controls)
+  // rather than bare styled elements; the sentinel tracks the measured peak with headroom.
+  peakDomNodes: 420,
   peakDomElements: 24,
   peakMountedFrames: 4,
   farRightMountedFrames: 2,

@@ -6,17 +6,21 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 
+import * as stylex from "@stylexjs/stylex";
+
 import type { ElementInput, Geometry, KoiElement, Point } from "@koi/core";
 
-import { useEditorRuntime } from "../shell/editor-context.js";
-import { SelectionOverlay } from "../overlays/selection-overlay.js";
-import { TextEditingOverlay } from "../overlays/text-editing-overlay.js";
+import { useEditorRuntime } from "../runtime/editor-context.js";
+import { SelectionOverlay } from "./overlays/selection-overlay.js";
+import { TextEditingOverlay } from "./overlays/text-editing-overlay.js";
 import { useProjection, useSelection } from "../store/hooks.js";
 import { screenToWorld, type Camera } from "./camera/camera.js";
 import { connectorBounds, worldGeometry } from "./geometry.js";
 import { DomLayer } from "./layers/dom-layer.js";
 import { SvgLayer } from "./layers/svg-layer.js";
 import { SpatialIndex } from "./visibility/spatial-index.js";
+import { canvasStyles } from "./styles.js";
+import { sx } from "./sx.js";
 
 interface PointerSession {
   mode: "pan" | "pen";
@@ -112,6 +116,8 @@ export function Canvas() {
   const viewportRef = useRef<HTMLDivElement>(null);
   const session = useRef<PointerSession | null>(null);
   const visibilityTimer = useRef<number | null>(null);
+  const pointerFocus = useRef(false);
+  const [keyboardFocus, setKeyboardFocus] = useState(false);
   const lastVisibilityRefresh = useRef(0);
   const [viewport, setViewport] = useState({ width: 1, height: 1, revision: 0 });
 
@@ -243,7 +249,7 @@ export function Canvas() {
     return { rootIds, elementIds, connectorIds };
   }, [camera, page, pageIndex, projection.document.revision, selection, viewport]);
 
-  if (!page) return <div className="koi-empty-canvas">No Page</div>;
+  if (!page) return <div {...stylex.props(canvasStyles.empty)}>No Page</div>;
 
   const localPoint = (event: ReactPointerEvent): Point => {
     const rect = viewportRef.current!.getBoundingClientRect();
@@ -306,15 +312,28 @@ export function Canvas() {
   return (
     <div
       ref={viewportRef}
-      className={`koi-canvas koi-tool-${tool}`}
+      {...sx(
+        "koi-canvas",
+        canvasStyles.root,
+        tool === "hand" && canvasStyles.hand,
+        tool === "pen" && canvasStyles.pen,
+        keyboardFocus && canvasStyles.keyboardFocus,
+      )}
       role="region"
       aria-label={`${page.name} infinite canvas`}
       tabIndex={0}
       onPointerDown={onPointerDown}
       onPointerDownCapture={(event) => {
         if (event.button === 0 || event.button === 1) {
+          // Pointer-driven focus must not paint the keyboard focus ring around the whole canvas.
+          pointerFocus.current = true;
           viewportRef.current?.focus({ preventScroll: true });
+          pointerFocus.current = false;
         }
+      }}
+      onFocus={(event) => {
+        if (event.target !== event.currentTarget) return;
+        setKeyboardFocus(!pointerFocus.current);
       }}
       onPointerMove={onPointerMove}
       onPointerUp={() => finishPointer(true)}
@@ -329,8 +348,8 @@ export function Canvas() {
         }
       }}
     >
-      <div className="koi-grid" />
-      <div ref={camera.attachWorld} className="koi-world-root">
+      <div {...stylex.props(canvasStyles.grid)} />
+      <div ref={camera.attachWorld} {...stylex.props(canvasStyles.worldRoot)}>
         <DomLayer
           page={page}
           visibleRootIds={visibility.rootIds}
@@ -343,14 +362,18 @@ export function Canvas() {
           visibleConnectorIds={visibility.connectorIds}
         />
       </div>
-      <canvas ref={hud.attach} className="koi-hud" />
-      <div className="koi-overlay-layer">
+      <canvas ref={hud.attach} {...stylex.props(canvasStyles.overlay)} />
+      <div {...stylex.props(canvasStyles.overlay)}>
         <SelectionOverlay />
         <TextEditingOverlay />
       </div>
-      <div className="koi-canvas-meta" aria-live="polite">
-        <span>{Math.round(camera.get().zoom * 100)}%</span>
-        <span>{page.elements.length} elements</span>
+      <div {...sx("koi-canvas-meta", canvasStyles.meta)} aria-live="polite">
+        <span {...stylex.props(canvasStyles.metaItem, canvasStyles.metaZoom)}>
+          {Math.round(camera.get().zoom * 100)}%
+        </span>
+        <span {...stylex.props(canvasStyles.metaItem, canvasStyles.metaDivided)}>
+          {page.elements.length} elements
+        </span>
       </div>
     </div>
   );

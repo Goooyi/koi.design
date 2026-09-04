@@ -1,13 +1,34 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import * as stylex from "@stylexjs/stylex";
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 
 import type { JsonObject, KoiElement } from "@koi/core";
 
-import { worldToScreen } from "../canvas/camera/camera.js";
-import { elementMap, worldGeometry } from "../canvas/geometry.js";
-import { useEditorRuntime } from "../shell/editor-context.js";
-import { useElement } from "../store/hooks.js";
+import { worldToScreen } from "../camera/camera.js";
+import { elementMap, worldGeometry } from "../geometry.js";
+import { useEditorRuntime } from "../../runtime/editor-context.js";
+import { useElement } from "../../store/hooks.js";
+import { canvasStyles } from "../styles.js";
 
 type EditableElement = Extract<KoiElement, { kind: "text" | "note" }>;
+
+function editingSurfaceStyle(element: EditableElement): CSSProperties {
+  if (element.kind === "note") {
+    return {
+      background: element.properties.color ?? "#ffe694",
+      color: "#3d351d",
+      fontSize: 16,
+      padding: 18,
+    };
+  }
+  return {
+    color: element.properties.style.color,
+    fontFamily: element.properties.style.fontFamily,
+    fontSize: element.properties.style.fontSize,
+    fontWeight: element.properties.style.fontWeight,
+    padding: 2,
+    textAlign: element.properties.style.align,
+  };
+}
 
 function ActiveTextEditor({
   initialElement,
@@ -77,7 +98,7 @@ function ActiveTextEditor({
   return (
     <textarea
       ref={overlayRef}
-      className="koi-text-editor-overlay"
+      {...stylex.props(canvasStyles.textEditor)}
       value={value}
       onChange={(event) => {
         setValue(event.target.value);
@@ -88,6 +109,7 @@ function ActiveTextEditor({
       }}
       onKeyDown={onKeyDown}
       onPointerDown={(event) => event.stopPropagation()}
+      style={editingSurfaceStyle(element)}
       aria-label={`Edit ${element.kind}`}
       autoFocus
     />

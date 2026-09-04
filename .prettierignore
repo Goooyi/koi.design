@@ -1,0 +1,2 @@
+# `astryx theme build` output in packages/astryx; `pnpm theme:check` guards it, not the formatter.
+packages/astryx/src/theme/generated/

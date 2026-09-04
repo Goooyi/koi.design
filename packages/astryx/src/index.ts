@@ -1,3 +1,5 @@
+export { ColorInput, type ColorInputProps } from "./components/color-input.tsx";
+export { KoiIcons, type KoiGlyph, type KoiIconName } from "./icons.tsx";
 export {
   KOI_ASTRYX_PROFILE,
   componentToHtml,
@@ -8,4 +10,5 @@ export {
   type ComponentDescriptor,
   type ComponentProperty,
 } from "./registry.tsx";
+export { koiTheme } from "./theme/generated/koi.js";
 export { KoiThemeProvider } from "./theme.tsx";

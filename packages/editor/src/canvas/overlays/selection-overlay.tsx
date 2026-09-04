@@ -1,9 +1,11 @@
+import * as stylex from "@stylexjs/stylex";
 import { useEffect, useRef } from "react";
 
-import { elementMap, worldGeometry } from "../canvas/geometry.js";
-import { worldToScreen } from "../canvas/camera/camera.js";
-import { useEditorRuntime } from "../shell/editor-context.js";
-import { usePreviewRevision, useProjection, useSelection } from "../store/hooks.js";
+import { elementMap, worldGeometry } from "../geometry.js";
+import { worldToScreen } from "../camera/camera.js";
+import { useEditorRuntime } from "../../runtime/editor-context.js";
+import { usePreviewRevision, useProjection, useSelection } from "../../store/hooks.js";
+import { canvasStyles } from "../styles.js";
 
 export function SelectionOverlay() {
   const { camera, store } = useEditorRuntime();
@@ -37,10 +39,10 @@ export function SelectionOverlay() {
   if (!element || !page || element.kind === "connector") return null;
 
   return (
-    <div ref={overlayRef} className="koi-selection-overlay">
+    <div ref={overlayRef} {...stylex.props(canvasStyles.selectionOverlay)}>
       <button
         type="button"
-        className="koi-resize-handle"
+        {...stylex.props(canvasStyles.resizeHandle)}
         aria-label="Resize selected element"
         onPointerDown={(event) => {
           event.stopPropagation();
