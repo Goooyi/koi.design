@@ -74,7 +74,7 @@ export function createWebMcpElementPreviews(
       ? {
           available: false,
           reason:
-            "Element property previews cannot be paginated in Stage 1. Inspect fewer Elements or use the human export action for the complete Document.",
+            "Element property previews cannot be paginated. Inspect fewer Elements or use the human export action for the complete Document.",
         }
       : null,
   };

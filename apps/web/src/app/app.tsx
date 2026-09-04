@@ -48,7 +48,7 @@ type ConnectMode = "open" | "publish";
 
 const LOCAL_RETURN_KEY = "koi.host.localReturnDocumentId";
 const HOST_BASE_URL_KEY = "koi.host.baseUrl";
-const IS_CHALLENGE_DEPLOYMENT = __KOI_DEPLOYMENT_MODE__ === "challenge";
+const IS_STANDALONE_DEPLOYMENT = __KOI_DEPLOYMENT_MODE__ === "standalone";
 const BUILD_LABEL = `Koi v${__KOI_VERSION__} · ${__KOI_BUILD_ID__.slice(0, 12)}`;
 
 function readLocalReturnId(): string | null {
@@ -726,7 +726,7 @@ export function App() {
         >
           {BUILD_LABEL}
         </span>
-        {!IS_CHALLENGE_DEPLOYMENT && localReturnId && localReturnId !== store.getDocument().id ? (
+        {!IS_STANDALONE_DEPLOYMENT && localReturnId && localReturnId !== store.getDocument().id ? (
           <button
             className="koi-host-button koi-local-return"
             type="button"
@@ -736,8 +736,8 @@ export function App() {
             Return to local
           </button>
         ) : null}
-        {IS_CHALLENGE_DEPLOYMENT ? (
-          <span className="koi-challenge-mode">Challenge demo · browser-local</span>
+        {IS_STANDALONE_DEPLOYMENT ? (
+          <span className="koi-standalone-mode">Standalone · browser-local</span>
         ) : (
           <button
             className="koi-host-button"
@@ -757,7 +757,7 @@ export function App() {
           </button>
         </div>
       )}
-      {showLogin && !IS_CHALLENGE_DEPLOYMENT ? (
+      {showLogin && !IS_STANDALONE_DEPLOYMENT ? (
         <ConnectPanel
           busy={transitionBusy}
           error={loginError}

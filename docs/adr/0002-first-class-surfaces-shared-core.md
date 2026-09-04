@@ -17,6 +17,7 @@ WebMCP tools register centrally at the top-level page with a stable catalog. MCP
 
 - Human and agent edits share validation, conflict handling, attribution, history, undo, and export.
 - Draft API changes remain localized without demoting WebMCP to an experiment.
-- The stdio and hosted adapters can follow the challenge web slice without redesigning the product core.
+- The stdio and hosted adapters can follow the standalone web slice without redesigning the product
+  core.
 - Adapter contract tests must prove equivalent observable results across surfaces.
 - Features unique to a host are capability-negotiated rather than assumed.

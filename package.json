@@ -5,22 +5,21 @@
   "license": "AGPL-3.0-or-later",
   "type": "module",
   "scripts": {
-    "audit:browser": "pnpm challenge:build && node scripts/capture-browser-audit.mjs",
+    "audit:browser": "pnpm standalone:build && node scripts/capture-browser-audit.mjs",
     "build": "vp run -r --concurrency-limit 2 build",
-    "challenge:build": "vp run --filter '@koi/web^...' --concurrency-limit 2 build && pnpm --filter @koi/web build:challenge",
-    "challenge:deploy": "pnpm challenge:verify && WRANGLER_WRITE_LOGS=false wrangler pages deploy --cwd apps/web --branch main --commit-dirty=false",
-    "challenge:dev": "pnpm challenge:build && WRANGLER_WRITE_LOGS=false wrangler pages dev --cwd apps/web --ip 127.0.0.1 --port 4174 --log-level warn",
-    "challenge:setup": "WRANGLER_WRITE_LOGS=false wrangler pages project create koi-design-webmcp-challenge --production-branch main --cwd apps/web",
-    "challenge:verify": "pnpm challenge:build && node scripts/verify-challenge-build.mjs",
     "check": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 check",
     "dev": "vp run -r --concurrency-limit 2 build && vp run @koi/web#dev",
     "doctor": "node scripts/doctor.mjs",
     "licenses:generate": "node scripts/generate-license-evidence.mjs",
+    "pages:deploy": "pnpm standalone:verify && WRANGLER_WRITE_LOGS=false wrangler pages deploy --cwd apps/web --branch main --commit-dirty=false",
+    "pages:dev": "pnpm standalone:build && WRANGLER_WRITE_LOGS=false wrangler pages dev --cwd apps/web --ip 127.0.0.1 --port 4174 --log-level warn",
     "ready": "vp run -r --concurrency-limit 2 build && vp run -r --concurrency-limit 2 check && pnpm test:doctor && vp run -r --concurrency-limit 2 test && vp exec playwright test --workers=1",
+    "standalone:build": "vp run --filter '@koi/web^...' --concurrency-limit 2 build && pnpm --filter @koi/web build:standalone",
+    "standalone:verify": "pnpm standalone:build && node scripts/verify-standalone-build.mjs",
     "test": "vp run -r --concurrency-limit 2 build && pnpm test:doctor && vp run -r --concurrency-limit 2 test",
     "test:doctor": "node --test scripts/lib/doctor-contract.test.mjs",
     "test:e2e": "vp run -r --concurrency-limit 2 build && vp exec playwright test --workers=1",
-    "webmcp:manifest": "pnpm challenge:build && node scripts/capture-webmcp-tools.mjs"
+    "webmcp:manifest": "pnpm standalone:build && node scripts/capture-webmcp-tools.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "catalog:",

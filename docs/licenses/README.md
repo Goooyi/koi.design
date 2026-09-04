@@ -1,12 +1,12 @@
-# Stage 1 license review
+# License review
 
-Koi's Stage 1 monorepo is licensed under `AGPL-3.0-or-later`. This directory records the automated
+Koi's public monorepo is licensed under `AGPL-3.0-or-later`. This directory records the automated
 dependency and asset review used for that release decision; it is an engineering provenance check,
 not legal advice.
 
 ## Result
 
-- The browser and MCP View runtime dependencies reviewed for Stage 1 use permissive MIT, ISC, or
+- The browser and MCP View runtime dependencies in the current inventory use permissive MIT, ISC, or
   transition-compatible MCP license terms. Required acknowledgements are preserved in the root
   `NOTICE` and the deployed `NOTICE.txt`.
 - AstryX Core `0.5.0` and StyleX `0.19.0` declare MIT in their published manifests. Because those
@@ -22,7 +22,7 @@ not legal advice.
   provenance resolves to the MIT-licensed Yuku `v0.5.48` source repository, but the exact native
   binaries remain `NOASSERTION`. They are build-only and are not redistributed in the browser
   artifact. Re-audit before distributing `node_modules`, a Koi CLI, or an OCI image.
-- The Stage 1 source tree bundles no raster images, audio, video, or webfonts. The Koi inline SVG
+- The tracked source tree bundles no raster images, audio, video, or webfonts. The Koi inline SVG
   favicon is project-authored; the AstryX icon registry uses Lucide/Feather.
 
 ## Reproduce the inventory

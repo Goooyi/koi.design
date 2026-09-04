@@ -40,3 +40,6 @@ jobs:
 
       - name: Run readiness gate
         run: pnpm ready
+
+      - name: Verify standalone build
+        run: pnpm standalone:verify

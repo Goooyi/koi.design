@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "vp build",
-    "build:challenge": "vp build --mode challenge",
+    "build:standalone": "vp build --mode standalone",
     "check": "vp check",
     "dev": "vp dev",
     "preview": "vp preview",

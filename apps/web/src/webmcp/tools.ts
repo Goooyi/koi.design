@@ -372,7 +372,7 @@ export function createKoiWebMcpTools({
               ? {
                   available: false,
                   reason:
-                    "Selection pagination is unavailable in Stage 1. The first 64 stable IDs are returned.",
+                    "Selection pagination is unavailable. The first 64 stable IDs are returned.",
                 }
               : null,
           sync: {

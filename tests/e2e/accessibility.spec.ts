@@ -1,9 +1,7 @@
 import { AxeBuilder } from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-test("the seeded Stage 1 editor has no detectable WCAG A/AA violations", async ({
-  page,
-}, testInfo) => {
+test("the seeded editor has no detectable WCAG A/AA violations", async ({ page }, testInfo) => {
   await page.goto("/");
   await expect(page.getByRole("region", { name: /Explorations infinite canvas/ })).toBeVisible();
 

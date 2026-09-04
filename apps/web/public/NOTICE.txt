@@ -72,4 +72,4 @@ Asset provenance
 
 The inline Koi favicon in apps/web/index.html is Koi-authored project artwork and is distributed
 under AGPL-3.0-or-later as part of this repository. Koi bundles no raster images, audio, video, or
-webfont files in the Stage 1 application. See docs/evidence/assets.json.
+webfont files in the browser application. See docs/evidence/assets.json.

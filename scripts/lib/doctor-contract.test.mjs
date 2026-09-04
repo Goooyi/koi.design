@@ -22,16 +22,16 @@ test("derives required versions and accepts pinned pnpm without Corepack", () =>
   assert.equal(pinnedPnpmCheck("11.20.0", "11.21.0", false).pass, false);
 });
 
-test("reports challenge release prerequisites without failing the development preflight", () => {
+test("reports standalone release prerequisites without failing the development preflight", () => {
   assert.deepEqual(doctorStatus([{ pass: true }], [{ pass: false }]), {
     ok: true,
-    challengeAppReleasePrerequisitesPass: false,
+    standaloneReleasePrerequisitesPass: false,
   });
 });
 
 test("fails the development preflight when a required tool check fails", () => {
   assert.deepEqual(doctorStatus([{ pass: false }], [{ pass: true }]), {
     ok: false,
-    challengeAppReleasePrerequisitesPass: true,
+    standaloneReleasePrerequisitesPass: true,
   });
 });

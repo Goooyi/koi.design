@@ -5,17 +5,16 @@ should block local development of the implemented product.
 
 ## 1. Long-term licensing and contributor rights
 
-Status: Stage 1 decision complete; company-launch policy remains open.
+Status: current repository policy complete; company-launch policy remains open.
 
-The complete Stage 1 monorepo is licensed under `AGPL-3.0-or-later`, third-party notices are
+The complete public monorepo is licensed under `AGPL-3.0-or-later`, third-party notices are
 documented, and contributions require DCO 1.1 sign-off. Before company launch, obtain legal review
 and decide whether portable specifications or client SDKs should also be offered under Apache-2.0,
 and whether future dual licensing requires a CLA.
 
 The decision must preserve the agreed product boundary: the complete self-hostable product can be
 public, while a future managed-service control plane may remain private. A private service must
-consume public Koi artifacts rather than become a hidden dependency of the self-hostable editor or
-challenge workflow.
+consume public Koi artifacts rather than become a hidden dependency of the self-hostable product.
 
 ## 2. Authentication and managed hosting
 

@@ -2,21 +2,21 @@
 
 ## Conclusion
 
-The bounded Stage 1 review completed on the deployed release. The application exposes useful
-landmarks and names, its ordinary controls have a predictable keyboard order and visible focus,
-representative toolbar and editor interactions work, and reduced-motion emulation introduces no
-motion or loss of function. There was no keyboard trap.
+The bounded review completed against Koi v0.1.0. The application exposes useful landmarks and
+names, its ordinary controls have a predictable keyboard order and visible focus, representative
+toolbar and editor interactions work, and reduced-motion emulation introduces no motion or loss of
+function. There was no keyboard trap.
 
 This is not a WCAG conformance claim. In particular, arbitrary canvas objects do not yet have a
 keyboard selection/editing model, the property inspector is unavailable in the 200%-zoom-equivalent
-layout, and the visually hidden file input creates an invisible tab stop. Those limitations must
-remain visible in the Stage 1 release record.
+layout, and the visually hidden file input creates an invisible tab stop. Those limitations remain
+part of the product backlog until a follow-up review verifies their resolution.
 
 ## Review identity and scope
 
 - Recorded: `2026-09-03T12:56:30Z`
-- URL: `https://koi-design-webmcp-challenge.pages.dev/`
-- Visible build: `Koi v0.1.0 · c31366f3ae3a · challenge`
+- Application commit: `c31366f3ae3a7a58af56b9e7f7933bda4491b694`
+- Product version: `0.1.0`
 - Browser: isolated Playwright CLI session using headless stable Chrome 151 on macOS
 - Baseline CSS viewport: `1440 × 900`
 - Zoom stress: `720 × 450` CSS pixels, the layout-equivalent viewport produced when a
@@ -26,8 +26,8 @@ remain visible in the Stage 1 release record.
 - Console result for the review session: 0 errors and 0 warnings
 
 The production browser does not expose WebMCP to an ordinary Playwright session unless Chrome is
-started with the experimental WebMCP feature configuration. WebMCP behavior is certified
-separately; this review concerns the rendered application's accessibility behavior.
+started with the experimental WebMCP feature configuration. WebMCP behavior is tested separately;
+this review concerns the rendered application's accessibility behavior.
 
 ## Observations
 
