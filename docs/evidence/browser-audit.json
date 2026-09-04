@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "capturedAt": "2026-09-04T12:52:39.019Z",
-  "generatedFromCommit": "3ea75268a2e1807f40dee323c940ddcd4f2af317",
+  "capturedAt": "2026-09-04T14:10:24.069Z",
+  "generatedFromCommit": "37e5249c522fee269d5c9f3532a1ed1ad58ac0ba",
   "sourceTree": {
     "sourceInputsClean": true,
     "dirtyGeneratedEvidenceBeforeCapture": []
@@ -19,7 +19,7 @@
     "claimScope": "Welcome Document regression sentinel; not a general canvas-capacity claim"
   },
   "environment": {
-    "url": "http://127.0.0.1:56487/",
+    "url": "http://127.0.0.1:64162/",
     "scope": "loopback-production-build",
     "browser": "151.0.7922.174",
     "node": "v26.8.1",
@@ -56,7 +56,7 @@
   },
   "instrumentation": {
     "failures": [],
-    "initialReactCommits": 17,
+    "initialReactCommits": 16,
     "compositorLayers": {
       "eventCount": 0,
       "maximum": null
@@ -66,15 +66,15 @@
     "canvasSamples": [
       {
         "label": "initial-after-warmup",
-        "pageHtmlElements": 342,
-        "canvasHtmlElements": 79,
-        "mountedKoiElements": 15,
-        "mountedFrames": 3,
-        "mountedFrameIds": ["frame-brief", "frame-components", "frame-flow"]
+        "pageHtmlElements": 348,
+        "canvasHtmlElements": 61,
+        "mountedKoiElements": 11,
+        "mountedFrames": 2,
+        "mountedFrameIds": ["frame-brief", "frame-components"]
       },
       {
         "label": "pan-1",
-        "pageHtmlElements": 357,
+        "pageHtmlElements": 381,
         "canvasHtmlElements": 94,
         "mountedKoiElements": 19,
         "mountedFrames": 4,
@@ -82,7 +82,7 @@
       },
       {
         "label": "pan-2",
-        "pageHtmlElements": 341,
+        "pageHtmlElements": 365,
         "canvasHtmlElements": 78,
         "mountedKoiElements": 14,
         "mountedFrames": 3,
@@ -90,29 +90,29 @@
       },
       {
         "label": "pan-3",
-        "pageHtmlElements": 288,
-        "canvasHtmlElements": 25,
-        "mountedKoiElements": 4,
-        "mountedFrames": 1,
-        "mountedFrameIds": ["frame-gpu"]
+        "pageHtmlElements": 330,
+        "canvasHtmlElements": 43,
+        "mountedKoiElements": 8,
+        "mountedFrames": 2,
+        "mountedFrameIds": ["frame-flow", "frame-gpu"]
       },
       {
         "label": "reset",
-        "pageHtmlElements": 342,
-        "canvasHtmlElements": 79,
-        "mountedKoiElements": 15,
-        "mountedFrames": 3,
-        "mountedFrameIds": ["frame-brief", "frame-components", "frame-flow"]
+        "pageHtmlElements": 348,
+        "canvasHtmlElements": 61,
+        "mountedKoiElements": 11,
+        "mountedFrames": 2,
+        "mountedFrameIds": ["frame-brief", "frame-components"]
       }
     ],
-    "markerWindowMs": 882.476,
+    "markerWindowMs": 916.772,
     "frameIntervalsMs": {
-      "count": 52,
-      "min": 14.7,
+      "count": 54,
+      "min": 14.6,
       "p50": 16.7,
-      "p95": 18.4,
-      "max": 18.6,
-      "total": 866.6
+      "p95": 17.9,
+      "max": 18.7,
+      "total": 901.3
     },
     "frameIntervalsOver50MsPercent": 0,
     "longTasksMs": {
@@ -129,72 +129,72 @@
     },
     "rendererMainTraceEvents": {
       "RunTask": {
-        "count": 400,
+        "count": 409,
         "min": 0.001,
-        "p50": 0.021,
-        "p95": 1.979,
-        "max": 8.352,
-        "total": 121.154
+        "p50": 0.024,
+        "p95": 1.924,
+        "max": 7.261,
+        "total": 126.565
       },
       "Layout": {
-        "count": 19,
-        "min": 0.042,
-        "p50": 0.141,
-        "p95": 0.825,
-        "max": 0.825,
-        "total": 3.673
+        "count": 23,
+        "min": 0.026,
+        "p50": 0.151,
+        "p95": 0.654,
+        "max": 0.973,
+        "total": 4.84
       },
       "UpdateLayoutTree": {
-        "count": 70,
-        "min": 0.014,
-        "p50": 0.075,
-        "p95": 0.795,
-        "max": 0.844,
-        "total": 11.152
+        "count": 71,
+        "min": 0.02,
+        "p50": 0.077,
+        "p95": 0.761,
+        "max": 1.236,
+        "total": 12.652
       },
       "Paint": {
-        "count": 42,
-        "min": 0.014,
-        "p50": 0.172,
-        "p95": 0.761,
-        "max": 0.871,
-        "total": 14.295
+        "count": 49,
+        "min": 0.013,
+        "p50": 0.278,
+        "p95": 0.903,
+        "max": 1.125,
+        "total": 17.225
       }
     },
     "ccActiveTreeLayerRecords": {
-      "count": 68,
+      "count": 71,
       "min": 13,
-      "p50": 14,
+      "p50": 13,
       "p95": 15,
       "max": 15,
-      "total": 961
+      "total": 972
     }
   },
   "memory": {
     "before": {
       "dom": {
         "documents": 1,
-        "nodes": 462,
-        "jsEventListeners": 259
+        "nodes": 471,
+        "jsEventListeners": 312
       },
       "heap": {
-        "usedSize": 7174204,
+        "usedSize": 7313516,
         "totalSize": 7995392,
-        "embedderHeapUsedSize": 2777672,
-        "backingStorageSize": 717273
+        "embedderHeapUsedSize": 2754592,
+        "backingStorageSize": 717468
       }
     },
     "after": {
       "dom": {
         "documents": 1,
-        "nodes": 462,
-        "jsEventListeners": 259
+        "nodes": 471,
+        "jsEventListeners": 312
       },
       "heap": {
-        "usedSize": 7288632,
-        "totalSize": 7995392,
-        "embedderHeapUsedSize": 2438544,
-        "backingStorageSize": 717346
+        "usedSize": 7454024,
+        "totalSize": 8257536,
+        "embedderHeapUsedSize": 2376592,
+        "backingStorageSize": 717541
       }
     },
     "retained": {
@@ -202,21 +202,21 @@
       "frames": 0,
       "nodes": 0,
       "eventListeners": 0,
-      "jsHeapBytes": 114428
+      "jsHeapBytes": 140508
     }
   },
   "performanceMetricDeltas": {
-    "LayoutCount": 19,
-    "RecalcStyleCount": 88,
-    "LayoutDurationMs": 3.876,
-    "RecalcStyleDurationMs": 11.919,
-    "ScriptDurationMs": 29.438,
-    "TaskDurationMs": 130.691
+    "LayoutCount": 23,
+    "RecalcStyleCount": 90,
+    "LayoutDurationMs": 5.062,
+    "RecalcStyleDurationMs": 13.386,
+    "ScriptDurationMs": 29.299,
+    "TaskDurationMs": 135.608
   },
   "resources": {
     "count": 3,
-    "encodedBodyBytes": 870608,
-    "transferBytes": 871508,
+    "encodedBodyBytes": 870056,
+    "transferBytes": 870956,
     "crossOrigin": []
   },
   "trace": {
@@ -229,9 +229,9 @@
     ],
     "localPath": "test-results/performance/chrome-trace.json.gz",
     "rawTracePublished": false,
-    "rawBytes": 4015323,
-    "compressedBytes": 385337,
-    "sha256": "fbb575d4ad04fc18d40def04405bc3dc08a807a33ce659e1e32dd4296625ee46"
+    "rawBytes": 3971770,
+    "compressedBytes": 377964,
+    "sha256": "bf69d08ad85cb065c1e6987a8da57058bcf0b0bf2d41d79b3bcebf99376fb730"
   },
   "budgets": [
     {
@@ -278,7 +278,7 @@
     },
     {
       "name": "peakPageHtmlElements",
-      "actual": 357,
+      "actual": 381,
       "maximum": 420,
       "pass": true
     },
@@ -302,7 +302,7 @@
     },
     {
       "name": "farRightMountedFrames",
-      "actual": 1,
+      "actual": 2,
       "maximum": 2,
       "pass": true
     },
@@ -314,7 +314,7 @@
     },
     {
       "name": "p95FrameIntervalMs",
-      "actual": 18.4,
+      "actual": 17.9,
       "maximum": 34,
       "pass": true
     },
@@ -344,43 +344,43 @@
     },
     {
       "name": "runTaskMaximumMs",
-      "actual": 8.352,
+      "actual": 7.261,
       "maximum": 75,
       "pass": true
     },
     {
       "name": "layoutTotalMs",
-      "actual": 3.673,
+      "actual": 4.84,
       "maximum": 75,
       "pass": true
     },
     {
       "name": "layoutMaximumMs",
-      "actual": 0.825,
+      "actual": 0.973,
       "maximum": 8,
       "pass": true
     },
     {
       "name": "updateLayoutTreeTotalMs",
-      "actual": 11.152,
+      "actual": 12.652,
       "maximum": 75,
       "pass": true
     },
     {
       "name": "updateLayoutTreeMaximumMs",
-      "actual": 0.844,
+      "actual": 1.236,
       "maximum": 8,
       "pass": true
     },
     {
       "name": "paintTotalMs",
-      "actual": 14.295,
+      "actual": 17.225,
       "maximum": 100,
       "pass": true
     },
     {
       "name": "paintMaximumMs",
-      "actual": 0.871,
+      "actual": 1.125,
       "maximum": 8,
       "pass": true
     },
@@ -422,38 +422,38 @@
     },
     {
       "name": "retainedJsHeapBytes",
-      "actual": 114428,
+      "actual": 140508,
       "maximum": 4194304,
       "pass": true
     },
     {
       "name": "encodedResourceBytes",
-      "actual": 870608,
+      "actual": 870056,
       "maximum": 2097152,
       "pass": true
     },
     {
       "name": "finalJsHeapUsedBytes",
-      "actual": 7288632,
+      "actual": 7454024,
       "maximum": 134217728,
       "pass": true
     },
     {
       "name": "rawTraceBytes",
-      "actual": 4015323,
+      "actual": 3971770,
       "maximum": 33554432,
       "pass": true
     },
     {
       "name": "harnessRuntimeMs",
-      "actual": 4790,
+      "actual": 5256,
       "maximum": 30000,
       "pass": true
     },
     {
       "name": "reactCommits",
       "actual": 14,
-      "maximum": 22,
+      "maximum": 23,
       "pass": true
     }
   ],
