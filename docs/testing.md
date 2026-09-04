@@ -36,11 +36,11 @@ Koi's deterministic baseline is implemented and runs within bounded resources:
   verifies hosted MCP authentication, one-message JSON-RPC admission, structured mutation
   pressure/storage failures, request bounds, post-rename durability and revision wake-up recovery,
   one request per HTTP socket, bounded connections, and stalled-socket destruction.
-- Twelve Playwright journeys use real pointer and keyboard input to verify bounded virtualized DOM,
+- Thirteen Playwright journeys use real pointer and keyboard input to verify bounded virtualized DOM,
   camera-driven visibility, drag persistence through IndexedDB, coherent Frame drag previews
   across DOM/SVG/connectors, focused shortcuts, Frame creation, pen input, text editing, preserving
   a human text draft across an agent update, durable authority-transition ordering, denied browser
-  storage, the full `.koi.json` download path, modifier-wheel containment, zero automated WCAG
+  storage, the full `.koi.json` download path, modifier-wheel containment, width-budget panel drops and toggles, zero automated WCAG
   A/AA violations, a complete stale-agent conflict/reinspect/replan/reload sequence after a human
   Frame move, and all eight native WebMCP tools under the production CSP.
 - Playwright is fixed to one Chromium worker, 30-second test timeouts, video disabled, and traces

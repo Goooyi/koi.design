@@ -4,12 +4,13 @@ import { Icon } from "@astryxdesign/core/Icon";
 import { IconButton } from "@astryxdesign/core/IconButton";
 import { StatusDot } from "@astryxdesign/core/StatusDot";
 import { Text } from "@astryxdesign/core/Text";
+import { ToggleButton, ToggleButtonGroup } from "@astryxdesign/core/ToggleButton";
 import { Toolbar } from "@astryxdesign/core/Toolbar";
 import { VStack } from "@astryxdesign/core/VStack";
 import { KoiIcons } from "@koi/astryx";
 import type { ReactNode } from "react";
 
-import type { EditorStatusTone } from "./koi-editor.js";
+import type { EditorPanel, EditorStatusTone } from "./koi-editor.js";
 
 const statusVariants = { ok: "success", busy: "warning", error: "error" } as const;
 
@@ -19,6 +20,8 @@ export function AppBar({
   status,
   statusTone,
   actions,
+  openPanels,
+  onOpenPanelsChange,
   onResetView,
   onUndo,
 }: {
@@ -27,6 +30,8 @@ export function AppBar({
   status: string;
   statusTone: EditorStatusTone;
   actions?: ReactNode;
+  openPanels: readonly EditorPanel[];
+  onOpenPanelsChange: (panels: readonly EditorPanel[]) => void;
   onResetView: () => void;
   onUndo: () => void;
 }) {
@@ -61,6 +66,30 @@ export function AppBar({
               {status}
             </Text>
           </HStack>
+          <ToggleButtonGroup
+            type="multiple"
+            label="Panels"
+            size="sm"
+            value={[...openPanels]}
+            onChange={(values) => onOpenPanelsChange(values as EditorPanel[])}
+          >
+            <ToggleButton
+              value="tools"
+              size="sm"
+              isIconOnly
+              label="Tools panel"
+              tooltip="Tools panel"
+              icon={<Icon icon={KoiIcons.panelStart} />}
+            />
+            <ToggleButton
+              value="inspector"
+              size="sm"
+              isIconOnly
+              label="Inspector"
+              tooltip="Inspector"
+              icon={<Icon icon={KoiIcons.panelEnd} />}
+            />
+          </ToggleButtonGroup>
           <ButtonGroup label="View" size="sm">
             <IconButton
               variant="secondary"

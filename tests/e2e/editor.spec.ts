@@ -521,4 +521,28 @@ test.describe("Koi browser editor", () => {
     });
     expect(errors).toEqual([]);
   });
+
+  test("drops side panels below Koi's width budget and brings them back", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByTestId("koi-build-identifier")).toContainText("Koi v0.1.0");
+    const tools = page.getByRole("complementary", { name: "Editor tools" });
+    const inspector = page.getByRole("complementary", { name: "Element inspector" });
+    await expect(tools).toBeVisible();
+    await expect(inspector).toBeVisible();
+
+    await page.setViewportSize({ width: 1024, height: 800 });
+    await expect(inspector).toHaveCount(0);
+    await expect(tools).toBeVisible();
+    await page.getByRole("button", { name: "Inspector", exact: true }).click();
+    await expect(inspector).toBeVisible();
+
+    await page.setViewportSize({ width: 760, height: 800 });
+    await expect(tools).toHaveCount(0);
+    await page.getByRole("button", { name: "Tools panel", exact: true }).click();
+    await expect(tools).toBeVisible();
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await expect(tools).toBeVisible();
+    await expect(inspector).toBeVisible();
+  });
 });

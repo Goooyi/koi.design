@@ -298,7 +298,7 @@ export function Inspector() {
       <Divider />
       <VStack gap={2}>
         <SectionTitle>Layout</SectionTitle>
-        <Grid columns={1} gap={1}>
+        <Grid columns={2} gap={1}>
           <NumberField
             key={`${element.id}:x`}
             label="X"

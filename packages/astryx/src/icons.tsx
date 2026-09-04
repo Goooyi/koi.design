@@ -62,6 +62,20 @@ export const KoiIcons = {
     </>,
   ),
   undo: glyph("KoiUndoIcon", <path d="M8.5 14.5 4 10l4.5-4.5M4 10h10.5a5.5 5.5 0 0 1 0 11H10" />),
+  panelStart: glyph(
+    "KoiPanelStartIcon",
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M9.5 5v14" />
+    </>,
+  ),
+  panelEnd: glyph(
+    "KoiPanelEndIcon",
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M14.5 5v14" />
+    </>,
+  ),
   add: glyph("KoiAddIcon", <path d="M12 5v14M5 12h14" />),
   button: glyph(
     "KoiButtonIcon",

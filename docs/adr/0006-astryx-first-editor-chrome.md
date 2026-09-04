@@ -36,6 +36,13 @@ name is missing, the Astryx token families are extended through the theme's `loc
 through parallel variables. Per-document design tokens will apply through a nested Astryx `Theme`
 around the canvas so that a design's theme never restyles the editor.
 
+The editor's width budget follows Astryx's layout guide: structural widths are pixels, everything
+inside them uses the spacing scale, and a region is dropped rather than left to compete for space.
+The tools panel (256) and the inspector (380) resize within their budgets through `useResizable` and
+`ResizeHandle`; at 1024 the inspector is dropped and at 768 the tools panel follows, and the app
+bar's panel toggles bring either back. Koi keeps the inspector as a collapsible panel rather than
+the guide's Dialog because it stays open while editing.
+
 ## Consequences
 
 - The editor looks and behaves like an Astryx application, and exported projects can reuse the
