@@ -1,7 +1,7 @@
 import type { App, McpUiHostContext } from "@modelcontextprotocol/ext-apps";
 import { useApp, useHostStyles } from "@modelcontextprotocol/ext-apps/react";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { type Command, type Projection } from "@koi/core";
+import { type Command, type Projection, operationTargetId } from "@koi/core";
 import { EditorStore, KoiEditor } from "@koi/editor";
 import {
   KOI_MCP_TOOL_NAMES,
@@ -70,9 +70,7 @@ function modelContextForCommand(command: Command, revision: number) {
     revision,
     commandId: command.commandId,
     documentId: command.documentId,
-    elementIds: command.operations.map((operation) =>
-      operation.type === "create" ? operation.element.id : operation.elementId,
-    ),
+    elementIds: command.operations.map((operation) => operationTargetId(operation)),
     detailTruncated: true,
   };
 }

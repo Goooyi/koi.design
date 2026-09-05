@@ -2,6 +2,7 @@ import { parseArgs } from "node:util";
 
 import { buildTheme, type BuildOptions } from "./build.js";
 import { DesignMdError, formatDiagnostic } from "./diagnostics.js";
+import { emitProfileModule } from "./emit.js";
 
 export interface CliIo {
   readFile(path: string): Promise<string>;
@@ -14,11 +15,13 @@ export interface CliIo {
 const HELP = `koi-design-md — bridge a DESIGN.md onto Astryx's token contract
 
 Usage:
-  koi-design-md build <DESIGN.md> --out <theme.ts> [--name <theme>] [--export <constName>] [--check]
+  koi-design-md build <DESIGN.md> --out <theme.ts> [--name <theme>] [--export <constName>]
+                     [--profile-out <profile.ts|.json>] [--check]
   koi-design-md inspect <DESIGN.md> [--json]
 
-build    Emit a TypeScript module calling Astryx's defineTheme. With --check, compare it with the
-         file at --out and exit 1 when they differ, so the generated theme cannot drift.
+build    Emit a TypeScript module calling Astryx's defineTheme, and with --profile-out the design
+         profile record a Koi document carries (a typed module for .ts, JSON otherwise). With
+         --check, compare with the files on disk and exit 1 when they differ, so nothing drifts.
 inspect  Print the mapping coverage and diagnostics (or the full design profile with --json).
 `;
 
@@ -37,6 +40,7 @@ export async function runDesignMdCli(argv: readonly string[], io: CliIo): Promis
       allowPositionals: true,
       options: {
         out: { type: "string" },
+        "profile-out": { type: "string" },
         name: { type: "string" },
         export: { type: "string" },
         check: { type: "boolean", default: false },
@@ -52,6 +56,7 @@ export async function runDesignMdCli(argv: readonly string[], io: CliIo): Promis
   const [command, input] = parsed.positionals;
   const {
     out,
+    "profile-out": profileOut,
     name,
     export: exportName,
     check,
@@ -59,6 +64,7 @@ export async function runDesignMdCli(argv: readonly string[], io: CliIo): Promis
     help,
   } = parsed.values as unknown as {
     out?: string;
+    "profile-out"?: string;
     name?: string;
     export?: string;
     check: boolean;
@@ -126,18 +132,30 @@ export async function runDesignMdCli(argv: readonly string[], io: CliIo): Promis
     if (diagnostic.severity !== "info") io.stderr(formatDiagnostic(diagnostic));
   }
 
+  const outputs: Array<[path: string, content: string]> = [[out, result.module]];
+  if (profileOut) {
+    const content = profileOut.endsWith(".ts")
+      ? emitProfileModule(result.profile, { sourceLabel: input })
+      : `${JSON.stringify(result.profile, null, 2)}\n`;
+    outputs.push([profileOut, content]);
+  }
+
   if (check) {
-    const current = (await io.exists(out)) ? await io.readFile(out) : null;
-    if (current !== result.module) {
-      io.stderr(
-        `${out} is out of date with ${input}; run the build without --check to regenerate it`,
-      );
-      return 1;
+    for (const [path, content] of outputs) {
+      const current = (await io.exists(path)) ? await io.readFile(path) : null;
+      if (current !== content) {
+        io.stderr(
+          `${path} is out of date with ${input}; run the build without --check to regenerate it`,
+        );
+        return 1;
+      }
+      io.stdout(`✓ ${path} matches ${input}`);
     }
-    io.stdout(`✓ ${out} matches ${input}`);
     return 0;
   }
-  await io.writeFile(out, result.module);
-  io.stdout(`✓ ${out}`);
+  for (const [path, content] of outputs) {
+    await io.writeFile(path, content);
+    io.stdout(`✓ ${path}`);
+  }
   return 0;
 }

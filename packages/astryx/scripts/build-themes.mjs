@@ -12,12 +12,15 @@ const check = process.argv.includes("--check");
 const designMdCli = path.resolve(packageRoot, "../design-md/dist/cli.mjs");
 const themes = [
   { name: "koi", source: "../../DESIGN.md" },
-  { name: "apple", source: "../design-md/fixtures/apple/DESIGN.md" },
+  { name: "apple", source: "../design-md/fixtures/apple/DESIGN.md", profile: true },
 ];
 
 for (const theme of themes) {
   const module = `src/theme/generated/${theme.name}.theme.ts`;
   const css = `src/theme/generated/${theme.name}.css`;
+  const profile = theme.profile
+    ? ["--profile-out", `src/theme/generated/${theme.name}.profile.ts`]
+    : [];
   run(process.execPath, [
     designMdCli,
     "build",
@@ -26,6 +29,7 @@ for (const theme of themes) {
     module,
     "--name",
     theme.name,
+    ...profile,
     ...(check ? ["--check"] : []),
   ]);
   run("astryx", ["theme", "build", module, "--out", css, ...(check ? ["--check"] : [])]);

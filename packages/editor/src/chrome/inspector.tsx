@@ -18,6 +18,7 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 import type { JsonObject, JsonValue, KoiElement } from "@koi/core";
 
 import { useEditorRuntime } from "../runtime/editor-context.js";
+import { useDocumentDesign } from "../canvas/design-theme.js";
 import { useElement, useProjection, useSelection } from "../store/hooks.js";
 
 /**
@@ -245,6 +246,7 @@ function ComponentProperties({ element }: { element: Extract<KoiElement, { kind:
 export function Inspector() {
   const { store } = useEditorRuntime();
   const projection = useProjection(store);
+  const design = useDocumentDesign();
   const selection = useSelection(store);
   const element = useElement(store, selection.length === 1 ? selection[0]! : "none");
   const page = store.getActivePage();
@@ -260,6 +262,9 @@ export function Inspector() {
         />
         <MetadataList orientation="vertical">
           <MetadataListItem label="Revision">{projection.document.revision}</MetadataListItem>
+          <MetadataListItem label="Design system">
+            {design?.profile.name ?? "Astryx defaults"}
+          </MetadataListItem>
           <MetadataListItem label="Pending sync">
             {projection.outbox.filter((item) => item.status !== "acknowledged").length}
           </MetadataListItem>

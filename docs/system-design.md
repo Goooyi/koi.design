@@ -459,7 +459,7 @@ The MVP compiles a trusted `koi.astryx/0.5.0` registry for Button, Card, Badge, 
 Banner. Registry entries define bounded serializable props, defaults, inspector metadata,
 provenance, rendering, and component-level HTML helpers.
 
-`@koidesign/design-md` (`packages/design-md`) bridges a DESIGN.md (format `alpha`) onto the `koi.astryx/0.5.0` profile: Koi's own theme is compiled from the repository's `DESIGN.md`, and the vendored Apple DESIGN.md proves the mapping on a third-party file. Per-document application of the resulting profile and complete native Page export remain future work. The intended versioned
+`@koidesign/design-md` (`packages/design-md`) bridges a DESIGN.md (format `alpha`) onto the `koi.astryx/0.5.0` profile: Koi's own theme is compiled from the repository's `DESIGN.md`, and the vendored Apple DESIGN.md proves the mapping on a third-party file. A Document carries the resulting profile record in `designProfile.tokens` through the `design` operation (undoable like any edit); the editor compiles it at runtime with `defineTheme` and wraps each trusted component instance in a nested Astryx `Theme`, so a document's design system restyles its components and nothing else. The side panel offers Astryx's defaults, the Apple profile, and any imported DESIGN.md. Complete native Page export remains future work. The intended versioned
 profile still maps portable design intent to the exact Astryx concepts Koi supports; Koi does not
 fork DESIGN.md or invent a parallel universal token system. Profile upgrades are explicit one-way
 transformations to the current runtime.

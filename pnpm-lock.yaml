@@ -412,6 +412,9 @@ importers:
       '@koi/editor':
         specifier: workspace:*
         version: link:../../packages/editor
+      '@koidesign/design-md':
+        specifier: workspace:*
+        version: link:../../packages/design-md
       idb:
         specifier: 'catalog:'
         version: 8.0.3
@@ -455,6 +458,9 @@ importers:
       '@koi/core':
         specifier: workspace:*
         version: link:../core
+      '@koidesign/design-md':
+        specifier: workspace:*
+        version: link:../design-md
       '@stylexjs/stylex':
         specifier: 'catalog:'
         version: 0.19.0
@@ -468,9 +474,6 @@ importers:
       '@astryxdesign/cli':
         specifier: 'catalog:'
         version: 0.5.0(@astryxdesign/core@0.5.0(@stylexjs/stylex@0.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@astryxdesign/theme-neutral@0.5.0(@astryxdesign/core@0.5.0(@stylexjs/stylex@0.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8))(gpt-tokenizer@3.4.0)(supports-color@10.2.2)
-      '@koidesign/design-md':
-        specifier: workspace:*
-        version: link:../design-md
       '@stylexjs/rollup-plugin':
         specifier: 'catalog:'
         version: 0.19.0(supports-color@10.2.2)
@@ -516,6 +519,9 @@ importers:
       '@koi/core':
         specifier: workspace:*
         version: link:../core
+      '@koidesign/design-md':
+        specifier: workspace:*
+        version: link:../design-md
       '@stylexjs/stylex':
         specifier: 'catalog:'
         version: 0.19.0

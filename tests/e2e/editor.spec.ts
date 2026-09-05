@@ -554,4 +554,63 @@ test.describe("Koi browser editor", () => {
     await expect(inspector).toBeVisible();
     await expect(rail).toBeVisible();
   });
+
+  test("applies a DESIGN.md design system to the document's Astryx components", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByTestId("koi-build-identifier")).toContainText("Koi v0.1.0");
+    const canvas = page.getByRole("region", { name: /infinite canvas/ });
+    const inspector = page.getByRole("complementary", { name: "Element inspector" });
+    const createProject = () => canvas.getByRole("button", { name: "Create project" }).first();
+    const astryxBlue = "rgb(0, 100, 224)";
+    const appleBlue = "rgb(0, 102, 204)";
+    await expect(createProject()).toHaveCSS("background-color", astryxBlue);
+    await expect(inspector).toContainText("Astryx defaults");
+
+    await page.getByRole("button", { name: "Apple", exact: true }).click();
+    await expect(createProject()).toHaveCSS("background-color", appleBlue);
+    await expect(inspector).toContainText("Apple-design-analysis");
+    await expect(page.getByRole("button", { name: "Reset view" })).toBeVisible();
+
+    await page.getByRole("button", { name: "Undo" }).click();
+    await expect(createProject()).toHaveCSS("background-color", astryxBlue);
+    await page.getByRole("button", { name: "Apple", exact: true }).click();
+    await expect(createProject()).toHaveCSS("background-color", appleBlue);
+
+    await page.reload();
+    await expect(page.getByTestId("koi-build-identifier")).toContainText("Koi v0.1.0");
+    await expect(createProject()).toHaveCSS("background-color", appleBlue);
+
+    await page.getByLabel("Import DESIGN.md").setInputFiles({
+      name: "DESIGN.md",
+      mimeType: "text/markdown",
+      buffer: Buffer.from(
+        [
+          "---",
+          "version: alpha",
+          "name: Ember",
+          "colors:",
+          '  primary: "#B7410E"',
+          '  on-primary: "#ffffff"',
+          "---",
+          "",
+          "## Colors",
+          "",
+          "Ember orange for every primary action.",
+          "",
+        ].join("\n"),
+      ),
+    });
+    await expect(page.locator(".koi-toast")).toContainText("Ember");
+    await expect(inspector).toContainText("Ember");
+    await expect(createProject()).not.toHaveCSS("background-color", appleBlue);
+    await expect(createProject()).not.toHaveCSS("background-color", astryxBlue);
+
+    await page.getByLabel("Import DESIGN.md").setInputFiles({
+      name: "broken.md",
+      mimeType: "text/markdown",
+      buffer: Buffer.from("# no front matter\n"),
+    });
+    await expect(page.locator(".koi-toast")).toContainText("front-matter");
+    await expect(inspector).toContainText("Ember");
+  });
 });

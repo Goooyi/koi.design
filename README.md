@@ -16,6 +16,9 @@ single-owner self-hosted deployment; it is not yet a multi-user cloud service.
 - A versioned semantic document model with stable IDs, validation, conflict preconditions,
   idempotent commands, ordered history, and bounded `.koi.json` import/export.
 - IndexedDB persistence for each browser Projection and its local/hosted authority metadata.
+- A document-level design system: Astryx's defaults, the Apple DESIGN.md, or any DESIGN.md you
+  import, compiled through `@koidesign/design-md`; the document's components re-render in it,
+  undoably, and it persists with the document.
 - Eight first-class WebMCP tools registered by the top-level page.
 - A self-contained MCP App View with five semantic/model-visible tools, one app-only bounded
   snapshot-transfer tool, and one durable local Projection file.

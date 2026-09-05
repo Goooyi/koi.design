@@ -306,6 +306,7 @@ export function hasHistoryBarrierAfter(projection: Projection, cursor: number): 
 }
 
 function rebaseInverseOperation(projection: Projection, operation: Operation): Operation {
+  if (operation.type === "design") return operation;
   if (operation.type === "create") {
     const tombstone = ownRecordValue(projection.tombstones, operation.element.id);
     return tombstone ? { ...operation, expectedTombstoneVersion: tombstone.version } : operation;

@@ -17,6 +17,7 @@
     "@koi/astryx": "workspace:*",
     "@koi/core": "workspace:*",
     "@koi/editor": "workspace:*",
+    "@koidesign/design-md": "workspace:*",
     "idb": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

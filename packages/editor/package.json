@@ -25,6 +25,7 @@
     "@astryxdesign/core": "catalog:",
     "@koi/astryx": "workspace:*",
     "@koi/core": "workspace:*",
+    "@koidesign/design-md": "workspace:*",
     "@stylexjs/stylex": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:"

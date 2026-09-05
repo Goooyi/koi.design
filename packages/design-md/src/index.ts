@@ -10,9 +10,14 @@ export {
   type TokenValue,
 } from "./astryx.js";
 export { buildTheme, type BuildOptions, type BuildResult } from "./build.js";
-export { runDesignMdCli, type CliIo } from "./command.js";
 export { DesignMdError, formatDiagnostic, type Diagnostic, type Severity } from "./diagnostics.js";
-export { emitThemeModule, themeExportName, themeInput, type EmitOptions } from "./emit.js";
+export {
+  emitProfileModule,
+  emitThemeModule,
+  themeExportName,
+  themeInput,
+  type EmitOptions,
+} from "./emit.js";
 export {
   SECTION_ORDER,
   canonicalSectionName,
@@ -22,7 +27,13 @@ export {
   type DesignMdSection,
   type ParseOptions,
 } from "./parse.js";
-export { toDesignProfile, type DesignProfile } from "./profile.js";
+export {
+  astryxThemeSpecSchema,
+  designProfileSchema,
+  parseDesignProfile,
+  toDesignProfile,
+  type DesignProfile,
+} from "./profile.js";
 export {
   DESIGN_MD_FORMAT_VERSION,
   frontMatterSchema,

@@ -3,8 +3,11 @@ import { Icon } from "@astryxdesign/core/Icon";
 import { List, ListItem } from "@astryxdesign/core/List";
 import { Text } from "@astryxdesign/core/Text";
 import { VStack } from "@astryxdesign/core/VStack";
-import { KoiIcons, listComponents, type KoiIconName } from "@koi/astryx";
+import { appleDesignProfile, KoiIcons, listComponents, type KoiIconName } from "@koi/astryx";
 
+import type { Document as KoiDocument } from "@koi/core";
+
+import { useDocumentDesign } from "../canvas/design-theme.js";
 import { useEditorRuntime } from "../runtime/editor-context.js";
 import { useProjection } from "../store/hooks.js";
 import { useInserts } from "./inserts.js";
@@ -12,7 +15,21 @@ import { useInserts } from "./inserts.js";
 interface SidePanelProps {
   onExport?: () => void;
   onImport?: () => void;
+  onImportDesign?: () => void;
 }
+
+type ProfileTokens = KoiDocument["designProfile"]["tokens"];
+
+/** Built-in design systems: Astryx's defaults, and the Apple DESIGN.md compiled by the bridge. */
+const designPresets: ReadonlyArray<{ label: string; name: string | null; tokens: ProfileTokens }> =
+  [
+    { label: "Astryx defaults", name: null, tokens: {} },
+    {
+      label: "Apple",
+      name: appleDesignProfile.name,
+      tokens: appleDesignProfile as unknown as ProfileTokens,
+    },
+  ];
 
 const componentGlyphs: Record<string, KoiIconName> = {
   "astryx.button": "button",
@@ -34,14 +51,43 @@ function SectionTitle({ children }: { children: string }) {
  * The editor's side panel: pages, the component library, and document actions, each an Astryx
  * `List` of rows so the panel reads one way throughout. Tools live in the rail beside the canvas.
  */
-export function SidePanel({ onExport, onImport }: SidePanelProps) {
+export function SidePanel({ onExport, onImport, onImportDesign }: SidePanelProps) {
   const { store } = useEditorRuntime();
   const projection = useProjection(store);
   const inserts = useInserts();
+  const design = useDocumentDesign();
   const page = store.getActivePage()!;
+  const activeName = design?.profile.name ?? null;
+  const isPreset = designPresets.some((preset) => preset.name === activeName);
 
   return (
     <VStack gap={5}>
+      <List density="compact" header={<SectionTitle>Design system</SectionTitle>}>
+        {designPresets.map((preset) => (
+          <ListItem
+            key={preset.label}
+            label={preset.label}
+            startContent={<Icon icon={KoiIcons.palette} />}
+            isSelected={activeName === preset.name}
+            onClick={() => store.setDesignProfile(preset.tokens)}
+          />
+        ))}
+        {design && !isPreset && (
+          <ListItem
+            label={design.profile.name}
+            startContent={<Icon icon={KoiIcons.palette} />}
+            isSelected
+          />
+        )}
+        {onImportDesign && (
+          <ListItem
+            label="Import DESIGN.md"
+            startContent={<Icon icon={KoiIcons.import} />}
+            onClick={onImportDesign}
+          />
+        )}
+      </List>
+
       <List density="compact" header={<SectionTitle>Pages</SectionTitle>}>
         {projection.document.pages.map((candidate) => (
           <ListItem

@@ -25,7 +25,9 @@ import {
   updateOutboxEntry,
   type Command,
   type Projection,
+  type JsonObject,
 } from "@koi/core";
+import { buildTheme, DesignMdError, formatDiagnostic } from "@koidesign/design-md";
 import { CameraController, EditorStore, KoiEditor, type EditorStatusTone } from "@koi/editor";
 
 import {
@@ -49,6 +51,8 @@ import {
   runWithSuspendedHostedSession,
   TransitionCoordinator,
 } from "./transition-coordinator.js";
+
+const MAX_DESIGN_MD_IMPORT_BYTES = 1024 * 1024;
 
 type SyncState =
   | "Local"
@@ -231,6 +235,7 @@ export function App() {
   const publishIntents = useRef(new HostedPublishIntentCoordinator());
   const syncQueue = useRef<Promise<void>>(Promise.resolve());
   const fileInput = useRef<HTMLInputElement>(null);
+  const designInput = useRef<HTMLInputElement>(null);
   const [store, setStore] = useState<EditorStore | null>(null);
   const [syncState, setSyncState] = useState<SyncState>("Local");
   const [webMcpState, setWebMcpState] = useState("WebMCP unavailable");
@@ -676,6 +681,35 @@ export function App() {
     }
   };
 
+  const importDesign = async (file: File) => {
+    if (file.size > MAX_DESIGN_MD_IMPORT_BYTES) {
+      setMessage("DESIGN.md imports are limited to 1 MiB.");
+      return;
+    }
+    const activeStore = storeRef.current!;
+    try {
+      const { profile, bridge } = buildTheme(await file.text(), { fileName: file.name });
+      const result = activeStore.setDesignProfile(profile as unknown as JsonObject);
+      if (!result.ok) {
+        setMessage(result.error.message);
+        return;
+      }
+      const mapped = Object.keys(bridge.coverage.mapped).length;
+      const kept = bridge.coverage.unmapped.length;
+      setMessage(
+        `Design system “${profile.name}” applied: ${mapped} tokens mapped onto Astryx, ${kept} kept in the profile.`,
+      );
+    } catch (error) {
+      setMessage(
+        error instanceof DesignMdError
+          ? [error.message, ...error.diagnostics.slice(0, 2).map(formatDiagnostic)].join(" ")
+          : error instanceof Error
+            ? error.message
+            : "Could not read this DESIGN.md.",
+      );
+    }
+  };
+
   const importFile = async (file: File) => {
     if (file.size > MAX_KOI_DOCUMENT_IMPORT_BYTES) {
       setMessage("Koi Document imports are limited to 32 MiB.");
@@ -784,6 +818,7 @@ export function App() {
         actions={hostActions}
         onExport={() => downloadDocument(store.getProjection())}
         onImport={() => fileInput.current?.click()}
+        onImportDesign={() => designInput.current?.click()}
       >
         <HostMessages message={message} onDismiss={dismissMessage} />
         {showLogin && !IS_STANDALONE_DEPLOYMENT ? (
@@ -811,6 +846,18 @@ export function App() {
             const file = event.target.files?.[0];
             if (file) void importFile(file);
             event.target.value = "";
+          }}
+        />
+        <input
+          ref={designInput}
+          type="file"
+          aria-label="Import DESIGN.md"
+          accept=".md,text/markdown"
+          disabled={busy}
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            event.target.value = "";
+            if (file) void importDesign(file);
           }}
         />
       </VisuallyHidden>

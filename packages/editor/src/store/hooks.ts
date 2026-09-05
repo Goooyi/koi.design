@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 
-import type { KoiElement, Projection } from "@koi/core";
+import type { Document as KoiDocument, KoiElement, Projection } from "@koi/core";
 
 import type { EditorStore } from "./editor-store.js";
 
@@ -41,5 +41,13 @@ export function useIsSelected(store: EditorStore, elementId: string): boolean {
     store.subscribeSelection,
     () => store.getSelection().includes(elementId),
     () => store.getSelection().includes(elementId),
+  );
+}
+
+export function useDesignProfileTokens(store: EditorStore): KoiDocument["designProfile"]["tokens"] {
+  return useSyncExternalStore(
+    store.subscribe,
+    () => store.getDocument().designProfile.tokens,
+    () => store.getDocument().designProfile.tokens,
   );
 }

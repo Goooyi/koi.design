@@ -1,3 +1,4 @@
+import { Theme } from "@astryxdesign/core/theme";
 import { renderComponent } from "@koi/astryx";
 import * as stylex from "@stylexjs/stylex";
 import type { CSSProperties } from "react";
@@ -7,6 +8,7 @@ import type { KoiElement, Page } from "@koi/core";
 import { useElementDrag } from "../interaction/use-element-drag.js";
 import { useEditorRuntime } from "../../runtime/editor-context.js";
 import { useElement, useIsSelected } from "../../store/hooks.js";
+import { useDocumentDesign } from "../design-theme.js";
 import { canvasStyles } from "../styles.js";
 import { sx } from "../sx.js";
 
@@ -31,6 +33,7 @@ function elementStyle(element: KoiElement, dx: number, dy: number): CSSPropertie
 
 function ElementContent({ element }: { element: KoiElement }) {
   const { store } = useEditorRuntime();
+  const design = useDocumentDesign();
   switch (element.kind) {
     case "frame":
       return (
@@ -39,12 +42,22 @@ function ElementContent({ element }: { element: KoiElement }) {
           style={{ background: element.properties.background ?? "#ffffff" }}
         />
       );
-    case "component":
+    case "component": {
+      // The document's design system restyles its components and nothing else: the nested Theme
+      // wraps the trusted component instance, never the editor's surfaces or overlays.
+      const rendered = renderComponent(element.properties.componentId, element.properties.props);
       return (
         <div {...stylex.props(canvasStyles.fill, canvasStyles.componentSurface)}>
-          {renderComponent(element.properties.componentId, element.properties.props)}
+          {design ? (
+            <Theme theme={design.theme} mode="light">
+              {rendered}
+            </Theme>
+          ) : (
+            rendered
+          )}
         </div>
       );
+    }
     case "text":
       return (
         <div

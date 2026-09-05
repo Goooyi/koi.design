@@ -1,6 +1,12 @@
 import { z } from "zod";
 
-import { commandSchema, operationSchema, type Command, type Operation } from "./schema.js";
+import {
+  commandSchema,
+  operationSchema,
+  type Command,
+  type Operation,
+  DESIGN_PROFILE_TARGET,
+} from "./schema.js";
 import {
   type CommandReceipt,
   type HistoryEntry,
@@ -115,6 +121,7 @@ function compensationOperationsEqual(left: Operation[], right: Operation[]): boo
       const { expectedTombstoneVersion: _expectedTombstoneVersion, ...semantic } = operation;
       return semantic;
     }
+    if (operation.type === "design") return operation;
     const { expectedVersion: _expectedVersion, ...semantic } = operation;
     return semantic;
   };
@@ -429,6 +436,22 @@ function deleteElement(
   };
 }
 
+function setDesignProfile(
+  document: Document,
+  tombstones: Record<string, Tombstone>,
+  operation: Extract<Operation, { type: "design" }>,
+): OperationResult {
+  return {
+    document: {
+      ...document,
+      designProfile: { ...document.designProfile, tokens: operation.tokens },
+    },
+    tombstones,
+    inverse: operationSchema.parse({ type: "design", tokens: document.designProfile.tokens }),
+    elementId: DESIGN_PROFILE_TARGET,
+  };
+}
+
 function applyOperation(
   document: Document,
   tombstones: Record<string, Tombstone>,
@@ -443,6 +466,8 @@ function applyOperation(
       return patchElement(document, tombstones, operation, operationIndex);
     case "delete":
       return deleteElement(document, tombstones, operation, command, operationIndex);
+    case "design":
+      return setDesignProfile(document, tombstones, operation);
   }
 }
 

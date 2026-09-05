@@ -49,11 +49,30 @@ const deleteOperationSchema = z.strictObject({
   expectedVersion: z.number().int().positive(),
 });
 
+/**
+ * Replaces the Document's design profile token record (`designProfile.tokens`): the record a
+ * DESIGN.md compiles to through `@koidesign/design-md`. The inverse restores the previous record.
+ */
+const designOperationSchema = z.strictObject({
+  type: z.literal("design"),
+  tokens: jsonObjectSchema,
+});
+
+/** The pseudo target a design operation mutates, for once-per-Command accounting. */
+export const DESIGN_PROFILE_TARGET = "design-profile";
+
 export const operationSchema = z.discriminatedUnion("type", [
   createOperationSchema,
   patchOperationSchema,
   deleteOperationSchema,
+  designOperationSchema,
 ]);
+
+export function operationTargetId(operation: Operation): string {
+  if (operation.type === "create") return operation.element.id;
+  if (operation.type === "design") return DESIGN_PROFILE_TARGET;
+  return operation.elementId;
+}
 
 export const commandSchema = z
   .strictObject({
@@ -76,15 +95,18 @@ export const commandSchema = z
     }
     const targets = new Set<string>();
     for (const [index, operation] of command.operations.entries()) {
-      const elementId = operation.type === "create" ? operation.element.id : operation.elementId;
-      if (targets.has(elementId)) {
+      const targetId = operationTargetId(operation);
+      if (targets.has(targetId)) {
         context.addIssue({
           code: "custom",
-          message: `A Command may mutate Element ${elementId} only once`,
+          message:
+            operation.type === "design"
+              ? "A Command may set the design profile only once"
+              : `A Command may mutate Element ${targetId} only once`,
           path: ["operations", index],
         });
       }
-      targets.add(elementId);
+      targets.add(targetId);
     }
   });
 
@@ -92,5 +114,6 @@ export type CreateOperation = z.infer<typeof createOperationSchema>;
 export type PatchChanges = z.infer<typeof patchChangesSchema>;
 export type PatchOperation = z.infer<typeof patchOperationSchema>;
 export type DeleteOperation = z.infer<typeof deleteOperationSchema>;
+export type DesignOperation = z.infer<typeof designOperationSchema>;
 export type Operation = z.infer<typeof operationSchema>;
 export type Command = z.infer<typeof commandSchema>;

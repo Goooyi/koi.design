@@ -27,13 +27,13 @@
   "dependencies": {
     "@astryxdesign/core": "catalog:",
     "@koi/core": "workspace:*",
+    "@koidesign/design-md": "workspace:*",
     "@stylexjs/stylex": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
   "devDependencies": {
     "@astryxdesign/cli": "catalog:",
-    "@koidesign/design-md": "workspace:*",
     "@stylexjs/rollup-plugin": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

@@ -54,6 +54,8 @@ export interface KoiEditorProps {
   children?: ReactNode;
   onExport?: () => void;
   onImport?: () => void;
+  /** Host-provided DESIGN.md import; the side panel offers it when present. */
+  onImportDesign?: () => void;
 }
 
 export function KoiEditor({
@@ -66,6 +68,7 @@ export function KoiEditor({
   children,
   onExport,
   onImport,
+  onImportDesign,
 }: KoiEditorProps) {
   const ownCamera = useMemo(() => new CameraController(), []);
   const camera = providedCamera ?? ownCamera;
@@ -161,7 +164,11 @@ export function KoiEditor({
                     padding={3}
                     isScrollable
                   >
-                    <SidePanel onExport={onExport} onImport={onImport} />
+                    <SidePanel
+                      onExport={onExport}
+                      onImport={onImport}
+                      onImportDesign={onImportDesign}
+                    />
                   </LayoutPanel>
                 )}
                 <ResizeHandle hasDivider resizable={pages.props} label="Resize pages panel" />

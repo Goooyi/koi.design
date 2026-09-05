@@ -2,7 +2,13 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vite-plus/test";
 
-import { buildTheme, runDesignMdCli, themeExportName, type CliIo } from "../src/index.js";
+import { runDesignMdCli, type CliIo } from "../src/command.js";
+import {
+  buildTheme,
+  emitProfileModule,
+  parseDesignProfile,
+  themeExportName,
+} from "../src/index.js";
 
 const apple = readFileSync(new URL("../fixtures/apple/DESIGN.md", import.meta.url), "utf8");
 const koi = readFileSync(new URL("../../../DESIGN.md", import.meta.url), "utf8");
@@ -44,6 +50,17 @@ describe("emitThemeModule", () => {
     );
   });
 
+  it("round-trips the design profile through its schema and emits it as a typed module", () => {
+    const { profile } = buildTheme(apple, { name: "apple" });
+    expect(parseDesignProfile(JSON.parse(JSON.stringify(profile)))).toEqual(profile);
+    expect(parseDesignProfile({ profile: "koi.astryx" })).toBeNull();
+    expect(parseDesignProfile({})).toBeNull();
+    const module = emitProfileModule(profile, { sourceLabel: "apple/DESIGN.md" });
+    expect(module).toContain('import type { DesignProfile } from "@koidesign/design-md";');
+    expect(module).toContain("export const appleDesignProfile: DesignProfile = {");
+    expect(module).toContain('"profileVersion": "0.5.0"');
+  });
+
   it("is deterministic and names the export after the theme", () => {
     const first = buildTheme(apple, { name: "apple" }).module;
     const second = buildTheme(apple, { name: "apple" }).module;
@@ -80,6 +97,29 @@ describe("koi-design-md CLI", () => {
       ),
     ).toBe(1);
     expect(err.at(-1)).toMatch(/out of date/);
+  });
+
+  it("writes and checks the design profile beside the theme with --profile-out", async () => {
+    const files = new Map([["DESIGN.md", apple]]);
+    const { io } = memoryIo(files);
+    const args = [
+      "build",
+      "DESIGN.md",
+      "--out",
+      "t.ts",
+      "--name",
+      "apple",
+      "--profile-out",
+      "p.ts",
+    ];
+    expect(await runDesignMdCli(args, io)).toBe(0);
+    expect(files.get("p.ts")).toContain("appleDesignProfile");
+    expect(await runDesignMdCli([...args, "--check"], io)).toBe(0);
+    files.set("p.ts", "stale");
+    expect(await runDesignMdCli([...args, "--check"], io)).toBe(1);
+    const jsonArgs = ["build", "DESIGN.md", "--out", "t.ts", "--profile-out", "p.json"];
+    expect(await runDesignMdCli(jsonArgs, io)).toBe(0);
+    expect(JSON.parse(files.get("p.json")!)).toMatchObject({ profile: "koi.astryx" });
   });
 
   it("inspects coverage as text or JSON", async () => {

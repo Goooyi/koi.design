@@ -258,6 +258,13 @@ export class EditorStore {
   ): EditorCommitResult {
     return this.commit([{ type: "create", pageId, element }], options);
   }
+  /** Replace the Document's design profile record; `{}` returns it to Astryx's defaults. */
+  setDesignProfile(
+    tokens: Extract<Operation, { type: "design" }>["tokens"],
+    options?: CommitOptions,
+  ): EditorCommitResult {
+    return this.commit([{ type: "design", tokens }], options);
+  }
 
   patchElement(
     pageId: string,

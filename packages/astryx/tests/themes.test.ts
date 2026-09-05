@@ -15,5 +15,6 @@ describe("themes built from DESIGN.md", () => {
     expect(generated("apple.theme.ts")).toContain('"accent": [');
     expect(generated("apple.css")).toContain("#0066cc");
     expect(generated("apple.css")).toContain('[data-astryx-theme="apple"]');
+    expect(generated("apple.profile.ts")).toContain('"profile": "koi.astryx"');
   });
 });
